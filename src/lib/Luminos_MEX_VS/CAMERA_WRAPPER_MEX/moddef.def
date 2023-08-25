@@ -1,0 +1,3 @@
+LIBRARY CAMERA_WRAPPER_MEX.mexw64
+EXPORTS mexFunction
+EXPORTS mexfilerequiredapiversion

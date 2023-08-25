@@ -1,0 +1,48 @@
+{
+  "name": "frontend",
+  "version": "2.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@headlessui/react": "^1.7.4",
+    "@heroicons/react": "^2.0.13",
+    "@mui/material": "^5.11.0",
+    "@tailwindcss/forms": "^0.5.3",
+    "classnames": "^2.3.2",
+    "lodash": "^4.17.21",
+    "notistack": "^2.0.8",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "socket.io-client": "^4.5.4",
+    "styled-components": "^5.3.6",
+    "tailwind-merge": "^1.8.1",
+    "uplot": "^1.6.23"
+  },
+  "scripts": {
+    "dev": "vite",
+    "start": "concurrently --names \"FRONTEND,RELAY\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev\" \"cd ../relay && npm run start\"",
+    "serve": "concurrently --names \"FRONTEND,RELAY\" -c \"bgBlue.bold,bgMagenta.bold\" \"vite preview --port 3000\" \"cd ../relay && npm run start\"",
+    "build": "vite build"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@tailwindcss/typography": "^0.5.8",
+    "@vitejs/plugin-react": "^4.0.0",
+    "autoprefixer": "^10.4.13",
+    "postcss": "^8.4.19",
+    "tailwindcss": "^3.2.4",
+    "vite": "^4.3.9"
+  }
+}

@@ -1,0 +1,64 @@
+{
+  "objectType": "Rig_Initializer",
+  "dataDirectory": "C:\\Users\\Cohen Lab\\Documents\\GitHub\\luminos\\raffi_temp_data",
+  "devices": [
+    {
+      "deviceType": "Camera",
+      "name": "Simulated_Cam",
+      "trigger": "",
+      "clock": "",
+      "hsync_rate": 100000,
+      "vsync": "",
+      "daqTrigCounter": [],
+      "type": 0,
+      "rdrivemode": [],
+      "cam_id": "\\0",
+      "virtualSensorSize": 2048,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Voltage_Shutter",
+      "name": "PMT Shutter",
+      "port": "Dev5/ao0",
+      "offVoltage": 0,
+      "onVoltage": 0.7,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "DAQ",
+      "name": "Simulator_DAQ",
+      "alias_init": "Dev5/ao0,Modulator",
+      "defaultClock": "",
+      "default_trigger": "",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "mod594",
+      "port": "Dev5/ao1",
+      "min": 0,
+      "max": 5,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "shutter594",
+      "port": "Dev5/port0/line1",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "mod488",
+      "port": "Dev5/ao2",
+      "min": 0,
+      "max": 5,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "shutter488",
+      "port": "Dev5/port0/line0",
+      "Prop_Allowed_Vals": []
+    }
+  ]
+}

@@ -1,0 +1,3329 @@
+﻿<html>
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>DCIMG-API 1.0.0 Function Reference</title>
+    <style type="text/css">
+            body {
+                font-family: sans-serif;
+            }
+            .arg-name {
+              font-style: italic;
+            }
+            .arg-decl {
+              text-indent: 5ex;
+            }
+            .arg-help {
+              text-indent: 2ex;
+            }
+            .fileinformation {
+                text-align: right;
+                color: #808080;
+            }
+            .chapter {
+                font-size: 200%;
+                line-height: 2em;
+                text-align: center;
+                border:	1px solid gray;
+                background-color: #C0FFC0;
+            }
+            .section {
+                font-size: 175%;
+                font-family: serif;
+                font-style: italic;
+            }
+            .title {
+                font-size: 125%;
+                color: #008080;
+            }
+            .fname {
+                font-family: serif;
+                font-style: italic;
+                font-size: 200%;
+                font-weight: bold;
+            }
+            .formula {
+                font-size: 150%;
+                line-height: 2em;
+                text-align: center;
+                font-family: serif;
+                font-style: italic;
+            }
+            .proplist {
+                font-family: sans-serif;
+            }
+            .prop_groupname {
+                font-size: 150%;
+                line-height: 2em;
+            }
+            .prop_id {
+                background-color: #FFFFC0;
+            }
+            .prop_indent {
+                background-color: #C0C0C0;
+            }
+            .pname
+            {
+                font-family: serif;
+                font-style: italic;
+                font-size: 150%;
+                font-weight: bold;
+            }
+            .psection
+            {
+                font-size: 130%;
+                font-family: serif;
+                font-style: italic;
+            }
+            .chaptercontent
+            {
+                font-size: 125%;
+            }
+            table {
+              text-indent: 0;
+            }
+            a.go-top   { text-decoration:none;}
+            a.go-top:link { color: #000080; }
+            a.go-top:hover { color: #808080; }
+            a.go-top:visited { color: #000080; }
+			txtind1 {
+         	 text-indent: 1em;
+          	}
+          	txtindhalf {
+          	text-indent: 50%;
+          	}
+        </style>
+  </head>
+  <body>
+    <div>
+      <div class="fileinformation">
+		<div>v17.4.5275</div>
+	</div>
+    </div>
+    <div><a class="go-top" href="#Chapter_appendix_detail"></a></div>
+    <hr>
+    <div id="Chapter_readfirst_detail">
+      <div class="chapter">Read before using</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					Hamamatsu Photonics K.K.(it is described as the following HPK) has copyright of this document and the software sample codes.  This document is included in DCIMG-SDK.  Devloper who uses DCIMG-API in their custom software can refer this.
+				</div>
+				<div>
+					This document and the software sample codes are disclosed only for the purpose described above, and do not constitute a license, transfer, or any other entitlement for the owner.
+				</div>
+				<div>
+					All of risk and result of using software depending on this document remains with the user.
+				</div>
+				<div>
+					This document may include technical inaccuracies or typographical errors. 					HPK does not guarantee any damage arising from such errors or this document.
+				</div>
+				<div>
+					HPK makes no commitment to update or keep current the information contained in this document.
+				</div>
+				<div>
+					All brand and product names are trademarks or registered trademarks of their respective owners. 					HPK has copyright of this document with all rights reserved.
+				</div>
+				<div>
+					No part of this documentation may be reproduced, transmitted, transcribed, stored in a retrieval system, or translated into any language or computer language, in any form, or by any means, in any means, electronic, mechanical, magnetic, optical, chemical, manual or otherwise, without the prior written permission of HPK.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_readfirst_detail">Go to of chapter "Read before using".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_overview_detail">
+      <div class="chapter">Overview</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">DCIMG-API</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					DCIMG-API is an application software program interface to read files which are recorded by DCAM-API recording functions, hereafter referred to simply as “DCIMG file”). 					DCAM-API is application software program interface to control preparing digital cameras and detecting system manufactured by HAMAMATSU (hereafter referred to simply as “devices”). 					DCIMG-API is installed when DCAM-API is installed. DCAM-API itself is downloadable from website, www.dcamapi.com.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">SDK</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					The DCIMG software development kit (hereafter referred to as the “SDK”) gives resource for making host software program by their developer.
+				</div>
+				<div>
+					The SDK consists of header files, library files, reference files of DCIMG-API functions, and source code of sample application software to give knowledge how to access DCIMG-API. SDK users are free to use the software in any way they like, such as partially modifying source codes and creating completely separate program, and also giving application software or plugin module for everyone. But followings are not allowed; opening the resources that get from HAMAMMATSU as SDK; making very thin wrapper module that is almost same as DCIMG-API itself.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">Concept</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					Concept of DCIMG-API is to give easy access to DCIMG files. HPK does not open file format itself but gives API for accessing these files because DCIMG file format may be expanded when DCAM-API supports new function.  So supporting by DCIMG-API is easier for developer than opening DCIMG file format.					Basically functions are for reading file into PC memory, there is no function for displaying and GUI control. Therefore the number of functions has been limited to the minimum. For common use, format of calling function are defined in the C programming language.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_overview_detail">Go to of chapter "Overview".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_general_detail">
+      <div class="chapter">General rule</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">Related to "Handles"</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">HDCIMG</div>
+				<div>
+					HDCIMG is the handle which specifies the target file on DCIMG-API.  Almost DCIMG-API functions use this handle as a parameter.  dcimg_open() function returns this handle to host software, and dcimg_close() function releases it at terminating using the device.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">Related to "Functions"</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Function name</div>
+				<div>
+					All DCIMG-API functions are contained by small letters and they start by "dcimg_".
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Function arguments</div>
+				<div>
+					All function except dcimg_init() function and dcimg_open() function, the first arguments are always HDCIMG handle. 					Some functions need additional argument and if there are 3 parameters or more, structure is used. In case of structure parameter, function requires a pointer and the first member of the structure indicates a size of the structure. If you do not have any option for other members, please fill them with 0.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Function return</div>
+				<div>
+					All function returns value of DCIMG_ERR. All values are defined with DCIMG_ERR_ prefix. 					If function successes DCIMG_ERR_SUCCESS is return value.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Frame, Session and File</div>
+				<div>
+					The smallest content of DCIMG file is "Frame". Frame is 2D image. 					The series of contiguous capturing images is called as "Session". 					The first frame in session is beginning capturing or resuming recording. The last frame is the last before stopping capturing or pausing recording. 					DCIMG file can contain multiple session.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_general_detail">Go to of chapter "General rule".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_calling_detail">
+      <div class="chapter">Calling sequence</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">Initialization and Termination, and HDCIMG handle</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Initialization</div>
+				<div>
+					At starting using DCIMG-API, host software needs to call dcimg_init() function first, then call dcimg_open() function to get HDCIMG handle. 
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Termination</div>
+				<div>
+					To release HDCIMG handle at ending using the file, host software needs to call dcimg_close() function. 					There is no ending function for DCIMG-API itself.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">HDCIMG handle</div>
+				<div>
+					Almost DCIMG-API functions require a HDCIMG handle. 					The HDCIMG handle is used for specifying the DCIMG file that the host software controls and it is got by dcimg_open() function.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">Access to image data and metadata</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Lock image data</div>
+				<div>
+					An easy way to access image data is calling dcimg_lockframe() function. 					First preparing instance of structure DCIMG_FRAME, second setting size member and iFrame member, then call this function to get the image information and point to access image data.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Copy image data</div>
+				<div>
+					dcimg_copyframe() function is used to copy image data into user prepared buffer. 					Before calling this function, the host software has to fill necessary member of structure DCIMG_FRAME. 					The function dcimg_getparaml() is prepared to get some information, e.g. image size, pixeltype and so on.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Metadata</div>
+				<div>
+					DCIMG file includes not only image data but also other data, which is called "metadata". 					The function dcimg_copymetadata() can return single metadata of a frame. 					The function dcimg_copymetadatablock() can return metadata across multiple frames.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Frame index</div>
+				<div>
+					Frame index in DCIMG-API is 0 based.					The index of first frame in a session is 0.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">Additional access</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Session</div>
+				<div>
+					In DCIMG-API, from starting record to finishing is called session. 					DCIMG file can includes multiple sessions. 					dcimg_setsessionindex() function can change current session by session index. 					dcimg_getsessionindex() function can return current session index. 					Session index is 0 base.  The first session index is 0.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">Parameter</div>
+				<div>
+					dcimg_getparaml() function can return various parameter in DCIMG file. 					enum DCIMG_IDPARAML can specify which parameter host software wants to know.
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_calling_detail">Go to of chapter "Calling sequence".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_functions_detail">
+      <div class="chapter">Type Declarations</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_ERR"></a>DCIMG_ERR</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOMEMORY</td>
+                            <td>not enough memory</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDHANDLE</td>
+                            <td>invalid file handle</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDPARAM</td>
+                            <td>invalid parameter</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDVALUE</td>
+                            <td>invalid value</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDVIEW</td>
+                            <td>invalid view index</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDFRAMEINDEX</td>
+                            <td>invalid frame index</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDSESSIONINDEX</td>
+                            <td>invalid session index</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_FILENOTOPENED</td>
+                            <td>Failed to open file</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNFILEFORMAT</td>
+                            <td>unknown file format</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOTSUPPORT</td>
+                            <td>not support the function or id with read file</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_FAILEDREADDATA</td>
+                            <td>failed to read data</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNSIGN</td>
+                            <td>signature of file header is unknown or corrupted</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_OLDERFILEVERSION</td>
+                            <td>version of file header is older than version that used DCIMGAPI supports</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NEWERFILEVERSION</td>
+                            <td>version of file header is newer than version that used DCIMGAPI supports</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOIMAGE</td>
+                            <td>no image</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNIMAGEPROC</td>
+                            <td>unknown image process type</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOTSUPPORTIMAGEPROC</td>
+                            <td>not support set image process</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NODATA</td>
+                            <td>target data isn't recorded.</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_UNKNOWNSIGNATURE</td>
+                            <td>signature of image header is unknown or corrupted</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_NEWRUNTIMEREQUIRED</td>
+                            <td>version of image header is newer than version that used DCIMGAPI supports</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_ERRORSTATUSEXIST</td>
+                            <td>image header stands error status</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_HEADERCORRUPTED</td>
+                            <td>image header value is strange</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_BROKENCONTENT</td>
+                            <td>image content is corrupted</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNCOMMAND</td>
+                            <td>unknown command</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNPARAMID</td>
+                            <td>unknown PARAMID</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_SUCCESS</td>
+                            <td>no error, general success code.</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNREACH</td>
+                            <td>internal error</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_CODEPAGE"></a>DCIMG_CODEPAGE</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__SHIFT_JIS</td>
+                            <td>Shift JIS</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF16_LE</td>
+                            <td>UTF-16 (Little Endian)</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF16_BE</td>
+                            <td>UTF-16 (Big Endian)</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF7</td>
+                            <td>UTF-7</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF8</td>
+                            <td>UTF-8</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__NONE</td>
+                            <td>No data</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_FRAME_OPTION"></a>DCIMG_FRAME_OPTION</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_CURRENT</td>
+                            <td>Current View</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_1</td>
+                            <td>View1</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_2</td>
+                            <td>View2</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_3</td>
+                            <td>View3</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_4</td>
+                            <td>View4</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_PIXELTYPE"></a>DCIMG_PIXELTYPE</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_PIXELTYPE_NONE</td>
+                            <td>None</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_PIXELTYPE_MONO8</td>
+                            <td>Mono 8bit</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_PIXELTYPE_MONO16</td>
+                            <td>Mono 16bit</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_METADATAKIND"></a>DCIMG_METADATAKIND</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_USERDATATEXT</td>
+                            <td>user metadata text</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_USERDATABIN</td>
+                            <td>user metadata binary</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_TIMESTAMPS</td>
+                            <td>time stamp of image</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_FRAMESTAMPS</td>
+                            <td>frame stamp of image</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_METADATAOPTION"></a>DCIMG_METADATAOPTION</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__LOCATION_FRAME</td>
+                            <td>access frame metadata</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__LOCATION_FILE</td>
+                            <td>access file metadata</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__LOCATION_SESSION</td>
+                            <td>access session metadata</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_CURRENT</td>
+                            <td>current view</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_1</td>
+                            <td>view1</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_2</td>
+                            <td>view2</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_3</td>
+                            <td>view3</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_4</td>
+                            <td>view4</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_IDPARAML"></a>DCIMG_IDPARAML</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_TOTALFRAME</td>
+                            <td>number of total frame in the file</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_SESSION</td>
+                            <td>number of session in the file</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_FRAME</td>
+                            <td>number of frame in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATABIN_SESSION</td>
+                            <td>byte size of current session binary USER META DATA</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATABIN_FILE</td>
+                            <td>byte size of file binary USER META DATA</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATATEXT_SESSION</td>
+                            <td>byte size of current session text USER META DATA</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATATEXT_FILE</td>
+                            <td>byte size of file text USER META DATA</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_WIDTH</td>
+                            <td>image width in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_HEIGHT</td>
+                            <td>image height in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_ROWBYTES</td>
+                            <td>image rowbytes in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_PIXELTYPE</td>
+                            <td>image pixeltype in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATABIN</td>
+                            <td>maximum byte size of frame binary USER META DATA in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATABIN_SESSION</td>
+                            <td>maximum byte size of session binary USER META DATA in the file</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATATEXT</td>
+                            <td>maximum byte size of frame text USER META DATA in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATATEXT_SESSION</td>
+                            <td>maximum byte size of session text USER META DATA in the file</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_CURRENT_SESSION</td>
+                            <td>current session index</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_VIEW</td>
+                            <td>number of view in current session</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_FILEFORMAT_VERSION</td>
+                            <td>file format version</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_CAPABILITY_IMAGEPROC</td>
+                            <td>capability of image process</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_functions_detail">Go to of chapter "Type Declarations".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_functions_detail">
+      <div class="chapter">Functions</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<hr>
+                  <div style="display:none" id="function_dcimg_init">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_init_detail').style.display='block';&#xA;document.getElementById('function_dcimg_init').style.display='none'&#xA;                "> dcimg_init()
+        </div>
+                  </div>
+                  <div id="function_dcimg_init_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_init_detail').style.display='none';&#xA;document.getElementById('function_dcimg_init').style.display='block'&#xA;                "> dcimg_init()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_init(<div class="arg-decl">DCIMG_INIT* param</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">param</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								an instance of structure DCIMG_INIT which can specify initialize option
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_init() function initializes DCIMG-API runtime. 						Host software calls this function before calling other functions.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_open">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_open_detail').style.display='block';&#xA;document.getElementById('function_dcimg_open').style.display='none'&#xA;                "> dcimg_open()
+        </div>
+                  </div>
+                  <div id="function_dcimg_open_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_open_detail').style.display='none';&#xA;document.getElementById('function_dcimg_open').style.display='block'&#xA;                "> dcimg_open()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_open(<div class="arg-decl">DCIMG_OPEN* param</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">param</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								an instance of structure DCIMG_OPEN which can specify DCIMG file path to acquire HDCIMG handle
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_open() function opens the DCIMG file specified by member path of the structure DCIMG_OPEN and return HDCIMG handle. Host software calls this function to get HDCIMG handle. 						If host software does not need the HDCIMG handle any more, it should call dcimg_close() function. After calling dcimg_close() function, HDCIMG handle is not available and host software can call dcaimg_open() function to get HDCIMG handle again. 						If this function can open the file, this function returns DCIMG_ERR_SUCCESS and the member hdcimg of the structure DCIMG_OPEN return the HDCIMG handle of specified file. 						If DCIMG-API could not open the specified file, this function returns error code.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_close">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_close_detail').style.display='block';&#xA;document.getElementById('function_dcimg_close').style.display='none'&#xA;                "> dcimg_close()
+        </div>
+                  </div>
+                  <div id="function_dcimg_close_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_close_detail').style.display='none';&#xA;document.getElementById('function_dcimg_close').style.display='block'&#xA;                "> dcimg_close()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_close(<div class="arg-decl">HDCIMG hdcimg</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle that will be released
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_close() function release HDCIMG handle and the DCIMG file. After calling this function and success, the HDCIMG handle is not avilable. To use same DCIMG file again, host software has to call dcimg_open() function for getting HDCIMG handle.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_getdata">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getdata_detail').style.display='block';&#xA;document.getElementById('function_dcimg_getdata').style.display='none'&#xA;                "> dcimg_getdata()
+        </div>
+                  </div>
+                  <div id="function_dcimg_getdata_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getdata_detail').style.display='none';&#xA;document.getElementById('function_dcimg_getdata').style.display='block'&#xA;                "> dcimg_getdata()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_getdata(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMGDATA_HDR* hdr</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle as reference
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">hdr</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of DCIMGDATA_HDR instance for getting data.								DCIMGDATA_HDR is first member of the structure to get data.
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_getdata() function gets the data that it is impossible to get with paraml. 						The structure is prepared by the kind of data. These structures have DCIMGDATA_HDR as the first member.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_lockframe">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_lockframe_detail').style.display='block';&#xA;document.getElementById('function_dcimg_lockframe').style.display='none'&#xA;                "> dcimg_lockframe()
+        </div>
+                  </div>
+                  <div id="function_dcimg_lockframe_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_lockframe_detail').style.display='none';&#xA;document.getElementById('function_dcimg_lockframe').style.display='block'&#xA;                "> dcimg_lockframe()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_lockframe(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_FRAME* pFrame</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle as reference
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">pFrame</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of DCIMG_FRAME instance for getting buffer infomation for access. 								See the description of DCIMG_FRAME to know which members have to be set prior to calling dcimg_lockframe() and which members contain information afterwards.
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_lockframe() function returns a pointer that host software can use to access an image data in DCIMG file. Next calling this function will prepare new data, so the DCIMG_FRAME parameter which was filled by last call is no more available. 						If the image frame which is specified by DCIMG_FRAME::iFrame is not exist, dcimg_lockframe() function will return DCIMG_ERR_INVALIDFRAMEINDEX. 						To avoid this situation, host software get the number of frame in session to call dcimg_getparaml() with DCIMG_IDPARAML_NUMBEROF_FRAME. 
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_copyframe">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copyframe_detail').style.display='block';&#xA;document.getElementById('function_dcimg_copyframe').style.display='none'&#xA;                "> dcimg_copyframe()
+        </div>
+                  </div>
+                  <div id="function_dcimg_copyframe_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copyframe_detail').style.display='none';&#xA;document.getElementById('function_dcimg_copyframe').style.display='block'&#xA;                "> dcimg_copyframe()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_copyframe(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_FRAME* pFrame</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle as reference
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">pFrame</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of DCIMG_FRAME instance to describe the details of the copy process. 								See the description of DCIMG_FRAME to know which members have to be set prior calling dcimg_copyframe() and which members contain information afterwards.
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_copyframe() function copies image data from DCIMG file to specified buffer that host software gives
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_copymetadata">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadata_detail').style.display='block';&#xA;document.getElementById('function_dcimg_copymetadata').style.display='none'&#xA;                "> dcimg_copymetadata()
+        </div>
+                  </div>
+                  <div id="function_dcimg_copymetadata_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadata_detail').style.display='none';&#xA;document.getElementById('function_dcimg_copymetadata').style.display='block'&#xA;                "> dcimg_copymetadata()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_copymetadata(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_METADATAHDR* hdr</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle as reference
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">hdr</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of hdr member as a destination buffer for copying meta data
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_copymetadata() function copies meta data from DCIMG file to specified buffer that host software gives.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_copymetadatablock">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadatablock_detail').style.display='block';&#xA;document.getElementById('function_dcimg_copymetadatablock').style.display='none'&#xA;                "> dcimg_copymetadatablock()
+        </div>
+                  </div>
+                  <div id="function_dcimg_copymetadatablock_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadatablock_detail').style.display='none';&#xA;document.getElementById('function_dcimg_copymetadatablock').style.display='block'&#xA;                "> dcimg_copymetadatablock()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_copymetadatablock(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_METADATAHDR* hdr</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle as reference
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">hdr</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of hdr member as a destination buffer for copying meta data
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_copymetadatablock() function copies plural meta data from DCIMG file to specified buffer that host software gives. 						Available kinds of meta data are TIMESTAMP and FRAMESTAMP.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_setsessionindex">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_setsessionindex_detail').style.display='block';&#xA;document.getElementById('function_dcimg_setsessionindex').style.display='none'&#xA;                "> dcimg_setsessionindex()
+        </div>
+                  </div>
+                  <div id="function_dcimg_setsessionindex_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_setsessionindex_detail').style.display='none';&#xA;document.getElementById('function_dcimg_setsessionindex').style.display='block'&#xA;                "> dcimg_setsessionindex()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_setsessionindex(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">int32 index</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle for changing current session
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">index</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify a session index
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_setsessionindex() function changes the target session when DCIMG file has some session.						The session index is 0 based.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_getsessionindex">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getsessionindex_detail').style.display='block';&#xA;document.getElementById('function_dcimg_getsessionindex').style.display='none'&#xA;                "> dcimg_getsessionindex()
+        </div>
+                  </div>
+                  <div id="function_dcimg_getsessionindex_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getsessionindex_detail').style.display='none';&#xA;document.getElementById('function_dcimg_getsessionindex').style.display='block'&#xA;                "> dcimg_getsessionindex()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_getsessionindex(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">int32* pIndex</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle for getting current session
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">pIndex</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of a variable for receiving current session index
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_getsessionindex() function returns the target session index.						The session index is 0 based.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_getparaml">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getparaml_detail').style.display='block';&#xA;document.getElementById('function_dcimg_getparaml').style.display='none'&#xA;                "> dcimg_getparaml()
+        </div>
+                  </div>
+                  <div id="function_dcimg_getparaml_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getparaml_detail').style.display='none';&#xA;document.getElementById('function_dcimg_getparaml').style.display='block'&#xA;                "> dcimg_getparaml()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_getparaml(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_IDPARAML index,</div>
+                          <div class="arg-decl">int32* paraml</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								specify HDCIMG handle for getting parameters
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">index</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a parameter index for getting parameter
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">paraml</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								a pointer of a variable for receiving current session index
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_getparaml() function returns a int32 value into paraml argument with DCIMG_IDPARAML value specified by the index argument.
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_functions_detail">Go to of chapter "Functions".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_structures_detail">
+      <div class="chapter">Structures</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_GUID"></a>DCIMG_GUID<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_GUID { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>_ui32</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data1;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>unsigned short</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data2;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>unsigned short</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data3;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>unsigned char</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data4[8];</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="section">
+                    <p></p>Remarks</div>
+                  <table width="90%">
+                    <tr>
+                      <td width="2%"></td>
+                      <td>
+						A structure type for DCIMG_INIT::guid member. This is not used in general.
+					</td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_INIT"></a>DCIMG_INIT<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_INIT { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							sizeof(*this)
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>const DCIMG_GUID*</td>
+                                <td width="2%"></td>
+                                <td nowrap>guid;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							GUID option, usually NULL
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">size</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set byte size of DCIMG_INIT structure.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set 0 because this member is reserved.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">guid</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set pointer of DCIMG_GUID instance. 							Set NULL usually.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="section">
+                    <p></p>Remarks</div>
+                  <table width="90%">
+                    <tr>
+                      <td width="2%"></td>
+                      <td>
+						This is used as a pointer for calling dcimg_init() function. 						Host software initializes DCIMG-API and will be able to call other DCIMG functions
+					</td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_OPEN"></a>DCIMG_OPEN<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_OPEN { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of this structure
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>HDCIMG</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdcimg;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>LPCTSTR</td>
+                                <td width="2%"></td>
+                                <td nowrap>path;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							file path
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set 0 because this member is reserved.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">hdcimg</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_open() function fills this value with DCIMG file handle value if success.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">path</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Host software fills this value with a point to specify DCIMG file path.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_FRAME"></a>DCIMG_FRAME<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_FRAME { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of this structure.
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>iKind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>iFrame;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							frame index
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>buf;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pointer for top-left image
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>rowbytes;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							byte size for next line
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_PIXELTYPE</td>
+                                <td width="2%"></td>
+                                <td nowrap>type;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pixel type in image data
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>width;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							horizontal pixel count
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>height;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							vertical line count
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>left;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							horizontal start pixel
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>top;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							vertical start line
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_TIMESTAMP</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestamp;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							time stamp
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestamp;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							frame stamp
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>camerastamp;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							camera stamp
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">size</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set size of this structure.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">iKind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Reserved. Set 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Reserved. Set 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">iFrame</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Specify frame by index.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">buf</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with the address of top-left corner of the image data.
+						</div>
+                          <div>
+							Set this as the defination pointer before calling dcimg_copyframe().
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">rowbytes</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with the byte size offset value from a line to the next line. This value can be negative in some cases.
+						</div>
+                          <div>
+							dcimg_copyframe() requires this as a byte size offset value from a line to the next line. This value can be negative if destination image is up-side-down.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">type</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with a DCIMG_PIXELTYPE value of image buffer.
+						</div>
+                          <div>
+							dcimg_copyframe() requires 0 and host application should set before calling the function.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">width</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with a value of horizontal pixel count in the frame.
+						</div>
+                          <div>
+							dcimg_copyframe() requires this with the number of horizontal pixels that host application wants to copy.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">height</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with a value of vertical line count in the frame.
+						</div>
+                          <div>
+							dcimg_copyframe() requires this with number of vertical lines that host application wants to copy.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">left</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with a value of horizontal offset address that image starts. Usually this is 0.
+						</div>
+                          <div>
+							dcimg_copyframe() requires this with horizontal offset address that host application wants to copy as top-left corner.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">top</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe() fills this with a value of vertical offset address that image starts. Usually this is 0.
+						</div>
+                          <div>
+							dcimg_copyframe() requires this with vertical offset address that host application wants to copy as top-left corner.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestamp</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							time stamp value is filled if it is recorded. 							If this value is 0, timestamp is not available in the frame.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestamp</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							frame stamp value is filled if it is recorded. 							frame stamp starts by 0 from beginning of session.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">camerastamp</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							camera stamp value is filled if it is recorded. 							camera stamp is supported in several cameras and user or host application can set.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_USERDATABIN"></a>DCIMG_USERDATABIN<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_USERDATABIN { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size member should be size of this structure
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>bin;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pointer to receive meta data
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>bin_len;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							byte size of destination buffer
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							iKind should be DCIMG_METADATAKIND_USERDATABIN. option should be one of DCIMG_METADATAOPTION__LOCATION.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">bin</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the destination buffer to receive the binary of meta data.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">bin_len</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the size of the destinanation buffer to receive.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_USERDATATEXTBLOCK"></a>DCIMG_USERDATATEXTBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_USERDATATEXTBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size member should be size of this structure
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatext;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pointer for userdatatext block
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of one userdatatext
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextvalidsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							return the written data text size of each frame
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							maximum number of userdatatext which can receive
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextcount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							number of userdatatext written to buffer
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatext_kind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMG_METADATAOPTION__LOCATION
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextcodepage;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							encode type of each written userdatatext
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							iKind should be DCIMG_METADATAKIND_USERDATATEXT.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatext</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the destination buffer to receive the block of user text.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the size of one userdatatext.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextvalidsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the array to receive the written data text size of each frame.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the maximum number of userdatatext which can receive. userdatatext pointer should have userdatatextsize * userdatatextmax.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextcount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Return how many userdatatext are filled.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatext_kind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Choose userdatatext kind from DCIMG_METADATAOPTION__LOCATION (File, Session, Frame).
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextcodepage</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Return encode type of each written userdatatext.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_USERDATABINBLOCK"></a>DCIMG_USERDATABINBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_USERDATABINBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size member should be size of this structure
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabin;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pointer for userdatabin block
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabinsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of one userdatabin
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabinvalidsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							return the written data bin size of each frame
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabinmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							maximum number of userdatabin which can receive
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabincount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							number of userdatabin written to buffer
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabin_kind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMG_METADATAOPTION__LOCATION
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							iKind should be DCIMG_METADATAKIND_USERDATABIN.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabin</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the destination to receive the block of userdatabin.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabinsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the buffer size for one userdatabin.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabinvalidsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the array to receive the written data bin size of each frame.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabinmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the maximum number of userdatabin which can receive. userdatabin pointer should have userdatabinsize * userdatabinmax.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabincount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Return how many userdatabin are filled.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabin_kind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Choose userdatabin kind from DCIMG_METADATAOPTION__LOCATION (File, Session, Frame).
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_TIMESTAMPBLOCK"></a>DCIMG_TIMESTAMPBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_TIMESTAMPBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size member should be size of this structure
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_TIMESTAMP*</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestamps;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pointer for TIMESTAMP block
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							maximum number of timestamp to receive
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampkind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							reserved to return timestamp kind
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							sizeof(DCIMG_TIMESTAMP)
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampvalidsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							the written data size of DCIMG_TIMESTAMP
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampcount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							number of timestamp written to timestamps
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							iKind should be DCIMG_METADATAKIND_TIMESTAMPS.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestamps</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the array of TIMESTAMP to receive the timestamp.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the maximum number of timestamp which can receive.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampkind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Reserved to return timestamp kind(Hardware, Driver, DCAM etc...).
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set to the byte size of DCIMG_TIMESTAMP structure.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampvalidsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Return the written data size of DCIMG_TIMESTAMP.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampcount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Return how many timestamp are filled.
+						</div>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_FRAMESTAMPBLOCK"></a>DCIMG_FRAMESTAMPBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_FRAMESTAMPBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size member should be size of this structure
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestamps;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							pointer for framestamp block
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestampmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							maximum number of framestamp to receive
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestampcount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							number of framestamp written to buffer
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved.
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							iKind should be DCIMG_METADATAKIND_FRAMESTAMPS.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestamps</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the destination buffer to receive framestamp block.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestampmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the maximum number of frametamp which can receive.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestampcount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Return how many framestamp are filled.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMGDATA_HDR"></a>DCIMGDATA_HDR<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMGDATA_HDR { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of whole structure, not only this
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>iKind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMGDATA_KIND
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMGDATA_OPTION
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">size</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set this to the byte size of the structure that has included this DCIMGDATA_HDR structure.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">iKind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the DCIMGDATA_KIND
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Set the DCIMGDATA_OPTION
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMGDATA_REGION"></a>DCIMGDATA_REGION<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMGDATA_REGION { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMGDATA_HDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							iKind = DCIMGDATA_KIND__REGION
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>type;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMGDATA_RETIONTYPE
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>data;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							top of data
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>datasize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of data
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							size member should be size of this structure
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">type</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get data type of region
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">data</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get pointer of region data.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">datasize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get data size
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMGDATA_SENSORPARAM"></a>DCIMGDATA_SENSORPARAM<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMGDATA_SENSORPARAM { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMGDATA_HDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							iKind = DCIMGDATA_KIND__SENSORPARAM
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>binning;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							binning
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorhpos;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							horizontal offset of sensor
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorhsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							horizontal size of sensor
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorvpos;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							vertical offset of sensor
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorvsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							vertical size of sensor
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							size member should be size of this structure
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							This member is reserved. Set to 0.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">binning</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get binning of recorded image
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorhpos</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get horizontal offset of recorded image on sensor coordinate.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorhsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get horizontal size of recorded image on sensor coordinate.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorvpos</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get vertical offset of recorded image on sensor coordinate.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorvsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							Get vertical size of recorded image on sensor coordinate.
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_structures_detail">Go to of chapter "Structures".</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,2 @@
+COM_PORT:COM1
+DAQ_AO:Dev1/ao0

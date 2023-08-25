@@ -1,0 +1,3329 @@
+﻿<html>
+  <head>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>DCIMG-API 1.0.0 Function Reference</title>
+    <style type="text/css">
+            body {
+                font-family: sans-serif;
+            }
+            .arg-name {
+              font-style: italic;
+            }
+            .arg-decl {
+              text-indent: 5ex;
+            }
+            .arg-help {
+              text-indent: 2ex;
+            }
+            .fileinformation {
+                text-align: right;
+                color: #808080;
+            }
+            .chapter {
+                font-size: 200%;
+                line-height: 2em;
+                text-align: center;
+                border:	1px solid gray;
+                background-color: #C0FFC0;
+            }
+            .section {
+                font-size: 175%;
+                font-family: serif;
+                font-style: italic;
+            }
+            .title {
+                font-size: 125%;
+                color: #008080;
+            }
+            .fname {
+                font-family: serif;
+                font-style: italic;
+                font-size: 200%;
+                font-weight: bold;
+            }
+            .formula {
+                font-size: 150%;
+                line-height: 2em;
+                text-align: center;
+                font-family: serif;
+                font-style: italic;
+            }
+            .proplist {
+                font-family: sans-serif;
+            }
+            .prop_groupname {
+                font-size: 150%;
+                line-height: 2em;
+            }
+            .prop_id {
+                background-color: #FFFFC0;
+            }
+            .prop_indent {
+                background-color: #C0C0C0;
+            }
+            .pname
+            {
+                font-family: serif;
+                font-style: italic;
+                font-size: 150%;
+                font-weight: bold;
+            }
+            .psection
+            {
+                font-size: 130%;
+                font-family: serif;
+                font-style: italic;
+            }
+            .chaptercontent
+            {
+                font-size: 125%;
+            }
+            table {
+              text-indent: 0;
+            }
+            a.go-top   { text-decoration:none;}
+            a.go-top:link { color: #000080; }
+            a.go-top:hover { color: #808080; }
+            a.go-top:visited { color: #000080; }
+			txtind1 {
+         	 text-indent: 1em;
+          	}
+          	txtindhalf {
+          	text-indent: 50%;
+          	}
+        </style>
+  </head>
+  <body>
+    <div>
+      <div class="fileinformation">
+		<div>v17.4.5275</div>
+	</div>
+    </div>
+    <div><a class="go-top" href="#Chapter_appendix_detail"></a></div>
+    <hr>
+    <div id="Chapter_readfirst_detail">
+      <div class="chapter">最初にお読みください</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					浜松ホトニクス(以下HPK)はこの文書およびサンプルコードの著作権を持っています。この文書は DCIMG-SDK に含まれ、DCIMG-API を利用するアプリケーションを作成する開発者は参照できます。
+				</div>
+				<div>
+					この文書とサンプルコードは上記目的のためにのみ公開され、					開発者はこの書類およびサンプルコードに対して、ライセンス／譲渡などの権利を有しません。
+				</div>
+				<div>
+					この書類に基づいて開発されたソフトウエアを使って発生するいかなる損害は開発者の責任です。
+				</div>
+				<div>
+					この書類には技術的または記述上の誤りが含まれる可能性がありますが、HPKはそれらに伴う損害を補償しません。
+				</div>
+				<div>
+					HPKはこの書類に含まれる情報が更新された場合の通知は行いません。
+				</div>
+				<div>
+					ブランド名ならびに製品名は商標または登録商標です。
+				</div>
+				<div>
+					HPKの許可無く、本書類の一部または全部の、複製／翻訳／意訳を認めません。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_readfirst_detail">Chapter 最初にお読みください の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_overview_detail">
+      <div class="chapter">概要</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">DCIMG-API</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					DCIMG-APIはDCAM-API のレコーディング関数を利用して記録された画像ファイル(以下DCIMGファイル)を扱う関数群です。					DCAM-APIは浜松ホトニクス社製の科学計測用デジタルカメラ(以下、デジタルカメラ)をパソコンの応用ソフトウエアから制御する為の関数群です。					DCIMG-API は DCAM-API のインストール時にインストールされます。DCAM-API は www.dcamapi.com からダウンロード可能です。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">SDK</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					DCIMGソフトウエア開発キット(以下SDK)は応用ソフトウエアの開発者がDCIMG-APIを使用する為に必要な資料を提供します。
+				</div>
+				<div>
+					SDKはヘッダファイル、ライブラリファイル、DCIMG-APIの関数説明書ならびにDCIMG-APIを利用するサンプルプログラムのソースコードで構成されます。SDKのユーザーは一部を変更して利用したり、全く新しいソフトウエアを作ったり、出来上がったバイナリファイルを公開することができます。しかしながら以下の事は許されていません。1) 浜松ホトニクス株式会社からSDKとして受け取った資料の公開／提供。2) ほとんどDCIMG-APIと同じであるwrapperモジュールを外部に提供。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">Concept</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div>
+					DCIMG-APIのコンセプトはDCIMGファイルを簡単に読み出せる事です。HPKはファイル形式の公開ではなくAPIの提供をするのは、DCAM-API側の拡張の際、DCIMGファイルの形式が拡張される可能性がある為です。つまり、ファイル形式を公開するよりも API としてサポートする方が開発者にとって良いです。					基本的にはファイルをメモリに取り込む機能のみが提供されており、画像表示の為のAPIやGUI制御部分は存在しません。これにより、必要となる関数数は最小限に押さえられています。また様々な環境で使用できるように呼び出し形式はC言語を採用しています。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_overview_detail">Chapter 概要 の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_general_detail">
+      <div class="chapter">全般</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">ハンドルに関するルール</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">HDCIMG</div>
+				<div>
+					HDCIMG ハンドルは DCIMG-API の関数がファイルを扱う時に使用します。DCIMG-APIの初期化後 dcimg_open()関数で取得でき、使い終わったら dcimg_close()関数で解放します。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">関数に関するルール</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">関数名</div>
+				<div>
+					全てのDCIMG-APIの関数名は小文字で構成され、dcimg_で始まります。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">関数引数</div>
+				<div>
+					dcimg_init()関数とdcimg_open()関数を除く全ての関数は、第一引数が HDCIMG ハンドルです。					多くの関数は一つか二つの引数を持ち、３つ以上のパラメータがある場合は構造体で受け渡しをするようになっています。					構造体の引数の場合、ポインタを渡し、構造体の第一メンバは構造体のサイズを指定します。構造体のメンバは特に設定する値が無いものは0でクリアしてください。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">関数戻り値</div>
+				<div>
+					全ての関数は DCIMG_ERR 型で定義されるエラー値を返します。					正常に終了するとDCIMG_ERR_SUCCESSが戻ります。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">フレーム、セッションそしてファイル</div>
+				<div>
+					DCIMGファイル内の最小構成単位はフレームです。フレームは二次元画像データです。					一連の取り込みで生成される連続したフレーム全体をセッションと呼びます。					セッションの始まりは取込みの始まりまたは記録の再開時であり、セッションの最後は取込みの終了または記録の中断時になります。					DCIMGファイルは内部に複数のセッションを含むことができます。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_general_detail">Chapter 全般 の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_calling_detail">
+      <div class="chapter">呼び出し順</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">初期化と終了処理とHDCIMGハンドル</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">初期化</div>
+				<div>
+					DCIMG-APIを使用する場合、まず最初にdcimg_init()関数を呼び、続いてdcimg_open()関数でHDCIMGハンドルを入手します。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">終了処理</div>
+				<div>
+					使わなくなったHDCIMGハンドルはdcimg_close()関数で解放できます。					DCIMG-API自体を終了する関数はありません。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">HDCIMGハンドル</div>
+				<div>
+					DCIMG-API のほとんどの関数は、HDCIMG ハンドルを引数として必要とします。					HDCIMG ハンドルは制御対象とする DCIMG ファイルを指定する為に使われ、dcimg_open() 関数で得られます。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">画像データとメタデータへのアクセス</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">画像データのロック</div>
+				<div>
+					画像データにアクセスする簡単な方法は dcimg_lockframe() 関数を呼びだす事です。					まずDCIMG_FRAME 構造体のインスタンスを用意し、size メンバと iFrame メンバを指定してから呼び出せば、指定したフレームの画像情報とデータにアクセスする為のポインタを得られます。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">画像データのコピー</div>
+				<div>
+					dcimg_copyframe() 関数を使うと、既に用意されているバッファに画像データを取り込むことができます。					DCIMG_FRAME 構造体のインスタンスにはあらかじめ必要とする領域のサイズや位置を指定する必要があります。					格納されている画像サイズやピクセルタイプ等を取得する場合 dcimg_getparaml() 関数を使用します。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">メタデータ</div>
+				<div>
+					DCIMG ファイルには画像データ以外のデータも含まれています。これらをメタデータと呼びます。					ある一枚のフレームに含まれるメタデータを得るには dcimg_copymetadata() 関数を使います。					複数のフレームにまたがるメタデータを得るには dcimg_copymetadatablock() 関数を使います。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">フレーム番号</div>
+				<div>
+					フレーム番号は 0 ベースです。セッション内の最初のフレーム番号は 0 です。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <hr>
+            <div class="section">その他のアクセス</div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">セッション</div>
+				<div>
+					DCIMG-API では、記録開始から記録終了までの一連の画像をセッションと呼びます。					DCIMG ファイルには複数のセッションを含む事ができます。					dcimg_setsessionindex() 関数はセッション番号を使ってカレントセッションを変更する事ができます。					現在のセッション番号を得るには dcimg_getsessionindex() 関数を使います。					セッション番号は 0 ベースです。最初のセッション番号は 0 になります。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<div class="title">パラメータ</div>
+				<div>
+					DCIMG ファイル内に含まれる各種パラメータを得るには dcimg_getparaml() 関数を使います。					パラメータの選択は DCIMG_IDPARAML 列挙型を使用します。
+				</div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_calling_detail">Chapter 呼び出し順 の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_functions_detail">
+      <div class="chapter">型宣言</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_ERR"></a>DCIMG_ERR</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOMEMORY</td>
+                            <td>メモリが足りません</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDHANDLE</td>
+                            <td>無効なファイルハンドルです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDPARAM</td>
+                            <td>無効なパラメータです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDVALUE</td>
+                            <td>無効な値です。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDVIEW</td>
+                            <td>無効なビューインデックスです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDFRAMEINDEX</td>
+                            <td>無効なフレームインデックスです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_INVALIDSESSIONINDEX</td>
+                            <td>無効なセッションインデックスです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_FILENOTOPENED</td>
+                            <td>ファイルを開くのに失敗しました。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNFILEFORMAT</td>
+                            <td>知らないファイルフォーマットです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOTSUPPORT</td>
+                            <td>読み込んだファイルでは関数もしくはIDをサポートしていません。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_FAILEDREADDATA</td>
+                            <td>データの読み込みに失敗しました。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNSIGN</td>
+                            <td>ファイルヘッダの署名が知らないものか、データが破損しています。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_OLDERFILEVERSION</td>
+                            <td>ファイルヘッダのバージョンが使用しているDCIMGAPIがサポートしているバージョンより古いです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NEWERFILEVERSION</td>
+                            <td>ファイルヘッダのバージョンが使用しているDCIMGAPIがサポートしているバージョンより新しいです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOIMAGE</td>
+                            <td>画像がありません。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNIMAGEPROC</td>
+                            <td>知らない画像処理タイプです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NOTSUPPORTIMAGEPROC</td>
+                            <td>設定された画像処理はサポートしていません。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_NODATA</td>
+                            <td>目的のデータは記録されていません。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_UNKNOWNSIGNATURE</td>
+                            <td>画像ヘッダの署名が知らないものか、データが破損しています。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_NEWRUNTIMEREQUIRED</td>
+                            <td>画像ヘッダのバージョンが使用しているDCIMGAPIがサポートしているバージョンより新しいです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_ERRORSTATUSEXIST</td>
+                            <td>画像ヘッダにエラーステータスが立っています。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_HEADERCORRUPTED</td>
+                            <td>画像ヘッダの値がおかしいです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_IMAGE_BROKENCONTENT</td>
+                            <td>画像データが破損しています。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNCOMMAND</td>
+                            <td>知らないコマンドです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNKNOWNPARAMID</td>
+                            <td>知らないPARAMIDです。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_SUCCESS</td>
+                            <td>エラーではありません。処理に成功しました。</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_ERR_UNREACH</td>
+                            <td>内部エラーです。</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_CODEPAGE"></a>DCIMG_CODEPAGE</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__SHIFT_JIS</td>
+                            <td>Shift JIS</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF16_LE</td>
+                            <td>UTF-16 (Little Endian)</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF16_BE</td>
+                            <td>UTF-16 (Big Endian)</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF7</td>
+                            <td>UTF-7</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__UTF8</td>
+                            <td>UTF-8</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_CODEPAGE__NONE</td>
+                            <td>記録されていません。</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_FRAME_OPTION"></a>DCIMG_FRAME_OPTION</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_CURRENT</td>
+                            <td>現在のビュー</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_1</td>
+                            <td>View1</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_2</td>
+                            <td>View2</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_3</td>
+                            <td>View3</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_FRAME_OPTION__VIEW_4</td>
+                            <td>View4</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_PIXELTYPE"></a>DCIMG_PIXELTYPE</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_PIXELTYPE_NONE</td>
+                            <td>情報がありません</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_PIXELTYPE_MONO8</td>
+                            <td>Mono 8bit</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_PIXELTYPE_MONO16</td>
+                            <td>Mono 16bit</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_METADATAKIND"></a>DCIMG_METADATAKIND</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_USERDATATEXT</td>
+                            <td>ユーザメタデータ　テキスト</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_USERDATABIN</td>
+                            <td>ユーザメタデータ　バイナリ</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_TIMESTAMPS</td>
+                            <td>画像のタイムスタンプ</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAKIND_FRAMESTAMPS</td>
+                            <td>画像のフレームスタンプ</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_METADATAOPTION"></a>DCIMG_METADATAOPTION</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__LOCATION_FRAME</td>
+                            <td>フレームメタデータへのアクセス</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__LOCATION_FILE</td>
+                            <td>ファイルメタデータへのアクセス</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__LOCATION_SESSION</td>
+                            <td>セッションメタデータへのアクセス</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_CURRENT</td>
+                            <td>現在のビュー</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_1</td>
+                            <td>view1</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_2</td>
+                            <td>view2</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_3</td>
+                            <td>view3</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_METADATAOPTION__VIEW_4</td>
+                            <td>view4</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="enumlist_DCIMG_IDPARAML"></a>DCIMG_IDPARAML</div>
+                  <table width="90%" align="center">
+                    <tr>
+                      <td>
+                        <table border="1">
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_TOTALFRAME</td>
+                            <td>ファイル内にあるフレーム数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_SESSION</td>
+                            <td>ファイル内にあるセッション数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_FRAME</td>
+                            <td>現在のセッション内にあるフレーム数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATABIN_SESSION</td>
+                            <td>現在のセッションに記録されているバイナリユーザメタデータのバイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATABIN_FILE</td>
+                            <td>ファイルに記録されているバイナリユーザメタデータのバイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATATEXT_SESSION</td>
+                            <td>現在のセッションに記録されているテキストユーザメタデータのバイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_SIZEOF_USERDATATEXT_FILE</td>
+                            <td>ファイルに記録されているテキストユーザメタデータのバイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_WIDTH</td>
+                            <td>現在のセッション内にある画像の水平画素数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_HEIGHT</td>
+                            <td>現在のセッション内にある画像の垂直画素数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_ROWBYTES</td>
+                            <td>現在のセッション内にある画像の水平方向のバイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_IMAGE_PIXELTYPE</td>
+                            <td>現在のセッション内にある画像のピクセルタイプ</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATABIN</td>
+                            <td>現在のセッション内にあるフレームのバイナリユーザメタデータの最大バイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATABIN_SESSION</td>
+                            <td>ファイル内にあるセッションのバイナリユーザメタデータの最大バイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATATEXT</td>
+                            <td>現在のセッション内にあるフレームのテキストユーザメタデータの最大バイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_MAXSIZE_USERDATATEXT_SESSION</td>
+                            <td>ファイル内にあるセッションのテキストユーザメタデータの最大バイト数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_CURRENT_SESSION</td>
+                            <td>現在のセッションインデックス</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_NUMBEROF_VIEW</td>
+                            <td>現在のセッションのビューの数</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_FILEFORMAT_VERSION</td>
+                            <td>ファイルフォーマットのバージョン</td>
+                          </tr>
+                          <tr>
+                            <td nowrap>DCIMG_IDPARAML_CAPABILITY_IMAGEPROC</td>
+                            <td>使用可能な画像処理のタイプ</td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                  <p></p>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_functions_detail">Chapter 型宣言 の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_functions_detail">
+      <div class="chapter">関数</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<hr>
+                  <div style="display:none" id="function_dcimg_init">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_init_detail').style.display='block';&#xA;document.getElementById('function_dcimg_init').style.display='none'&#xA;                "> dcimg_init()
+        </div>
+                  </div>
+                  <div id="function_dcimg_init_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_init_detail').style.display='none';&#xA;document.getElementById('function_dcimg_init').style.display='block'&#xA;                "> dcimg_init()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_init(<div class="arg-decl">DCIMG_INIT* param</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">param</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								DCIMG_INIT 構造体のインスタンスで、初期化時にオプションを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_init()関数は、DCIMG-APIを初期化します。						ホストソフトウエアは他の関数を呼ぶ前に一度この関数を呼びます。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_open">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_open_detail').style.display='block';&#xA;document.getElementById('function_dcimg_open').style.display='none'&#xA;                "> dcimg_open()
+        </div>
+                  </div>
+                  <div id="function_dcimg_open_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_open_detail').style.display='none';&#xA;document.getElementById('function_dcimg_open').style.display='block'&#xA;                "> dcimg_open()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_open(<div class="arg-decl">DCIMG_OPEN* param</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">param</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								DCIMG_OPEN 構造体のインスタンスで、DCIMG ファイルのパスを指定して、HDCIMG ハンドルを受け取ります
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_open() 関数は、DCIMG_OPEN::path で指定された DCIMG ファイルを開き、対応する HDCIMG ハンドルを返します。						ホストソフトウエアは DCIMG ファイル一つにつき一回だけこの関数を呼び出す事ができます。						ホストソフトウエアが HDCIMG ハンドルが不要になったら dcimg_close() 関数で解放してください。						dcimg_close() 関数を呼ぶと、その後 HDCIMG ハンドルは使えなくなりますが、本関数を再度呼び出すと再び HDCIMG ハンドルを取得できます。						本関数は成功すると DCIMG_ERR_SUCCESS を返し、DCIMG_OPEN::hdcimg メンバに HDCIMG ハンドルがセットされています。						サポートするファイルが見つからなかった場合、この関数はエラーコードを返します。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_close">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_close_detail').style.display='block';&#xA;document.getElementById('function_dcimg_close').style.display='none'&#xA;                "> dcimg_close()
+        </div>
+                  </div>
+                  <div id="function_dcimg_close_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_close_detail').style.display='none';&#xA;document.getElementById('function_dcimg_close').style.display='block'&#xA;                "> dcimg_close()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_close(<div class="arg-decl">HDCIMG hdcimg</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								解放する HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_close() 関数は HDCIMG ハンドルとファイルを解放します。この関数が呼ばれて成功した場合、指定された HDCIMG ハンドルは使えなくなります。再度同じカメラを使う場合、ホストソフトウエアは dcimg_open() 関数を呼んで HDCIMG ハンドルを取得する必要があります。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_getdata">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getdata_detail').style.display='block';&#xA;document.getElementById('function_dcimg_getdata').style.display='none'&#xA;                "> dcimg_getdata()
+        </div>
+                  </div>
+                  <div id="function_dcimg_getdata_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getdata_detail').style.display='none';&#xA;document.getElementById('function_dcimg_getdata').style.display='block'&#xA;                "> dcimg_getdata()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_getdata(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMGDATA_HDR* hdr</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								参照元となる HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">hdr</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								必要なデータを取得するための構造体の先頭にある DCIMGDATA_HDR 構造体インスタンスへのポインタ
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_getdata() 関数は、paramlでは取得できないようなデータを取得します。						データの種類ごとに構造体が用意され、最初のメンバ変数はDCIMGDATA_HDRになっています。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_lockframe">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_lockframe_detail').style.display='block';&#xA;document.getElementById('function_dcimg_lockframe').style.display='none'&#xA;                "> dcimg_lockframe()
+        </div>
+                  </div>
+                  <div id="function_dcimg_lockframe_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_lockframe_detail').style.display='none';&#xA;document.getElementById('function_dcimg_lockframe').style.display='block'&#xA;                "> dcimg_lockframe()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_lockframe(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_FRAME* pFrame</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								参照元となる HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">pFrame</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								画像を参照する為の情報を受け取る DCIMG_FRAME 構造体インスタンスへのポインタ
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_lockframe() 関数は、DCIMG ファイル中の画像にアクセスする為のポインタを返します。						この関数が再び呼ばれると、その前に dcimg_lockframe() 関数を呼んだときに返される内容は無効になります。						この事態を避ける為に、dcimg_lockframe() 関数の呼び出しは、ある決まったスレッドから行うのが良いです。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_copyframe">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copyframe_detail').style.display='block';&#xA;document.getElementById('function_dcimg_copyframe').style.display='none'&#xA;                "> dcimg_copyframe()
+        </div>
+                  </div>
+                  <div id="function_dcimg_copyframe_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copyframe_detail').style.display='none';&#xA;document.getElementById('function_dcimg_copyframe').style.display='block'&#xA;                "> dcimg_copyframe()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_copyframe(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_FRAME* pFrame</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								参照元となる HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">pFrame</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								コピー先として画像を受け取る DCIMG_FRAME 構造体インスタンスへのポインタです
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_copyframe() 関数は DCIMG ファイル中の画像データをホストアプリケーションが指定したバッファにコピーします
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_copymetadata">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadata_detail').style.display='block';&#xA;document.getElementById('function_dcimg_copymetadata').style.display='none'&#xA;                "> dcimg_copymetadata()
+        </div>
+                  </div>
+                  <div id="function_dcimg_copymetadata_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadata_detail').style.display='none';&#xA;document.getElementById('function_dcimg_copymetadata').style.display='block'&#xA;                "> dcimg_copymetadata()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_copymetadata(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_METADATAHDR* hdr</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								参照元となる HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">hdr</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								コピー先としてメタデータを受け取る構造体の先頭にある hdr メンバーへのポインタです
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcambuf_copymetadata() 関数はホストアプリケーションが指定したバッファにメタデータをコピーします。						メタデータは DCAM_METADATAKIND で指定され、タイムスタンプとフレームスタンプを指定できます。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_copymetadatablock">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadatablock_detail').style.display='block';&#xA;document.getElementById('function_dcimg_copymetadatablock').style.display='none'&#xA;                "> dcimg_copymetadatablock()
+        </div>
+                  </div>
+                  <div id="function_dcimg_copymetadatablock_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_copymetadatablock_detail').style.display='none';&#xA;document.getElementById('function_dcimg_copymetadatablock').style.display='block'&#xA;                "> dcimg_copymetadatablock()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_copymetadatablock(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_METADATAHDR* hdr</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								参照元となる HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">hdr</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								コピー先としてメタデータを受け取る構造体の先頭にある hdr メンバーへのポインタです
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_copymetadatablock() 関数はホストアプリケーションが指定したバッファに複数のメタデータをコピーします。						メタデータは DCAM_METADATAKIND で指定され、タイムスタンプとフレームスタンプを指定できます。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_setsessionindex">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_setsessionindex_detail').style.display='block';&#xA;document.getElementById('function_dcimg_setsessionindex').style.display='none'&#xA;                "> dcimg_setsessionindex()
+        </div>
+                  </div>
+                  <div id="function_dcimg_setsessionindex_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_setsessionindex_detail').style.display='none';&#xA;document.getElementById('function_dcimg_setsessionindex').style.display='block'&#xA;                "> dcimg_setsessionindex()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_setsessionindex(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">int32 index</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								セッションを変更する HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">index</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								セッションインデックスを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_setsessionindex()関数は、複数のSessionを持っているときに対象とするSessionを切り替えます。						Sessionのインデックスは0から始まります。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_getsessionindex">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getsessionindex_detail').style.display='block';&#xA;document.getElementById('function_dcimg_getsessionindex').style.display='none'&#xA;                "> dcimg_getsessionindex()
+        </div>
+                  </div>
+                  <div id="function_dcimg_getsessionindex_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getsessionindex_detail').style.display='none';&#xA;document.getElementById('function_dcimg_getsessionindex').style.display='block'&#xA;                "> dcimg_getsessionindex()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_getsessionindex(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">int32* pIndex</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								セッションを取得する HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">pIndex</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								現在のセッションインデックスを受け取る変数へのポインタを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_getsessionindex()は対象となっているSessionのインデックスを返します。						essionのインデックスは0から始まります。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div style="display:none" id="function_dcimg_getparaml">
+                    <div class="fname"><input type="button" value="+" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getparaml_detail').style.display='block';&#xA;document.getElementById('function_dcimg_getparaml').style.display='none'&#xA;                "> dcimg_getparaml()
+        </div>
+                  </div>
+                  <div id="function_dcimg_getparaml_detail">
+                    <div class="fname"><input type="button" value="-" style="WIDTH:2em; vertical-align: middle;" onClick="&#xA;document.getElementById('function_dcimg_getparaml_detail').style.display='none';&#xA;document.getElementById('function_dcimg_getparaml').style.display='block'&#xA;                "> dcimg_getparaml()
+        </div>
+                    <div class="section">
+                      <p></p>Declaration</div>
+                    <table width="90%" frame="box" align="Center">
+                      <tr>
+                        <td>DCIMG_ERR dcimg_getparaml(<div class="arg-decl">HDCIMG hdcimg,</div>
+                          <div class="arg-decl">DCIMG_IDPARAML index,</div>
+                          <div class="arg-decl">int32* paraml</div>);</td>
+                      </tr>
+                    </table>
+                    <div class="section">
+                      <p></p>Parameter</div>
+                    <div class="arg-name">hdcimg</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								調べたい対象の HDCIMG ハンドルを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">index</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								値を取得したいパラメータのインデックスを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="arg-name">paraml</div>
+                    <div class="arg-help">
+                      <table width="90%">
+                        <tr>
+                          <td width="5%"></td>
+                          <td>
+								現在のセッションインデックスを受け取る変数へのポインタを指定します
+							</td>
+                        </tr>
+                      </table>
+                    </div>
+                    <div class="section">
+                      <p></p>Remarks</div>
+                    <table width="90%">
+                      <tr>
+                        <td width="2%"></td>
+                        <td>
+						dcimg_getparam()関数は、indexで指定されたDCIMG_PARAMLの値からparamlにint32の値を返します。
+					</td>
+                      </tr>
+                    </table>
+                  </div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_functions_detail">Chapter 関数 の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+    <hr>
+    <div id="Chapter_structures_detail">
+      <div class="chapter">構造体</div>
+      <p></p>
+      <table width="100%">
+        <tr>
+          <td width="1%"></td>
+          <td>
+            <hr>
+            <div class="section">
+            </div>
+            <table width="96%">
+              <tr>
+                <td width="1%"></td>
+                <td>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_GUID"></a>DCIMG_GUID<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_GUID { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>_ui32</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data1;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>unsigned short</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data2;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>unsigned short</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data3;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>unsigned char</td>
+                                <td width="2%"></td>
+                                <td nowrap>Data4[8];</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="section">
+                    <p></p>Remarks</div>
+                  <table width="90%">
+                    <tr>
+                      <td width="2%"></td>
+                      <td>
+						DCIMG_INIT 構造体の guid メンバで使用されている型です。						一般には使用しません。
+					</td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_INIT"></a>DCIMG_INIT<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_INIT { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							sizeof(*this)
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							予約
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>const DCIMG_GUID*</td>
+                                <td width="2%"></td>
+                                <td nowrap>guid;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							GUID オプション、通常は NULL
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">size</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMG_INIT 構造体のバイトサイズを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">guid</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMG_GUIDインスタンスへのポインタを指定します。							通常はNULLを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="section">
+                    <p></p>Remarks</div>
+                  <table width="90%">
+                    <tr>
+                      <td width="2%"></td>
+                      <td>
+						dcimg_init() 関数を呼び出す際に引数にポインタで渡します。						ホストソフトウエアは DCIMG-API を初期化し、他の DCIMG 関数が呼び出せるようになります。
+					</td>
+                    </tr>
+                  </table>
+                  <p></p>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_OPEN"></a>DCIMG_OPEN<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_OPEN { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							この構造体のバイトサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							予約
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>HDCIMG</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdcimg;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// </td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>LPCTSTR</td>
+                                <td width="2%"></td>
+                                <td nowrap>path;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							ファイルパス
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">hdcimg</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_open()関数が成功するとここにDCIMGのファイルハンドルが入ります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">path</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							ホストソフトウエアはここにDCIMGのファイルパスを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_FRAME"></a>DCIMG_FRAME<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_FRAME { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							この構造体のバイトサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>iKind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							予約
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							予約
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>iFrame;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							フレームインデックス
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>buf;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							画像の左上のポインタ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>rowbytes;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							次のラインまでのバイトサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_PIXELTYPE</td>
+                                <td width="2%"></td>
+                                <td nowrap>type;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							画像データのピクセルタイプ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>width;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							水平方向の画像数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>height;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							垂直方向のライン数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>left;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							垂直方向の先頭画素
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>top;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							垂直方向の先頭ライン
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_TIMESTAMP</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestamp;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							タイムスタンプ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestamp;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							フレームスタンプ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>camerastamp;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							カメラスタンプ
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">size</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							この構造体のバイトサイズを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">iKind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を設定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を設定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">iFrame</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							インデックスでフレームを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">buf</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はこの変数に画像の左上のアドレスを返します。
+						</div>
+                          <div>
+							dcimg_copyframe()を呼ぶ前に画像をコピーするために定義されたポインタを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">rowbytes</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はあるラインから次のラインへのオフセットをバイトサイズで返します。この値はマイナスになることもあります。
+						</div>
+                          <div>
+							dcimg_copyframe()はあるラインから次のラインへのオフセットをバイトサイズを指定する必要があります。画像を上下に反転したいときは、この値をマイナスにすることで可能です。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">type</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はこの変数に画像データのDCIMG_PIXELTYPEを返します。
+						</div>
+                          <div>
+							dcimg_copyframe()は関数を呼ぶ前にこの変数の値を0にする必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">width</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はこの変数に水平方向の画素数を返します。
+						</div>
+                          <div>
+							dcimg_copyframe()はホストアプリケーションがコピーしたい水平方向の画像数を指定する必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">height</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はこの変数に垂直方向のライン数を返します。
+						</div>
+                          <div>
+							dcimg_copyframe()はホストアプリケーションがコピーしたい垂直方向のライン数を指定する必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">left</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はこの変数に画像が開始する水平方向のオフセットを返します。通常0が入ります。
+						</div>
+                          <div>
+							dcimg_copyframe()はホストアプリケーションがコピーしたい左上の角のアドレスへの水平方向のオフセットを指定する必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">top</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							dcimg_lockframe()はこの変数に画像が開始する垂直方向のオフセットを返します。通常0が入ります。
+						</div>
+                          <div>
+							dcimg_copyframe()はホストアプリケーションがコピーしたい左上の角のアドレスへの垂直方向のオフセットを指定する必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestamp</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							記録されていれば、タイムスタンプが入ります。							もし値が0であれば、その画像はタイムスタンプが有効ではないということです。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestamp</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							記録されていれば、フレームスタンプが入ります。							フレームスタンプはセッションの先頭が0で始まります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">camerastamp</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							記録されていれば、カメラスタンプの値が入ります。							カメラスタンプはいくつかのカメラでサポートしており、ユーザもしくはホストアプリケーションでが設定することができます。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_USERDATABIN"></a>DCIMG_USERDATABIN<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_USERDATABIN { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メンバ変数sizeにこの構造体のサイズを指定
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>bin;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メタデータを受け取るためのポインタ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>bin_len;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メタデータを受け取るためのバッファサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							予約
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数ikindにDCIMG_METADATAKIND_USERDATABINを設定し、メンバ変数optionにDCIMG_METEDATAOPTION__LOCATIONのどれか一つを設定する必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">bin</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							バイナリメタデータを受け取るためのバッファを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">bin_len</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メタデータを受け取るためのバッファサイズを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_USERDATATEXTBLOCK"></a>DCIMG_USERDATATEXTBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_USERDATATEXTBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メンバ変数sizeにこの構造体のサイズを指定
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatext;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							ユーザテキストデータのブロックで受け取るためのポインタ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							ひとつのユーザテキストを受け取るためのバッファサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextvalidsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							画像それぞれのテキストサイズを返します
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							受け取ることができるユーザテキストの最大数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextcount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							バッファに書き込まれたユーザテキストの数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatext_kind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMG_METADATAOPTION__LOCATION
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatatextcodepage;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							書き込まれたユーザテキストのそれぞれのエンコードタイプ
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数ikindにDCIMG_METADATAKIND_USERDATATEXTを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatext</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							ユーザテキストブロックを受け取るためのバッファを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							ひとつのユーザテキストを受け取るために用意したバッファサイズを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextvalidsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							それぞれの画像に対して書き込まれたテキストのサイズを受け取るための配列を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							受け取ることができるユーザテキストの最大数を指定します。userdatatextに指定するポインタはuserdatatextsize * userdatatextmaxの領域を持つ必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextcount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							書き込まれたユーザテキストの数を返します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatext_kind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMG_METADATAOPTION__LOCATIONからユーザテキストの種類を選択します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatatextcodepage</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							書き込まれたユーザテキストのそれぞれのエンコードタイプを返します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_USERDATABINBLOCK"></a>DCIMG_USERDATABINBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_USERDATABINBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メンバ変数sizeにこの構造体のサイズを指定
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabin;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							ユーザバイナリのブロックを受け取るためのポインタ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabinsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							一つのユーザバイナリのサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabinvalidsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							画像それぞれバイナリデータのサイズを返します
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabinmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							受け取ることができるユーザバイナリの最大数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabincount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							バッファに書き込まれたユーザテキストの数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>userdatabin_kind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMG_METADATAOPTION__LOCATION
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数ikindにDCIMG_METADATAKIND_USERDATABINを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabin</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							ユーザバイナリのブロックを受け取るためのバッファを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabinsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							一つのユーザバイナリを格納するためのバッファのサイズを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabinvalidsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							それぞれの画像に対して書き込まれたバイナリのサイズを受け取るために配列を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabinmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							受け取ることができるユーザバイナリの最大数を指定します。userdatabinに指定するポインタはuserdatabinsize * userdatabinmaxの領域を持つ必要があります。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabincount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							書き込まれたユーザテキストの数を返します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">userdatabin_kind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMG_METADATAOPTION__LOCATIONからユーザバイナリの種類を選択します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_TIMESTAMPBLOCK"></a>DCIMG_TIMESTAMPBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_TIMESTAMPBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メンバ変数sizeにこの構造体のサイズを指定
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_TIMESTAMP*</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestamps;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							タイムスタンプブロックを受け取るためのポインタです
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							受け取ることができるタイムスタンプの最大数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampkind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							タイムスタンプの種類を返すために予約されています
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							sizeof(DCIMG_TIMESTAMP)
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampvalidsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMG_TIMESTAMPに書き込まれたデータサイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>timestampcount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							timestampsに書き込まれたタイムスタンプの数
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数ikindにDCIMG_METADATAKIND_TIMESTAMPSを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestamps</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							タイムスタンプを受け取るためのTIMESTAMPの配列を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							受け取ることができるタイムスタンプの最大数を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampkind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							タイムスタンプの種類（ハードウエア、ドライバ、DCAMなど）を返すために予約されています。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMG_TIMESTAMP構造体のサイズを設定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampvalidsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMG_TIMESTAMPに書き込まれたデータサイズを返します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">timestampcount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							書き込まれたタイムスタンプの数を返します。
+						</div>
+                          <div>
+							予約されています。0を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMG_FRAMESTAMPBLOCK"></a>DCIMG_FRAMESTAMPBLOCK<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMG_FRAMESTAMPBLOCK { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMG_METADATAHDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							メンバ変数sizeにこの構造体のサイズを指定
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32*</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestamps;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							フレームスタンプを受け取るためのポインタ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestampmax;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							受け取ることができるフレームスタンプの最大数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>framestampcount;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							バッファに書き込まれたフレームスタンプの数
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							予約
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数ikindにDCIMG_METADATAKIND_FRAMESTAMPSを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestamps</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							フレームスタンプを受け取るためのバッファを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestampmax</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							受け取ることができるフレームスタンプの最大数を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">framestampcount</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							書き込まれたフレームスタンプの数を返します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMGDATA_HDR"></a>DCIMGDATA_HDR<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMGDATA_HDR { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>size;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							構造体全体のサイズ。この構造体のサイズではありません。
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>iKind;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMGDATA_KIND
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMGDATA_OPTION
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">size</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							DCIMGDATA_HDR構造体を含む、全体の構造体のバイトサイズを指定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">iKind</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							構造体の種類を判別するためのDCIMGDATA_KIND値を設定します。	
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							必要に応じてDCIMGDATA_OPTION値を設定します。	
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMGDATA_REGION"></a>DCIMGDATA_REGION<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMGDATA_REGION { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMGDATA_HDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							iKind = DCIMGDATA_KIND__REGION
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>type;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							DCIMGDATA_RETIONTYPE
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>void*</td>
+                                <td width="2%"></td>
+                                <td nowrap>data;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							top of data
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>datasize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							size of data
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>reserved;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数のsizeにはこの構造体のサイズを設定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">type</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							取得した領域のデータタイプ
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">data</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							領域データの先頭アドレスを取得します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">datasize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							データサイズを取得します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">reserved</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+				<hr>
+                  <div class="section"><a name="structure_DCIMGDATA_SENSORPARAM"></a>DCIMGDATA_SENSORPARAM<p></p>
+                  </div>
+                  <div style="border: 2px solid; width: 90%; overflow: scroll;">
+                    <table>
+                      <tr>
+                        <td>struct DCIMGDATA_SENSORPARAM { <table>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>DCIMGDATA_HDR</td>
+                                <td width="2%"></td>
+                                <td nowrap>hdr;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							iKind = DCIMGDATA_KIND__SENSORPARAM
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>option;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							0 reserved
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>binning;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							ビニング
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorhpos;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							センサ上の水平オフセット
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorhsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							センサ上の水平サイズ
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorvpos;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							センサ上の垂直オフセット
+						</td>
+                              </tr>
+                            </div>
+                            <div class="arg-decl">
+                              <tr>
+                                <td width="2%"></td>
+                                <td nowrap>int32</td>
+                                <td width="2%"></td>
+                                <td nowrap>sensorvsize;</td>
+                                <td width="2%"></td>
+                                <td nowrap>// 
+							センサ上の垂直サイズ
+						</td>
+                              </tr>
+                            </div>
+                          </table>};</td>
+                      </tr>
+                    </table>
+                  </div>
+                  <p></p>
+                  <div class="arg-name">hdr</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							メンバ変数のsizeにはこの構造体のサイズを設定します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">option</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							予約されています。0を指定してください。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">binning</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							記録されている画像のビニング情報を取得
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorhpos</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							センサ座標値で記録されている画像の水平オフセットを取得します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorhsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							センサ座標値で記録されている画像の水平サイズを取得します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorvpos</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							センサ座標値で記録されている画像の垂直オフセットを取得します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  <div class="arg-name">sensorvsize</div>
+                  <div class="arg-help">
+                    <table width="90%">
+                      <tr>
+                        <td width="5%"></td>
+                        <td>
+                          <div>
+							センサ座標値で記録されている画像の垂直サイズを取得します。
+						</div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+			</td>
+              </tr>
+            </table>
+            <p></p>
+            <p><a class="go-top" href="#Chapter_structures_detail">Chapter 構造体 の先頭へ戻る</a></p>
+          </td>
+          <td width="2%"></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
