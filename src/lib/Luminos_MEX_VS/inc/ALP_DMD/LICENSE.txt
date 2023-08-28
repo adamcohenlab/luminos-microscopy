@@ -1,0 +1,17 @@
+End-User License Agreement (EULA) for ALP-4 Controller Suite
+
+This EULA is a legal agreement between the licensee and ViALUX Messtechnik + Bildverarbeitung GmbH (ViALUX) regarding the use of the software, firmware, and FPGA logic of ALP-4 Controller Suite. Unless otherwise agreed in writing with ViALUX with respect to ALP-4, the use of ALP-4 is subject to this EULA.
+
+In addition, the General Terms and Conditions of ViALUX apply without restriction, in particular with regard to warranty and liability.
+
+The purchase of the license only grants a right to use ALP-4, whereby ViALUX retains full ownership of ALP-4 in all respects.
+
+This right of use is not limited in time and place and can be transferred to third parties. The use of the ALP-4 is exclusively bound to the V-Modules supplied by ViALUX. The use of ALP-4 with other hardware is strictly prohibited, unless agreed upon in a written and duly signed contract. The license is granted as a whole, it may not be divided into parts.
+
+The programming examples supplied with the ALP-4 installation also remain property of ViALUX, but may be incorporated into further user programs of the licensee without any claim to completeness or freedom from errors, if reference is made to the source in the program code.
+
+All descriptions of hardware and software included in the scope of delivery may only be reproduced and distributed in their original form. Any kind of distribution of partial information from these documents, such as tables, graphics, pictures requires the consent of ViALUX.
+
+Any attempt to gain possession of the unpublished sources of ALP-4 or parts of ALP-4 by reverse engineering is prohibited.
+
+August 26, 2021

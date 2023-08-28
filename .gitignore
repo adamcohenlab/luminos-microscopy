@@ -1,0 +1,21 @@
+# Matlab auto-save files.
+*.asv
+#Visual Studio precompiled headers
+*.ipch
+src/sdk_debug.txt
+src/**/sdk_debug.txt
+sdk_debug.txt
+#Rig-specific user logs
+user_logs.txt
+!/src/Init_Files/**
+!/Guides/Install_Requirements/**
+!/src/Devices/Patterning/DMD/ALP/ALP_Libraries/VIALUX control/ALPTool/**
+
+.DS_Store
+.vscode
+
+build
+!/.vscode/extensions.json
+raffi_temp_data
+
+.data
