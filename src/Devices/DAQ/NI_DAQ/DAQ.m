@@ -87,7 +87,7 @@ classdef DAQ < Device
                 [aa] = daq.ni.NIDAQmx.DAQmxResetDevice(obj.Device_List{i});
             end
             if ~isempty(Initializer)
-                if ~isempty(Initializer.alias_init)
+                if ~(isempty(Initializer.alias_init) || strcmp(Initializer.alias_init,""))
                     obj.alias_init = Initializer.alias_init;
                     obj.alias_list = reshape(strip(strsplit(obj.alias_init, ',')), 2, [])';
                 end
