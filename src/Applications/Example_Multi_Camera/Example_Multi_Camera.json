@@ -1,0 +1,194 @@
+{
+  "objectType": "Rig_Initializer",
+  "dataDirectory": "C:\\Users\\Labmember\\Data",
+  "tabs": [
+    "Main",
+    "Waveforms",
+    { "type": "DMD", "names": ["DMD_Orange", "DMD_Blue"] },
+    "Lasers",
+    "Scanning"
+  ],
+  "devices": [
+    {
+      "deviceType": "DAQ",
+      "name": "Dev1",
+      "alias_init": "Dev1/ao3,2P mod,Dev1/ao2,mod488,Dev1/ao1,mod594, Dev1/port0/line0,shutter488, Dev1/port0/line1,shutter594, Dev1/port0/line2,Shutter sensory, Dev1/port0/line4,DMD Trigger, Dev1/port0/line5,General Shutter",
+      "defaultClock": "Dev1/PFI0",
+      "default_trigger": "Dev1/PFI12",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Voltage_Shutter",
+      "name": "PMT Shutter",
+      "port": "/Dev2/ao2",
+      "offVoltage": 0,
+      "onVoltage": 0.7,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Camera",
+      "name": "Orca Fusion",
+      "trigger": "Dev1/port0/line7",
+      "clock": "/Dev1/PFI0",
+      "hsync_rate": 200000,
+      "vsync": "Dev1/Ctr3",
+      "daqTrigCounter": "Dev1/Ctr0",
+      "type": 1,
+      "rdrivemode": 0,
+      "cam_id": "S/N: 001125",
+      "virtualSensorSize": 2304,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Camera",
+      "name": "Orca Flash",
+      "trigger": "Dev1/port0/line7",
+      "clock": "",
+      "hsync_rate": 100000,
+      "vsync": "Dev1/Ctr1",
+      "daqTrigCounter": "Dev1/Ctr0",
+      "type": 1,
+      "rdrivemode": 0,
+      "cam_id": "S/N: 002312",
+      "virtualSensorSize": 2048,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "mod594",
+      "port": "Dev1/ao1",
+      "min": 0,
+      "max": 5,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "shutter594",
+      "port": "Dev1/port0/line1",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "OBIS_Laser",
+      "name": "488",
+      "COMPORT": "COM14",
+      "maxPower": 0.055,
+      "Wavelength": 488,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "mod488",
+      "port": "Dev1/ao2",
+      "min": 0,
+      "max": 5,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "2P mod",
+      "port": "Dev1/ao3",
+      "min": 0,
+      "max": 5,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "shutter488",
+      "port": "Dev1/port0/line0",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "ALP_41_DMD",
+      "name": "DMD_Orange",
+      "frac_calpoints": [
+        [0.35, 0.35],
+        [0.3, 0.35],
+        [0.3, 0.45]
+      ],
+      "calPS": 5,
+      "debug_mode": 0,
+      "Alignment_Pattern_Stack": [],
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Scientifica_Stage_Controller",
+      "name": "ScientificaStage",
+      "COMPORT": "COM6",
+      "microstep_size": 1,
+      "driver": "Motion2",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "Shutter sensory",
+      "port": "Dev1/port0/line2",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "DMD Trigger",
+      "port": "Dev1/port0/line4",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "General Shutter",
+      "port": "Dev1/port0/line5",
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Scanning_Device",
+      "name": "Chameleon (To friends: Ben)",
+      "vbounds": [-5, -5, 5, 5],
+      "timebase_source": "",
+      "trigger_physport": "",
+      "PMT_physport": "Dev2/ai0",
+      "galvofbx_physport": "Dev2/ai1",
+      "galvofby_physport": "Dev2/ai2",
+      "galvox_physport": "Dev2/ao0",
+      "galvoy_physport": "Dev2/ao1",
+      "sync_counter": "Dev2/Ctr0",
+      "sample_rate": 200000,
+      "DAQ_Vendor": 1,
+      "feedback_scaling": 0.5,
+      "galvos_only": 0,
+      "frac_calpoints": [
+        [-3, -1],
+        [-2, -1],
+        [-3, 0]
+      ],
+      "calPS": 2,
+      "debug_mode": 0,
+      "Alignment_Pattern_Stack": [],
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "ALP_DMD",
+      "name": "DMD_Blue",
+      "api_version": "alpV42x64",
+      "frac_calpoints": [
+        [0.5078, 0.48],
+        [0.41, 0.54],
+        [0.44, 0.61]
+      ],
+      "calPS": 5,
+      "debug_mode": 0,
+      "Alignment_Pattern_Stack": [],
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "Thorlabs_Filterwheel",
+      "name": "Emission Filter",
+      "COMPORT": "COM8",
+      "filterlist": [
+        "645/75",
+        "520/40",
+        "560/50",
+        "Long664",
+        "446-510-581-703",
+        "593/46"
+      ],
+      "Prop_Allowed_Vals": []
+    }
+  ]
+}
