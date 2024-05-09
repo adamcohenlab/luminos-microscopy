@@ -15,14 +15,22 @@ if ~isempty(cfcl)
 end
 Laser = app.getDevice('Laser_Device');
 if numel(cam) > 1
-    assert(~contains(cam(2).clock, 'Ctr'), 'Master Camera Cannot Use A Counter as a Clock! Change to equivalent PFI.')
-    dq_session.clock = char(cam(2).clock);
-    cam_clock_rate = cam(2).hsync_rate;
+    assert(~contains(cam(1).clock, 'Ctr'), 'Master Camera Cannot Use A Counter as a Clock! Change to equivalent PFI.')
+    %dq_session.clock = char(cam(1).clock);
+    if ~isempty(strip(dq_session.clock))
+        clock_rate = cam(1).hsync_rate;
+    else
+        clock_rate = dq_session.rate;
+    end
 else
     %dq_session.trigger=char(cam.trigger); Removed this safety to allow
     %other readout modes. Will put back in with an if-switch later. -HD
-    dq_session.clock = char(cam.clock);
-    cam_clock_rate = cam.hsync_rate;
+    %dq_session.clock = char(cam.clock);
+    if ~isempty(strip(dq_session.clock))
+        clock_rate = cam.hsync_rate;
+    else
+        clock_rate = dq_session.rate;
+    end
 end
 
 if ~strcmp(cam(1).frametrigger_source, "Off")
