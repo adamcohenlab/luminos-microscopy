@@ -1,0 +1,74 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Luminos
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: F. Phil
+    family-names: Brooks
+    name-suffix: III
+    affiliation: Harvard University
+    orcid: 'https://orcid.org/0000-0002-4334-8192'
+  - given-names: Hunter C.
+    family-names: Davis
+    affiliation: Harvard University
+  - given-names: Raphael
+    family-names: Hotter
+    affiliation: Harvard University
+  - given-names: Daniel
+    family-names: Itkis
+    affiliation: Harvard University
+  - given-names: Marley
+    family-names: Xiong
+    affiliation: Harvard University
+  - given-names: David
+    family-names: Wong-Campos
+    affiliation: Harvard University
+  - given-names: 'Rebecca '
+    family-names: Frank Hayward
+    affiliation: Harvard University
+  - given-names: Bill
+    family-names: Jia
+    affiliation: Harvard University
+  - given-names: Madeleine
+    family-names: Howell
+    affiliation: Harvard University
+  - given-names: Byung Hun
+    family-names: Lee
+    affiliation: Harvard University
+  - given-names: Adam E.
+    family-names: Cohen
+    email: cohen@chemistry.harvard.edu
+    affiliation: Harvard University
+    orcid: 'https://orcid.org/0000-0002-8699-2404'
+repository-code: 'https://github.com/adamcohenlab/luminos-microscopy/'
+url: 'https://www.luminosmicroscopy.com/'
+abstract: >-
+  To make optical electrophysiology more generally
+  accessible, we present Luminos, an open source
+
+  library for highly synchronized microscope control. While
+  motivated by the demands of
+
+  optical elecrophysiology, this library is general and is
+  intended to be used for a wide range of experiments. This
+  library combines support for high-speed camera acquisition
+  and highly synchronized digital and analog I/O for control
+  of custom microscopy rigs.
+keywords:
+  - Microscopy
+  - Automation
+  - Synchronized
+  - Camera
+  - Scanning
+  - Patterning
+  - Optical physiology
+  - Voltage imaging
+  - Software
+commit: da4de40649fc195dce7d229c934d81b38e25139f
+version: v0.1
+date-released: '2023-08-25'
