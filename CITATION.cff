@@ -8,14 +8,14 @@ message: >-
   metadata from this file.
 type: software
 authors:
+  - given-names: Hunter C.
+    family-names: Davis
+    affiliation: Harvard University
   - given-names: F. Phil
     family-names: Brooks
     name-suffix: III
     affiliation: Harvard University
     orcid: 'https://orcid.org/0000-0002-4334-8192'
-  - given-names: Hunter C.
-    family-names: Davis
-    affiliation: Harvard University
   - given-names: Raphael
     family-names: Hotter
     affiliation: Harvard University
