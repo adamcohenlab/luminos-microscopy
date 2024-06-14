@@ -4,7 +4,7 @@
 #include "dcimgapi.h"
 #include "dcimg2bin.h"
 #include "Hamamatsu_console4.h"
-#include "../inc/dcamsdk4/samples/cpp/misc/common.h"
+#include "../inc/custom/dcamsdk4/samples/cpp/misc/common.h"
 #include <wchar.h>
 #define STREQHD(x, y) !(std::strcmp(x, y))
 class Cam_Control;

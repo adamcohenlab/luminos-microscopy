@@ -15,11 +15,11 @@ authors:
     family-names: Brooks
     name-suffix: III
     affiliation: Harvard University
-    orcid: 'https://orcid.org/0000-0002-4334-8192'
+    orcid: "https://orcid.org/0000-0002-4334-8192"
   - given-names: Raphael
     family-names: Hotter
     affiliation: Harvard University
-  - given-names: Daniel
+  - given-names: Daniel G.
     family-names: Itkis
     affiliation: Harvard University
   - given-names: Marley
@@ -28,7 +28,7 @@ authors:
   - given-names: David
     family-names: Wong-Campos
     affiliation: Harvard University
-  - given-names: 'Rebecca '
+  - given-names: "Rebecca "
     family-names: Frank Hayward
     affiliation: Harvard University
   - given-names: Bill
@@ -44,9 +44,9 @@ authors:
     family-names: Cohen
     email: cohen@chemistry.harvard.edu
     affiliation: Harvard University
-    orcid: 'https://orcid.org/0000-0002-8699-2404'
-repository-code: 'https://github.com/adamcohenlab/luminos-microscopy/'
-url: 'https://www.luminosmicroscopy.com/'
+    orcid: "https://orcid.org/0000-0002-8699-2404"
+repository-code: "https://github.com/adamcohenlab/luminos-microscopy/"
+url: "https://www.luminosmicroscopy.com/"
 abstract: >-
   To make optical electrophysiology more generally
   accessible, we present Luminos, an open source
@@ -69,6 +69,6 @@ keywords:
   - Optical physiology
   - Voltage imaging
   - Software
-commit: da4de40649fc195dce7d229c934d81b38e25139f
-version: v0.1
-date-released: '2023-08-25'
+
+version: v0.2
+date-released: "2024-06-13"

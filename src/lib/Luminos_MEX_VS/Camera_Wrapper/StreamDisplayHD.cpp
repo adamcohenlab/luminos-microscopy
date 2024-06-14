@@ -6,11 +6,14 @@
 using namespace std::chrono;
 const InstructionSet::InstructionSet_Internal InstructionSet::CPU_Rep;
 
-/* StreamDisplay class implements a multi-threaded data-streaming, display, and handoff module.
-This takes image data from a camera and streams it to a live display window, which can be interacted with
-to zoom, change ROI, change colormap, and select a box from which to calculate sub-roi average and total counts.
-When using the Cam_Wrapper class, the StreamDisplay does not need to be handled directly by the client, but should be 
-handled using the Cam_Wrapper as an intermediate.*/
+/* StreamDisplay class implements a multi-threaded data-streaming, display, and
+handoff module. This takes image data from a camera and streams it to a live
+display window, which can be interacted with to zoom, change ROI, change
+colormap, and select a box from which to calculate sub-roi average and total
+counts. When using the Cam_Wrapper class, the StreamDisplay does not need to be
+handled directly by the client, but should be handled using the Cam_Wrapper as
+an intermediate.*/
+
 StreamDisplayHD::StreamDisplayHD()
     : imgToggleFlag(0x0), MONITOR_INDEX(DEFAULT_MONITOR_INDEX),
       SCREEN_WIDTH(DEFAULT_SCREEN_WIDTH), SCREEN_HEIGHT(DEFAULT_SCREEN_HEIGHT),
@@ -36,14 +39,15 @@ StreamDisplayHD::StreamDisplayHD()
       workImgSurfBuffer(), interaction_event(), use_sse()
 
 {
-  cmap_high = 1; //cmap bounds
+  cmap_high = 1; // cmap bounds
   cmap_low = 0;
   newcontstore = false;
   cam = NULL;
   keydelta = DEFAULT_KEY_DELTA;
   cam_attached = false;
+  lastKeyPressTime = 0;
 
-  //buffers to hold subroi, contour, and image data.
+  // buffers to hold subroi, contour, and image data.
   Contour_DrawGuides =
       (SDL_Point *)malloc(LINE_THICKNESS * 2 * sizeof(SDL_Point));
   tempROIBufferRGBA =
@@ -67,7 +71,7 @@ StreamDisplayHD::StreamDisplayHD()
 
   roibufferlength = DEFAULT_ROI_MEAN_VEC_LENGTH;
 
-    // Determine supported vector instruction sets.
+  // Determine supported vector instruction sets.
   printf("MMX: %s\n", (InstructionSet::MMX() ? "Supported" : "Not Supported"));
   printf("SSE: %s\n", (InstructionSet::SSE() ? "Supported" : "Not Supported"));
   printf("SSE2: %s\n",
@@ -84,13 +88,13 @@ StreamDisplayHD::StreamDisplayHD()
   // conversion)
   use_sse = InstructionSet::SSE41(); // Set flag whether to use SSE or scalar.
 
-  //check for successful memory allocation.
+  // check for successful memory allocation.
   if (lastImageData == NULL) {
     printf("Failed to allocate memory");
   }
-  continueRunningAllThreads = true; //when false, stop all threads.
+  continueRunningAllThreads = true; // when false, stop all threads.
 
-  //Create 'jet' colormap by mixing rgb colors.
+  // Create 'jet' colormap by mixing rgb colors.
   int blue_checks[5] = {0x7F, 0xFF, 0x7F, 0x00, 0x00};
   int green_checks[5] = {0x00, 0x7F, 0xFF, 0x7F, 0x00};
   int red_checks[5] = {0x00, 0x00, 0x7F, 0xFF, 0x7F};
@@ -108,7 +112,7 @@ StreamDisplayHD::StreamDisplayHD()
       jet_colors[i + j * 64].a = 0xFF;
     }
   }
-  //Create greyscale colormap
+  // Create greyscale colormap
   int gr_blue_checks[5] = {0x00, 0x40, 0x80, 0xBF, 0xFF};
   int gr_green_checks[5] = {0x00, 0x40, 0x80, 0xBF, 0xFF};
   int gr_red_checks[5] = {0x00, 0x40, 0x80, 0xBF, 0xFF};
@@ -126,7 +130,7 @@ StreamDisplayHD::StreamDisplayHD()
       grey_colors[i + j * 64].a = 0xFF;
     }
   }
-  //Create 'hot' colormap
+  // Create 'hot' colormap
   int hot_blue_checks[5] = {0x00, 0x00, 0x00, 0x80, 0xFF};
   int hot_green_checks[5] = {0x00, 0x00, 0xFF, 0xFF, 0xFF};
   int hot_red_checks[5] = {0x00, 0xFF, 0xFF, 0xFF, 0xFF};
@@ -147,14 +151,17 @@ StreamDisplayHD::StreamDisplayHD()
   cmap_pointers[0] = grey_colors;
   cmap_pointers[1] = hot_colors;
   cmap_pointers[2] = jet_colors;
-  cmap_index = 0; //default is greyscale colormap (0)
+  cmap_index = 0; // default is greyscale colormap (0)
 
-  //Create unowned mutexes. Mutexes are objects that allow synchronization between threads. A mutex can be 'owned'
-  // by up to one thread. Another thread can request ownership. If owned by another thread, the requesting thread will
-  // wait (suspend execution) until the mutex is released by the current owner.
-  ReadyImgMutex = CreateMutex(NULL, FALSE, NULL);
-  HandoffMutex = CreateMutex(NULL, FALSE, NULL);
-  ROI_Rect_mutex = CreateMutex(NULL, FALSE, NULL);
+  // Create unowned mutexes. Mutexes are objects that allow synchronization
+  // between threads. A mutex can be 'owned'
+  //  by up to one thread. Another thread can request ownership. If owned by
+  //  another thread, the requesting thread will wait (suspend execution) until
+  //  the mutex is released by the current owner.
+  ReadyImgMutex = CreateMutex(NULL, FALSE, NULL); // for SDL readyimg surface
+  HandoffMutex = CreateMutex(
+      NULL, FALSE, NULL); // For lastimagedata internal copy of last frame
+  ROI_Rect_mutex = CreateMutex(NULL, FALSE, NULL); // For SDL rectangle overlay
   newframemutex = CreateMutex(NULL, FALSE, NULL);
   newframeroimutex = CreateMutex(NULL, FALSE, NULL);
   newframeimgmutex = CreateMutex(NULL, FALSE, NULL);
@@ -162,26 +169,28 @@ StreamDisplayHD::StreamDisplayHD()
   roidatamutex = CreateMutex(NULL, FALSE, NULL);
   contourstoremutex = CreateMutex(NULL, FALSE, NULL);
 
-  //Create events that will be used to signal between threads. Events are configured by second argument (True) to be manual-resettable.
-  // 
+  // Create events that will be used to signal between threads. Events are
+  // configured by second argument (True) to be manual-resettable.
+  //
   newframeavailable_event = CreateEvent(
       NULL, TRUE, FALSE, TEXT("NewFrameEvent")); // Manual reset win32 event.
   newframeroi_event = CreateEvent(NULL, TRUE, FALSE, TEXT("NewFrameROIEvent"));
   newframeimg_event = CreateEvent(NULL, TRUE, FALSE, TEXT("NewFrameImgEvent"));
   readyforrender_event =
-      CreateEvent(NULL, TRUE, FALSE, TEXT("ReadyForRenderEvent"));  
+      CreateEvent(NULL, TRUE, FALSE, TEXT("ReadyForRenderEvent"));
 }
 
-//Destructor.
+// Destructor.
 StreamDisplayHD::~StreamDisplayHD() {
   if (cleaned_up == false) {
     cleanup();
   }
 }
 
-//Cleanup method. Signal all threads to stop and set all events so that threads exit any wait states. Then wait for threads
-//to exit, close all threads, free allocated memory, and quit SDL subsystem. Thorough cleanup is important to allow relaunching 
-//without errors and to avoid hangups or orphaned threads.
+// Cleanup method. Signal all threads to stop and set all events so that threads
+// exit any wait states. Then wait for threads to exit, close all threads, free
+// allocated memory, and quit SDL subsystem. Thorough cleanup is important to
+// allow relaunching without errors and to avoid hangups or orphaned threads.
 void StreamDisplayHD::cleanup() {
   if (cleaned_up ==
       false) { // The caller shouldn't be solely responsible for this check
@@ -192,7 +201,7 @@ void StreamDisplayHD::cleanup() {
     SetEvent(newframeroi_event);
     SetEvent(newframeimg_event);
     SetEvent(readyforrender_event);
-    //Wait for threads to exit:
+    // Wait for threads to exit:
     WaitForSingleObject(calcthread, INFINITE);
     CloseHandle(calcthread);
     WaitForSingleObject(ROIthread, INFINITE);
@@ -201,11 +210,14 @@ void StreamDisplayHD::cleanup() {
     CloseHandle(dispthread);
     WaitForSingleObject(disp_handoff_thread, INFINITE);
     CloseHandle(disp_handoff_thread);
-    WaitForSingleObject(sd_thread, 1000); // cleanup itself may be called by sd_thread, in which case sd_thread can't exit until cleanup is done. Therefore we can't wait infinite.
+    WaitForSingleObject(sd_thread,
+                        1000); // cleanup itself may be called by sd_thread, in
+                               // which case sd_thread can't exit until cleanup
+                               // is done. Therefore we can't wait infinite.
     CloseHandle(sd_thread);
     WaitForSingleObject(framecheckthread, INFINITE);
     CloseHandle(framecheckthread);
-    //free allocated memory
+    // free allocated memory
     free(lastImageData);
     free(tempROIBufferRGBA);
     free(ROImeanvec);
@@ -214,7 +226,7 @@ void StreamDisplayHD::cleanup() {
     free(contour_buff);
     free(contour_pixel_index);
     free(Contour_DrawGuides);
-    //Clear and Quit SDL (if all running SDL subsystems are unititialized)
+    // Clear and Quit SDL (if all running SDL subsystems are unititialized)
     SDL_RenderClear(renderer);
     printf("Quitting SDL video subsystem\n");
     // This checks the init counter, incremented each time SDL_Init is called on
@@ -225,14 +237,14 @@ void StreamDisplayHD::cleanup() {
       printf("SDL Quit\n");
       SDL_Quit(); // Do final cleanup and quit of SDL. If we call this without
                   // checking first, we kill all of SDL every time
-                  // we want to clean up a single StreamDisplay instance, even if others are
-                  // still running.
+                  // we want to clean up a single StreamDisplay instance, even
+                  // if others are still running.
     }
     cleaned_up = true;
   }
 }
 
-//Attach Camera instance to StreamDisplayHD instance. Call this first.
+// Attach Camera instance to StreamDisplayHD instance. Call this first.
 void StreamDisplayHD::attach_camera(Streaming_Device *cam_in) {
   cam = cam_in;
   if (cam != NULL) {
@@ -249,7 +261,8 @@ void StreamDisplayHD::launch_disp_threads() {
                              (void *)this, 0, &sdthreadid);
 }
 
-// Launch main loop that handles camera-StreamDisplay communication. Call this Third.
+// Launch main loop that handles camera-StreamDisplay communication. Call this
+// Third.
 void StreamDisplayHD::Launch_Handoff_Thread() {
   disp_handoff_thread =
       (HANDLE)_beginthreadex(NULL, (unsigned int)5e8, &disphandoffThreadFcn,
@@ -322,10 +335,18 @@ unsigned __stdcall SDL_Event_wrapper(void *pArguments) {
       }
       // keyboard press
       if (interaction_event.type == SDL_KEYDOWN) {
-        disp_ptr->keyresponse(interaction_event.key.keysym.sym);
+        Uint32 currentTime = SDL_GetTicks();
+        //        if (interaction_event.key.repeat == 0 &&
+        if (currentTime - disp_ptr->lastKeyPressTime >= 500) {
+          // Check if the keypress is not a repeat and at least 500
+          // milliseconds have passed since the last key press
+          disp_ptr->keyresponse(interaction_event.key.keysym.sym);
+          disp_ptr->lastKeyPressTime =
+              currentTime; // Update the last key press time
+        }
       }
-    } else { // If the event wasn't for this window, it may have been for
-             // another instance (another camera)
+    } else {     // If the event wasn't for this window, it may have been for
+                 // another instance (another camera)
       Sleep(10); // Sleep the event thread to make sure other window gets the
                  // event.
     }
@@ -334,7 +355,7 @@ unsigned __stdcall SDL_Event_wrapper(void *pArguments) {
   return 0;
 }
 
-//Main thread for camera data handling.
+// Main thread for camera data handling.
 unsigned __stdcall disphandoffThreadFcn(void *pArguments) {
   StreamDisplayHD *disp = (StreamDisplayHD *)pArguments;
   Streaming_Device *cam = disp->cam;
@@ -343,15 +364,18 @@ unsigned __stdcall disphandoffThreadFcn(void *pArguments) {
   int myImageDataWidth = MAX_IMG_WIDTH;
   int myImageDataHeight = MAX_IMG_HEIGHT;
 
-  //Set up timing throttle: There's no point in streaming images to the display faster than monitor refresh rates. It just needlessly uses CPU resources.
+  // Set up timing throttle: There's no point in streaming images to the display
+  // faster than monitor refresh rates. It just needlessly uses CPU resources.
   const int MAX_REFRESH =
-      120; // max refresh rate in Hz (beyond which there is no point sampling
-           // for live display due to monitor rates)
-  Uint64 min_refresh_interval = (Uint64)floor(1000 / MAX_REFRESH); //in ms. Minimum elapsed time between image refreshes.
+      60; // max refresh rate in Hz (beyond which there is no point sampling
+          // for live display due to monitor rates)
+  Uint64 min_refresh_interval = (Uint64)floor(
+      1000 /
+      MAX_REFRESH); // in ms. Minimum elapsed time between image refreshes.
   Uint64 base_time = 0;
   Uint64 time = 0;
 
-  //Main Loop:
+  // Main Loop:
   while (disp->continueRunningAllThreads) {
     time = SDL_GetTicks();
     if (time - base_time < min_refresh_interval) {
@@ -359,19 +383,22 @@ unsigned __stdcall disphandoffThreadFcn(void *pArguments) {
                 // limits
     }
     base_time = time;
-    SDL_Delay(2); //REMOVE?
+    SDL_Delay(5); // REMOVE?
 
-    //Frame data transfer split into two parts so that the transfer out of the camera can be dependent
-    //on one mutex (ghMutexCapturing) to avoid simultaneous access with upstream camera, while the transfer
-    //into the lastImageData property can be dependent on another mutex (HandoffMutex) to avoid simultaneous access
-    //with a downstream processing thread.
+    // Frame data transfer split into two parts so that the transfer out of the
+    // camera can be dependent on one mutex (ghMutexCapturing) to avoid
+    // simultaneous access with upstream camera, while the transfer into the
+    // lastImageData property can be dependent on another mutex (HandoffMutex)
+    // to avoid simultaneous access with a downstream processing thread.
 
-    //PART 1: From Camera
+    // PART 1: From Camera
     WaitForSingleObject(cam->ghMutexCapturing, INFINITE);
     // read outside image only when not being modified
-    if (cam->isCapturing && !(cam->isRecording)) { //Don't livestream during recording.
-      newFrame = cam->aq_thread_snap(); //get new frame data
-      //copy frame into myImageData location.
+    if (cam->isCapturing &&
+        !(cam->isRecording)) { // Don't livestream during recording.
+      ReleaseMutex(cam->ghMutexCapturing);
+      newFrame = cam->aq_thread_snap(); // get new frame data
+      // copy frame into myImageData location.
       if (newFrame) {
         memcpy(myImageData, newFrame->buf,
                newFrame->width * newFrame->height * sizeof(uint16_t));
@@ -379,13 +406,13 @@ unsigned __stdcall disphandoffThreadFcn(void *pArguments) {
         myImageDataHeight = newFrame->height;
       }
     } else {
+      ReleaseMutex(cam->ghMutexCapturing);
       newFrame = NULL;
     }
-    ReleaseMutex(cam->ghMutexCapturing);
 
-    //PART 2: Into lastImageData property.
-    // broadcast live image from local copy if updated. PERFORMANCE BOTTLENECK
-    // FROM EXTRA COPY?
+    // PART 2: Into lastImageData property.
+    //  broadcast live image from local copy if updated. PERFORMANCE BOTTLENECK
+    //  FROM EXTRA COPY?
     if (newFrame) {
       // write outside copy only if not being read
       WaitForSingleObject(disp->HandoffMutex, INFINITE);
@@ -394,7 +421,7 @@ unsigned __stdcall disphandoffThreadFcn(void *pArguments) {
       disp->lastImageDataWidth = myImageDataWidth;
       disp->lastImageDataHeight = myImageDataHeight;
       disp->new_frame_available = true;
-      //Tell other threads that new frame is available.
+      // Tell other threads that new frame is available.
       if (!SetEvent(disp->newframeavailable_event)) {
         printf("SetEvent failed (%d)\n", GetLastError());
         return 1;
@@ -406,7 +433,7 @@ unsigned __stdcall disphandoffThreadFcn(void *pArguments) {
   return 0;
 }
 
-//Update live display rendering with new image data.
+// Update live display rendering with new image data.
 void StreamDisplayHD::update_rendering() {
   SDL_RenderClear(renderer); // blank the rendering
   if (myReadyImgSurf) {      // in case these pointers are NULL
@@ -417,7 +444,7 @@ void StreamDisplayHD::update_rendering() {
     ResetEvent(readyforrender_event);
     ReleaseMutex(ReadyImgMutex);
     SDL_RenderCopy(renderer, myImgTex, &imgSrcRect, &imgDestRect);
-    //Draw sub-roi rectangle or contour on top of image:
+    // Draw sub-roi rectangle or contour on top of image:
     if (ROI_Active) {
       int code;
       WaitForSingleObject(ROI_Rect_mutex, INFINITE);
@@ -435,17 +462,17 @@ void StreamDisplayHD::update_rendering() {
   SDL_RenderPresent(renderer); // put the rendering to screen
 }
 
-
 // Respond to Key presses:
 void StreamDisplayHD::keyresponse(SDL_Keycode key) {
   SDL_Rect ROItry = cam->ROI;
   bool res;
+  int current_binning = cam->bin;
 
   if (cam_attached) {
     double sensorsize;
     switch (key) {
 
-    //Arrow keys increment or decrement sub-roi dimensions
+    // Arrow keys increment or decrement sub-roi dimensions
     case SDLK_UP:
       ROItry.y = ROItry.y - keydelta;
       res = cam->aq_live_restart(ROItry, cam->bin, cam->exposureTimeSeconds);
@@ -463,22 +490,34 @@ void StreamDisplayHD::keyresponse(SDL_Keycode key) {
       res = cam->aq_live_restart(ROItry, cam->bin, cam->exposureTimeSeconds);
       break;
 
-    //+- change binning
+      //+- change binning
     case SDLK_KP_PLUS:
-      sensorsize = cam->find_sensor_size();
-      res = cam->aq_live_restart(cam->ROI, cam->bin * 2,
-                                 cam->exposureTimeSeconds);
-      break;
+      if (current_binning == 4) {
+        break;
+      } else {
+        sensorsize = cam->find_sensor_size();
+        res = cam->aq_live_restart(cam->ROI, cam->bin * 2,
+                                   cam->exposureTimeSeconds);
+        break;
+      }
     case SDLK_KP_MINUS:
-      sensorsize = cam->find_sensor_size();
-      res = cam->aq_live_restart(cam->ROI, cam->bin / 2,
-                                 cam->exposureTimeSeconds);
-      break;
+      if (current_binning == 1) {
+        break;
+      } else {
+        sensorsize = cam->find_sensor_size();
+        res = cam->aq_live_restart(cam->ROI, cam->bin / 2,
+                                   cam->exposureTimeSeconds);
+        break;
+      }
 
-    //z Zooms camera ROI to current liveview subroi (sum_rect)
+    // z Zooms camera ROI to current liveview subroi (sum_rect)
     case SDLK_z:
       if (ROI_Active) {
         ROItry = sum_rect;
+        ROItry.x = ROItry.x * cam->bin;
+        ROItry.y = ROItry.y * cam->bin;
+        ROItry.w = ROItry.w * cam->bin;
+        ROItry.h = ROItry.h * cam->bin;
         ROItry.x += cam->ROI.x;
         ROItry.y += cam->ROI.y;
         ROItry.w++;
@@ -487,7 +526,7 @@ void StreamDisplayHD::keyresponse(SDL_Keycode key) {
       }
       break;
 
-    //x exits the camera ROI to the full sensor size.
+    // x exits the camera ROI to the full sensor size.
     case SDLK_x:
       cam->framereset_switch = true;
       sensorsize = cam->find_sensor_size();
@@ -498,7 +537,17 @@ void StreamDisplayHD::keyresponse(SDL_Keycode key) {
       res = cam->aq_live_restart(ROItry, cam->bin, cam->exposureTimeSeconds);
       break;
 
-    //c cycles through available colormaps
+    // r refreshes the streaming display.
+    case SDLK_r:
+      cam->framereset_switch = true;
+      ROItry.w = cam->ROI.w;
+      ROItry.h = cam->ROI.h;
+      ROItry.x = cam->ROI.x;
+      ROItry.y = cam->ROI.y;
+      res = cam->aq_live_restart(ROItry, cam->bin, cam->exposureTimeSeconds);
+      break;
+
+    // c cycles through available colormaps
     case SDLK_c:
       cmap_index = (cmap_index + 1) % 3;
       WaitForSingleObject(ReadyImgMutex, INFINITE);
@@ -512,7 +561,7 @@ void StreamDisplayHD::keyresponse(SDL_Keycode key) {
   }
 }
 
-//Thread wrapper for image data processing calculations before display.
+// Thread wrapper for image data processing calculations before display.
 unsigned __stdcall calc_wrapper(void *pArguments) {
   StreamDisplayHD *disp_ptr = (StreamDisplayHD *)pArguments;
   while (disp_ptr->continueRunningAllThreads) {
@@ -520,7 +569,7 @@ unsigned __stdcall calc_wrapper(void *pArguments) {
     if (!disp_ptr->continueRunningAllThreads) {
       break;
     }
-    //If new frame available:
+    // If new frame available:
     if (disp_ptr->new_frame_available_img) {
       disp_ptr->calc_and_update_image();
     }
@@ -533,7 +582,8 @@ unsigned __stdcall calc_wrapper(void *pArguments) {
   return 0;
 }
 
-//Wait for new frame to be available from camera. Then set flags for other threads
+// Wait for new frame to be available from camera. Then set flags for other
+// threads
 unsigned __stdcall framecheck(void *pArguments) {
   StreamDisplayHD *disp_ptr = (StreamDisplayHD *)pArguments;
   while (disp_ptr->continueRunningAllThreads) {
@@ -548,10 +598,10 @@ unsigned __stdcall framecheck(void *pArguments) {
     if (disp_ptr->new_frame_available) { // make sure event is valid (optional.
                                          // Could remove)
       WaitForSingleObject(disp_ptr->newframeimgmutex, INFINITE);
-      disp_ptr->new_frame_available_img = true; //set downstream flag.
-      SetEvent(disp_ptr->newframeimg_event); //trigger event
+      disp_ptr->new_frame_available_img = true; // set downstream flag.
+      SetEvent(disp_ptr->newframeimg_event);    // trigger event
       ReleaseMutex(disp_ptr->newframeimgmutex);
-      //Set roi processing flags and events if applicable.
+      // Set roi processing flags and events if applicable.
       if (disp_ptr->ROI_Active || disp_ptr->Contour_Active) {
         WaitForSingleObject(disp_ptr->newframeroimutex, INFINITE);
         disp_ptr->new_frame_available_roi = true;
@@ -566,7 +616,7 @@ unsigned __stdcall framecheck(void *pArguments) {
   return 0;
 }
 
-//When new frame is ready for rendering, call update_rendering()
+// When new frame is ready for rendering, call update_rendering()
 unsigned __stdcall disp_wrapper(void *pArguments) {
   StreamDisplayHD *disp_ptr = (StreamDisplayHD *)pArguments;
   // Phil Brooks rewrote using event to eliminate unnecessary CPU usage 6/2022
@@ -583,7 +633,7 @@ unsigned __stdcall disp_wrapper(void *pArguments) {
   return 0;
 }
 
-//Handle ROI mean and sum calculations
+// Handle ROI mean and sum calculations
 unsigned __stdcall roi_calc_wrapper(void *pArguments) {
   StreamDisplayHD *disp_ptr = (StreamDisplayHD *)pArguments;
   // Phil Brooks rewrote using event to eliminate unnecessary CPU usage 6/2022
@@ -613,7 +663,7 @@ unsigned __stdcall roi_calc_wrapper(void *pArguments) {
   return 0;
 }
 
-//Update contour position based on input coordinates x,y
+// Update contour position based on input coordinates x,y
 void StreamDisplayHD::Contour_Update(int x, int y) {
   ROI_Active = false;
   ROI_click_toggle = 0x0;
@@ -638,7 +688,7 @@ void StreamDisplayHD::Contour_Update(int x, int y) {
   }
 }
 
-//Handle contour line scaling and finite thickness calculations:
+// Handle contour line scaling and finite thickness calculations:
 void scale_line(SDL_Point *pts_in, SDL_Point *pts_out, float scaleX,
                 float scaleY, int ox, int oy, int thickness) {
   SDL_Point scaledin[2];
@@ -672,7 +722,7 @@ void scale_line(SDL_Point *pts_in, SDL_Point *pts_out, float scaleX,
   }
 }
 
-//Refresh contour metadata properties.
+// Refresh contour metadata properties.
 void StreamDisplayHD::refresh_cont_points() {
   int cpx, cpy;
   float dx = (float)(Contour_Ends[1].x - Contour_Ends[0].x);
@@ -688,7 +738,7 @@ void StreamDisplayHD::refresh_cont_points() {
   }
 }
 
-//Calculate average counts along contour
+// Calculate average counts along contour
 void StreamDisplayHD::update_cont_vals() {
   uint16_t myImageData[MAX_IMG_WIDTH * MAX_IMG_HEIGHT];
   int myImageDataWidth = MAX_IMG_WIDTH;
@@ -726,7 +776,7 @@ void StreamDisplayHD::update_cont_vals() {
   }
 }
 
-//Update subROI coordinates based on mouse click coordinates.
+// Update subROI coordinates based on mouse click coordinates.
 void StreamDisplayHD::ROI_Update(int x, int y) {
   Contour_Active = false;
   contour_click_toggle = 0x0;
@@ -764,7 +814,7 @@ void StreamDisplayHD::ROI_Update(int x, int y) {
   }
 }
 
-//Calculate ROI average and sum counts:
+// Calculate ROI average and sum counts:
 void StreamDisplayHD::calcROImean() {
   int i, j;
   double adder = 0;
@@ -774,7 +824,8 @@ void StreamDisplayHD::calcROImean() {
   int myImageDataWidth = MAX_IMG_WIDTH;
   int myImageDataHeight = MAX_IMG_HEIGHT;
 
-  //Copy image data into local variable so that calculations can be performed without image data being changed externally.
+  // Copy image data into local variable so that calculations can be performed
+  // without image data being changed externally.
   WaitForSingleObject(HandoffMutex, INFINITE);
   memcpy(myImageData, lastImageData,
          ((uint64_t)lastImageDataWidth) * ((uint64_t)lastImageDataHeight) *
@@ -782,22 +833,22 @@ void StreamDisplayHD::calcROImean() {
   myImageDataWidth = lastImageDataWidth;
   myImageDataHeight = lastImageDataHeight;
   ReleaseMutex(HandoffMutex);
-  //Sum over ROI
+  // Sum over ROI
   for (i = sum_rect.x; i < sum_rect.x + sum_rect.w + 1; i++) {
     for (j = sum_rect.y; j < sum_rect.y + sum_rect.h + 1; j++) {
       adder += myImageData[i + j * myImageDataWidth];
     }
   }
-  //Mean over ROI
+  // Mean over ROI
   ROImean = adder / (((double)sum_rect.w + 1) * ((double)sum_rect.h + 1));
   // WaitForSingleObject(roidatamutex, INFINITE); //Why commented out?
   roi_buff.put(ROImean);
   roi_sum_buff.put(adder);
   // ReleaseMutex(roidatamutex);
-
 }
 
-//Copy Contour or subROI data into *dataout location. Caution. Make sure dataout is large enough for entire data transfer.
+// Copy Contour or subROI data into *dataout location. Caution. Make sure
+// dataout is large enough for entire data transfer.
 void StreamDisplayHD::getROIdata(double *dataout) {
   if (ROI_Active) {
     WaitForSingleObject(roidatamutex, INFINITE);
@@ -810,15 +861,15 @@ void StreamDisplayHD::getROIdata(double *dataout) {
   }
 }
 
-//Start SDL window
+// Start SDL window
 void StreamDisplayHD::start_SDL_window(uint16_t *windowLocationParams) {
-    //Try to initialize SDL Video subsystem
+  // Try to initialize SDL Video subsystem
   if (SDL_Init(SDL_INIT_VIDEO) < 0)
     return;
-  //Initialize lastImageData with known values
+  // Initialize lastImageData with known values
   for (int iy = 0; iy < MAX_IMG_HEIGHT; iy++) {
     for (int ix = 0; ix < MAX_IMG_WIDTH; ix++) {
-      lastImageData[iy * MAX_IMG_WIDTH + ix] = 16384; //0x4000
+      lastImageData[iy * MAX_IMG_WIDTH + ix] = 16384; // 0x4000
     }
   }
 
@@ -894,14 +945,15 @@ void StreamDisplayHD::start_SDL_window(uint16_t *windowLocationParams) {
   printf("display ok\n");
 }
 
-// For auto-scaling colormap to intensity max and min of data, we need to calculate the max and min over the frames.
+// For auto-scaling colormap to intensity max and min of data, we need to
+// calculate the max and min over the frames.
 void StreamDisplayHD::extractmaxmin(uint16_t *data, uint64_t length) {
   uint16_t max_val = *data;
   uint16_t min_val = *data;
   uint16_t cmap_max;
   uint16_t cmap_min;
   // auto start = high_resolution_clock::now();
-  //Iterate along data, update max and min if applicable.
+  // Iterate along data, update max and min if applicable.
   for (uint64_t x = 0; x < length; x++) {
     if (*data > max_val) {
       max_val = *data;
@@ -914,7 +966,7 @@ void StreamDisplayHD::extractmaxmin(uint16_t *data, uint64_t length) {
   auto duration = duration_cast<milliseconds>(stop - start);
   printf("%d\n", duration.count());*/
 
-  //calculate colormap scaling limits
+  // calculate colormap scaling limits
   cmap_max = (uint16_t)lround(max_val * cmap_high);
   cmap_min = (uint16_t)lround(min_val + (max_val - min_val) * cmap_low);
   if (cmap_max == cmap_min) {
@@ -924,15 +976,15 @@ void StreamDisplayHD::extractmaxmin(uint16_t *data, uint64_t length) {
   loThresholdCounts = cmap_min;
 }
 
-//Perform image scaling based on colormap and limits:
-//SSE4.1 implementation by F. Phil Brooks III
+// Perform image scaling based on colormap and limits:
+// SSE4.1 implementation by F. Phil Brooks III
 void StreamDisplayHD::calc_and_update_image() {
   int ix, iy;
 
   // local data copies to lock only during copy
   // Aligning makes loading into SSE registers easier. Not necessary (use
-  // unaligned load and store if not), but since it's easy here, we might as well
-  // do it.
+  // unaligned load and store if not), but since it's easy here, we might as
+  // well do it.
   uint16_t __declspec(align(16)) myImageData[MAX_IMG_WIDTH * MAX_IMG_HEIGHT];
   int myImageDataWidth = MAX_IMG_WIDTH;
   int myImageDataHeight = MAX_IMG_HEIGHT;
@@ -948,11 +1000,12 @@ void StreamDisplayHD::calc_and_update_image() {
   // new_frame_available_img = false;
   ReleaseMutex(HandoffMutex);
 
-  //calculate max and min of image data to know how far to scale.
+  // calculate max and min of image data to know how far to scale.
   extractmaxmin(myImageData,
                 (uint64_t)myImageDataWidth * (uint64_t)myImageDataHeight);
 
-  // toggle and select which buffer to work on (alternate buffers so SDL can display the other one while we load into one).
+  // toggle and select which buffer to work on (alternate buffers so SDL can
+  // display the other one while we load into one).
   imgToggleFlag = !imgToggleFlag;
   // Here, it would be a bit harder to enforce alignment since the array is
   // allocated by SDL, so we'll just use unaligned store when we need to write
@@ -969,9 +1022,13 @@ void StreamDisplayHD::calc_and_update_image() {
       (float)255 / ((float)hiThresholdCounts - (float)loThresholdCounts);
 
   // auto start = high_resolution_clock::now();
-  // SSE vector intrinsics allow use of SSE vector instructions in c++. These vector instructions allow the CPU to operate on multiple elements of data at once.
-  // This can vastly improve efficiency (in this case, 16 pixel operations in the time of 1). Actually, the vectorized instruction flow is a bit more complicated
-  // than the scalar version (more separate instructions needed per operation), so it isn't actually a 16x speedup, but it is a ~order of magnitude speedup anyway.
+  // SSE vector intrinsics allow use of SSE vector instructions in c++. These
+  // vector instructions allow the CPU to operate on multiple elements of data
+  // at once. This can vastly improve efficiency (in this case, 16 pixel
+  // operations in the time of 1). Actually, the vectorized instruction flow is
+  // a bit more complicated than the scalar version (more separate instructions
+  // needed per operation), so it isn't actually a 16x speedup, but it is a
+  // ~order of magnitude speedup anyway.
   if (use_sse) {
     // SSE version should work on any processor supporting SSE4.1 (Intel after
     // Penryn (2007/8) and AMD after Bulldozer ('11)).
@@ -982,14 +1039,18 @@ void StreamDisplayHD::calc_and_update_image() {
     __m128i loThresholdCounts_epi32 = _mm_set1_epi32(loThresholdCounts);
     __m128i hiThresholdCounts_epi32 = _mm_set1_epi32(hiThresholdCounts);
     __m128 constantFactor_ps = _mm_set1_ps(constant_factor);
-    //For every row:
+    // For every row:
     for (iy = 0; iy < myImageDataHeight; iy++) {
       int iy_times_width = iy * myImageDataWidth;
-      int final_x_baseline = (iy + toy) * MAX_IMG_WIDTH + tox; //index offset for row in final surface buffer
-      //surface buffer is always of max sensor size, and doesn't scale with ROI, so we need to be careful where in that large buffer
-      //we place our frame data that comes from a subroi. It is easier to handle if we iterate by row and column separately.
-      
-      //iterate over sets of 16 pixels:
+      int final_x_baseline =
+          (iy + toy) * MAX_IMG_WIDTH +
+          tox; // index offset for row in final surface buffer
+      // surface buffer is always of max sensor size, and doesn't scale with
+      // ROI, so we need to be careful where in that large buffer we place our
+      // frame data that comes from a subroi. It is easier to handle if we
+      // iterate by row and column separately.
+
+      // iterate over sets of 16 pixels:
       for (ix = 0; ix < myImageWidth_adjusted; ix += 16) {
         // Load sixteen 16-bit int values four at a time into the lower 64 bits
         // of four SSE registers
@@ -1009,7 +1070,7 @@ void StreamDisplayHD::calc_and_update_image() {
         int_data3 = _mm_cvtepu16_epi32(int_data3);
         int_data4 = _mm_cvtepu16_epi32(int_data4);
         // Do max/min on epi32s as it is significantly faster than for floats
-        //Threshold pixel values:
+        // Threshold pixel values:
         int_data1 =
             _mm_max_epi32(_mm_min_epi32(int_data1, hiThresholdCounts_epi32),
                           loThresholdCounts_epi32);
@@ -1023,7 +1084,7 @@ void StreamDisplayHD::calc_and_update_image() {
             _mm_max_epi32(_mm_min_epi32(int_data4, hiThresholdCounts_epi32),
                           loThresholdCounts_epi32);
         // Subtraction is also faster for ints
-        //Subtract lower threshold to 0.
+        // Subtract lower threshold to 0.
         int_data1 = _mm_sub_epi32(int_data1, loThresholdCounts_epi32);
         int_data2 = _mm_sub_epi32(int_data2, loThresholdCounts_epi32);
         int_data3 = _mm_sub_epi32(int_data3, loThresholdCounts_epi32);
@@ -1039,7 +1100,8 @@ void StreamDisplayHD::calc_and_update_image() {
         f_data2 = _mm_mul_ps(f_data2, constantFactor_ps);
         f_data3 = _mm_mul_ps(f_data3, constantFactor_ps);
         f_data4 = _mm_mul_ps(f_data4, constantFactor_ps);
-        // Convert back to int and pack down to 8-bit (we don't need more precision as SDL uses 8-bit precision)
+        // Convert back to int and pack down to 8-bit (we don't need more
+        // precision as SDL uses 8-bit precision)
         int_data1 = _mm_cvtps_epi32(f_data1);
         int_data2 = _mm_cvtps_epi32(f_data2);
         int_data3 = _mm_cvtps_epi32(f_data3);
@@ -1057,13 +1119,14 @@ void StreamDisplayHD::calc_and_update_image() {
       for (; ix < myImageDataWidth; ix++) {
         // mind bit-endian-ness here
         float fval = (float)myImageData[iy_times_width + ix];
-        fval = min(max(fval, loThresholdCounts), hiThresholdCounts); //threshold
-        uint8_t val =
-            (uint8_t)((fval - (float)loThresholdCounts) * constant_factor); //subtract and scale
+        fval =
+            min(max(fval, loThresholdCounts), hiThresholdCounts); // threshold
+        uint8_t val = (uint8_t)((fval - (float)loThresholdCounts) *
+                                constant_factor); // subtract and scale
         workImgSurfBuffer[final_x_baseline + ix] = val;
       }
     }
-    //If SSE4.1 not supported:
+    // If SSE4.1 not supported:
   } else {
     // Scalar version (standard c++ should work on any processor that supports
     // c++)
@@ -1074,9 +1137,7 @@ void StreamDisplayHD::calc_and_update_image() {
       for (ix = 0; ix < myImageDataWidth; ix++) {
         // mind bit-endian-ness here
         float fval = (float)myImageData[iy_times_width + ix];
-        fval =
-            min(max(fval, loThresholdCounts),
-                hiThresholdCounts);
+        fval = min(max(fval, loThresholdCounts), hiThresholdCounts);
         uint8_t val =
             (uint8_t)((fval - (float)loThresholdCounts) * constant_factor);
         workImgSurfBuffer[final_x_baseline + ix] = val;
@@ -1115,7 +1176,8 @@ void StreamDisplayHD::calc_and_update_image() {
   ReleaseMutex(ReadyImgMutex);
 }
 
-//Copy subROI coordinates into coordsout (CAUTION: ensure that coordsout is large enough)
+// Copy subROI coordinates into coordsout (CAUTION: ensure that coordsout is
+// large enough)
 void StreamDisplayHD::getROIcoords(int coordsout[]) {
   coordsout[0] = ROI_Rect.x;
   coordsout[1] = ROI_Rect.y;

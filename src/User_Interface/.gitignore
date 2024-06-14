@@ -22,7 +22,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-package-lock.json
+# package-lock.json #We should actually commit this to ensure that everyone has the same JS packages. We just need to update regularly.
 node_modules
 
 /relay/data/

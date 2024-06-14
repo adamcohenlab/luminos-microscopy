@@ -1,3 +1,4 @@
+/*Implements waveform rows within each Waveform section. Each row covers a different channel.*/ 
 import Menu from "../../components/Menu";
 import {
   ChevronDownIcon,

@@ -5,7 +5,7 @@ classdef Camera < Device
         hsync_rate double;
         trigger;
         vsync;
-        type; %0:emulator; 1:Hamamatsu; 2:Andor.
+        type; %0:emulator; 1:Hamamatsu; 2:Andor; 3:Kinetix.
         virtualSensorSize;
         microns_per_pixel;
         cam_id
@@ -13,6 +13,10 @@ classdef Camera < Device
         frametrigger_source = "Off";
         daqtrig_period_ms = 10; %Period requested from daq for triggered mode in ms
         daqTrigCounter = 'Dev1/Ctr3';
+        
+        roiJS = struct('left', 0, 'width', 0, 'top', 0, 'height', 0, 'type', "arbitrary");
+        exposuretime;
+        bin;
     end
     properties (Transient = true, Hidden = true)
         plt;
@@ -29,9 +33,7 @@ classdef Camera < Device
         frames_requested = 1;
     end
     properties (SetAccess = private, SetObservable)
-        exposuretime
         ROI
-        bin
         acq_complete
         dropped_frames = 0;
         dropped_frames_indicator = 0; %separate property to avoid get recursion
@@ -72,9 +74,10 @@ classdef Camera < Device
             if isempty(this.hsync_rate)
                 this.hsync_rate = 100e3;
             end
-            Get_Exposure(this);
-            Get_ROI(this);
             
+            % use the most up to date ROI for the JS interface
+            roiJS = this.getRoiFromStream();
+            this.roiJS = roiJS;
         end
         
         function set.frametrigger_source(this, val)
@@ -130,7 +133,6 @@ classdef Camera < Device
                 if ~this.rdrivemode
                     CAMERA_WRAPPER_MEX('RDArray',this.objectHandle,logical(this.rdrivemode));
                 end
-                Get_Exposure(this);
                 Get_ROI(this);
             end
         end
@@ -173,10 +175,13 @@ classdef Camera < Device
         %%
         function Prepare_Sync_Aq(this, exposuretime, ROIin, binning)
             if this.check_Cpp_instance()
-                CAMERA_WRAPPER_MEX('Prepare_Sync_Aq', this.objectHandle, exposuretime, int32(ROIin), uint32(binning));
+                
                 this.exposuretime = exposuretime;
                 this.ROI = ROIin;
                 this.bin = binning;
+                %Don't call other things after the prepare_sync_aq mex
+                %call, because they can "unprepare" the camera.
+                CAMERA_WRAPPER_MEX('Prepare_Sync_Aq', this.objectHandle, exposuretime, int32(ROIin), uint32(binning));
             end
         end
         
@@ -207,46 +212,87 @@ classdef Camera < Device
             end
         end
         
-        function Set_Binning(this, binning)
+        function setBinningInCpp(this, binning)
             if this.check_Cpp_instance()
                 if(binning==1 || binning==2 || binning==4)
                     CAMERA_WRAPPER_MEX('Set_Binning', this.objectHandle,uint32(binning));
-                    this.bin=binning;
                 else
                     warning('Illegal binning value: Allowed values are 1,2,and 4')
                 end
             end
         end
-        
-        function res = Set_Exposure(this, exposuretime)
+
+        function set.bin(this,binning)
+            this.setBinningInCpp(binning);
+        end
+
+        function binning = get.bin(this)
             if this.check_Cpp_instance()
-                min_exposure_time = 1 / this.calculate_max_framerate();
-                if exposuretime < min_exposure_time
-                    error('Exposure time too short. Minimum allowed exposure time is %f s', min_exposure_time);
-                end
-                res=CAMERA_WRAPPER_MEX('Set_Exposure', this.objectHandle,exposuretime);
-                this.exposuretime=res;
+                binning = CAMERA_WRAPPER_MEX('Get_Binning',this.objectHandle);
             end
         end
         
-        %%CAUTION!: This Get method sets the exposuretime property, which
-        %%can potentially cause recursion if a client calls Get_Exposure
-        %%upon being notified of a change in the exposuretime value. To be
-        %%safe, clients can access the exposuretime property directly if
-        %%they know it to be up to date.
-        function res = Get_Exposure(this)
+        function set.exposuretime(this, exposuretime)
             if this.check_Cpp_instance()
-                res=CAMERA_WRAPPER_MEX('Get_Exposure', this.objectHandle);
-                this.exposuretime=res;
+                % min_exposure_time = 1 / this.calculate_max_framerate();
+                % if exposuretime < min_exposure_time
+                %     error('Exposure time too short. Minimum allowed exposure time is %f s', min_exposure_time);
+                % end
+                this.setExposureTimeInCpp(exposuretime);
             end
         end
         
-        function setCameraROI(this, ROI_JS, type)
+        function setExposureTimeInCpp(this, exposuretime)
+            if this.check_Cpp_instance()
+                CAMERA_WRAPPER_MEX('Set_Exposure', this.objectHandle, exposuretime);
+            end
+        end
+        
+        function exposureTime = get.exposuretime(this)
+            if this.check_Cpp_instance()
+                exposureTime = CAMERA_WRAPPER_MEX('Get_Exposure', this.objectHandle);
+            end
+        end
+        
+        % Get the ROI from the live camera view in a user friendly format
+        function roiJS = getRoiFromStream(this)
+            roi = this.Get_ROI();
+            roiJS = this.roiArrayToStruct(roi, this.roiJS.type);
+        end
+        
+        % Convert ROI from array format to a struct format
+        function roiJS = roiArrayToStruct(this, roiArray, roiType)
+            roiJS = struct('left', roiArray(1), 'width', roiArray(2), 'top', roiArray(3), 'height', roiArray(4), 'type', roiType);
+        end
+        
+        % Convert ROI from struct format to an array format
+        function roiArray = roiStructToArray(this, roiStruct)
+            roiArray = [roiStruct.left, roiStruct.width, roiStruct.top, roiStruct.height];
+        end
+        
+        % Get the ROI from the JS interface in array format
+        function roi = getROIForAcquisition(this)
+            roi = this.roiStructToArray(this.roiJS);
+        end
+        
+        % Set the ROI in a user friendly format. This function gets called from the JS
+        function set.roiJS(this, roiJS)
+            roiToSet = this.setCameraROI(roiJS, roiJS.type);
+            this.roiJS = this.roiArrayToStruct(roiToSet, roiJS.type);
+        end
+        
+        function roiToSet = setCameraROI(this, ROI_JS, type)
+            % arbitrary rectangular region
             if type == "arbitrary"
                 roiToSet = [ROI_JS.left, ROI_JS.width, ROI_JS.top, ROI_JS.height];
-            elseif type == "centered" %Pre-formats the ROI for high-speed acquisition
+                
+                % centered region
+            elseif type == "centered" % Pre-formats the ROI for high-speed acquisition
+                % round so it's compatible with the camera
                 width = min(max(ceil(ROI_JS.width/8)*8, 8), this.virtualSensorSize);
                 height = min(max(ceil(ROI_JS.height/8)*8, 8), this.virtualSensorSize);
+                
+                % compute the top left corner of the ROI
                 top = (this.virtualSensorSize - ROI_JS.height) / 2;
                 left = (this.virtualSensorSize - ROI_JS.width) / 2;
                 roiToSet = [left, width, top, height];
@@ -280,12 +326,9 @@ classdef Camera < Device
         %Get the camera recording ROI bounds (portion of FOV captured by
         %camera).
         function res = Get_ROI(this)
-            % 'check cpp getroi'
             if this.check_Cpp_instance()
-                % 'Get ROI'
                 res=CAMERA_WRAPPER_MEX('Get_ROI',this.objectHandle);
                 this.ROI=res;
-                % res
             end
         end
         
@@ -293,10 +336,12 @@ classdef Camera < Device
             if this.check_Cpp_instance()
                 this.frames_requested = numFrames;
                 modpath = fullfile(fpath); %standardize file formatting
+                fprintf("Saving to %s\n", modpath);
                 modpath = strrep(modpath, '\', '\\');
-                disp(string(modpath))
                 CAMERA_WRAPPER_MEX('Start_Acquisition', this.objectHandle,uint32(numFrames),char(modpath));
-                notify(this,'exp_finished');
+                notify(this,'exp_finished'); %This is a bit silly since we notify the app that we're done
+                % without actually finishing first. Is there a better way?
+                % This can cause confusing errors.
             end
         end
         
@@ -340,7 +385,7 @@ classdef Camera < Device
                     end
                 otherwise
                     warning("Auto N only works for Hamamatsu PCIe camera interface at the moment. Please add correct algorithms for your camera to the calculate_framerate method of the Camera_Controller class.");
-                    framerate = 1 / obj.Get_Exposure();
+                    framerate = 1 / obj.exposuretime;
             end
         end
         
@@ -366,7 +411,7 @@ classdef Camera < Device
             % Camera. They will be updated in a future commit.
             switch obj.type
                 case 1 %Hamamatsu
-                    expos = (obj.Get_Exposure());
+                    expos = (obj.exposuretime);
                     H = 9.74436e-6; %constant from camera manual
                     roi = double(obj.Get_ROI());
                     side1 = obj.virtualSensorSize/2-roi(3);

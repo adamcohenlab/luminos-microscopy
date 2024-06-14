@@ -1,6 +1,7 @@
 {
   "objectType": "Rig_Initializer",
-  "dataDirectory": "C:\\Users\\Cohen Lab\\Documents\\GitHub\\luminos\\raffi_temp_data",
+  "dataDirectory": "C:\\Users\\Labmember\\Data",
+  "tabs": ["Main", "Waveforms", "DMD"],
   "devices": [
     {
       "deviceType": "Camera",

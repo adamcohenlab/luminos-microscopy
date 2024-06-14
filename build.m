@@ -31,6 +31,10 @@ if options.rebuild_js
     display(result);
 end
 
+%If the JS install shows output describing existing vulnerabilities, they
+%may by repaired by running (>npm audit fix) from the shell in the frontend
+%and relay directories.
+
 if options.rebuild_c
     % Build C++ libraries
     fprintf("Building C++ libraries...\n")

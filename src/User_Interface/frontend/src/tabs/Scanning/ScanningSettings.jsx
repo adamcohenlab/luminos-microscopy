@@ -16,13 +16,15 @@ import { GeneralSettings } from "../../components/GeneralSettingsSection";
 import { Button } from "../../components/Button";
 import {
   framerateToMicronsPerPoint,
+  micronsPerPointToFramerate,
   getFramerate,
+  getResolution,
   startSinglePlaneGalvoAcquisition,
   startWithWaveformsGalvoAcquisition,
   startZStackGalvoAcquisition,
   turnGalvoOn,
 } from "../../matlabComms/scanningComms";
-import { setProperty } from "../../matlabComms/matlabHelpers.jsx";
+import { setProperty } from "../../matlabComms/matlabHelpers";
 
 const useGalvoOn = () => {
   const [galvoOn, setGalvoOn] = useState(false);
@@ -110,16 +112,16 @@ export const ScanningSettings = ({ experimentName }) => {
     });
   };
 
+  const [isDisplayingFrameRate, setisDisplayingFrameRate] = useState(false);
+
+  const [micronsPerPoint, setMicronsPerPoint] = useState(0.1);
+
   // get framerate on startup
   useEffect(() => {
-    getFramerate().then((framerate) =>
-      setFrameRateOrMicronsPerPoint({ framerate })
+    getResolution().then((mpp) =>
+      setFrameRateOrMicronsPerPoint({ micronsPerPoint: mpp })
     );
   }, []);
-
-  const [isDisplayingFrameRate, setisDisplayingFrameRate] = useState(true);
-
-  const [micronsPerPoint, setMicronsPerPoint] = useState(null);
 
   const setFrameRateOrMicronsPerPoint = async ({
     framerate,

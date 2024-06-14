@@ -19,6 +19,7 @@ classdef Scientifica_Stage_Controller < Linear_Controller
     end
     properties (SetObservable, AbortSet)
         pos % x, y, z
+        zStageFlag = false;
     end
     
     properties (Hidden, Constant)
@@ -69,6 +70,8 @@ classdef Scientifica_Stage_Controller < Linear_Controller
             flush(obj.serial_com);
             pause(.01)
             obj.serial_com.writeline(obj.pos_command);
+            flush(obj.serial_com);
+
             pos_str = str2num(obj.serial_com.readline());
             pos.x = pos_str(1);
             pos.y = pos_str(2);
@@ -77,7 +80,7 @@ classdef Scientifica_Stage_Controller < Linear_Controller
         
         function pos = get.pos(obj)
             pos = obj.Get_Current_Position_Microns();
-            obj.pos = pos;
+            %obj.pos = pos;
         end
         
         function res = Step_Fixed(obj, dim, distance_um)
@@ -88,11 +91,12 @@ classdef Scientifica_Stage_Controller < Linear_Controller
             obj.serial_com.writeline(['REL ', num2str(stepvec)]);
             r1 = obj.serial_com.readline();
             while (obj.isMoving())
-                pause(.01);
+                pause(.1);
             end
             res = r1;
         end
         function tf = isMoving(obj)
+            flush(obj.serial_com);
             obj.serial_com.writeline('S');
             res = obj.serial_com.readline();
             tf = logical(str2double(res));

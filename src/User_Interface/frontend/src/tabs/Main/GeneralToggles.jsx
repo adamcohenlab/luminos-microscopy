@@ -13,7 +13,6 @@ import { usePrevious } from "../../components/Utils";
 
 export const GeneralToggles = ({ ...props }) => {
   const [generalSettings, setGeneralSettings] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const prevGeneralSettings = usePrevious(generalSettings);
 
   const changeRange = (value, min1, max1, min2, max2) =>
@@ -57,7 +56,6 @@ export const GeneralToggles = ({ ...props }) => {
       const data = addIds([...shuttersInfo, ...modulatorsInfo, ...filterInfo]);
 
       setGeneralSettings(data);
-      setIsLoading(false);
     };
 
     fetchData();
@@ -92,7 +90,6 @@ export const GeneralToggles = ({ ...props }) => {
     <div {...props}>
       <div className="max-w-sm">
         <GeneralSettingsSection
-          isLoading={isLoading}
           title="Toggles & Modulators"
           type="vertical"
           properties={generalSettings}

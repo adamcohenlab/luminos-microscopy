@@ -1,7 +1,7 @@
 % This is for ALP versions 4.2 and above.
 
 classdef ALP_DMD < DMD
-
+    
     properties (Transient)
         %Device Characteristics
         api_version string
@@ -13,7 +13,7 @@ classdef ALP_DMD < DMD
         trigger DQ_DO_Finite; %DAQ or other I/O Device Channel.
         seq %Moved to transient by HD to prevent data loading issues.
     end
-
+    
     methods
         function obj = ALP_DMD(Initializer) %
             obj@DMD(Initializer);
@@ -32,24 +32,24 @@ classdef ALP_DMD < DMD
                 obj.calpoints = ceil(obj.Dimensions.*obj.frac_calpoints);
             end
         end
-
+        
         function obj = dmdStopSeq(obj, seq)
             obj.device.stop;
             obj.device.halt;
             seq.free;
         end
-
+        
         function Write_Video(obj)
             imgs = permute(obj.video_stack, [3, 1, 2]);
             obj.device.stop;
             obj.device.halt;
-
+            
             obj.device.control(obj.api.VD_EDGE, obj.api.EDGE_RISING);
-
+            
             BitPlanes = 1;
             PicOffset = 0;
             PicNum = size(imgs, 1);
-
+            
             if ~isempty(obj.seq)
                 dmdStopSeq(obj.device, obj.seq);
             end
@@ -68,7 +68,7 @@ classdef ALP_DMD < DMD
             obj.device.projcontrol(ALP_PROJ_STEP, obj.api.EDGE_RISING)
             obj.device.startcont(obj.seq);
         end
-
+        
         function Write_Static(obj)
             obj.Target = obj.Target > .5;
             img = logical(obj.Target);
@@ -82,12 +82,12 @@ classdef ALP_DMD < DMD
                 end
                 obj.seq = alpsequence(obj.device);
                 obj.seq.alloc(BitPlanes, PicNum);
-
+                
                 %obj.seq.control(obj.api.DATA_FORMAT,obj.api.DATA_BINARY_TOPDOWN);
                 obj.seq.control(obj.api.BIN_MODE, obj.api.BIN_UNINTERRUPTED);
                 obj.seq.timing(10E6-2E-6, 10E6, 0, 0, 0);
                 obj.seq.put(PicOffset, PicNum, img');
-
+                
                 obj.device.projcontrol(obj.api.PROJ_MODE, obj.api.MASTER);
                 obj.device.startcont(obj.seq);
             else
@@ -96,15 +96,16 @@ classdef ALP_DMD < DMD
                 imagesc(obj.demo_ax(2), imwarp(double(img), invert(obj.tform), 'OutputView', Rfixed));
             end
         end
+        
         function Write_Stack(obj)
-
+            
             imgs = permute(obj.pattern_stack, [3, 2, 1]);
             imgs = imgs > .5;
             PicNum = size(imgs, 1);
             PicOffset = int32(0);
             BitPlanes = int32(1);
             obj.device.control(obj.api.VD_EDGE, obj.api.EDGE_RISING);
-
+            
             % does this stop work?
             if ~isempty(obj.seq)
                 dmdStopSeq(obj.device, obj.seq);

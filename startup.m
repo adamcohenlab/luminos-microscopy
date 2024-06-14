@@ -1,10 +1,4 @@
-% This sript adds all subfolders to path
-
-try
-    bp = load('breakpoints.mat');
-    dbstop(bp.bp);
-catch
-end
+% This script adds all subfolders to path
 folder = fileparts(which(mfilename));
 addpath(genpath(folder));
 [~, ~] = system(sprintf("Setx MatlabDir ""%s""", matlabroot));

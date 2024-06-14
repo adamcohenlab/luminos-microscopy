@@ -3,9 +3,11 @@ import { linSpace, useInterval } from "../../components/Utils";
 import { getCameraProperties, getROIBuffer } from "../../matlabComms/mainComms";
 import { usePrevious } from "../../components/Utils";
 import { Plots } from "../../components/Plots";
+import { subsamplingRate } from "../Waveforms/WaveformPlots";
 
 export const ROIPlotter = ({ ...props }) => {
-  const secondsToPlot = 30;
+  const secondsToPlotGoal = 30;
+  const secondsToPlot =  secondsToPlotGoal / subsamplingRate; // need to account for subsampling DI
   const [exposureTime, setExposureTime] = useState(0.015); // will update below
   const numDataPoints = Math.round(secondsToPlot / exposureTime);
 
@@ -13,8 +15,10 @@ export const ROIPlotter = ({ ...props }) => {
 
   let x;
   if (numDataPoints < 1e5) x = linSpace(0, secondsToPlot, numDataPoints);
-  else x = linSpace(0, exposureTime * 1e5, Math.round(1e5));
+  else x = linSpace(0, exposureTime * 1e5 , Math.round(1e5));
   const [y, setY] = useState([]);
+  // Stretch the x values by a factor of 10
+  x = x.map(value => value * subsamplingRate);
 
   useEffect(() => {
     if (prevExposureTime !== exposureTime) {

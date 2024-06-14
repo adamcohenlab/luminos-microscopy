@@ -6,7 +6,7 @@ import { getImageFolderPath } from "../../../matlabComms/miscellaneousComms";
 import { tellMatlabAboutImage } from "../../../matlabComms/patterningComms";
 import { useMatlabVariable } from "../../../matlabComms/matlabHelpers";
 
-// compute the number of points to use in the calibration
+// compute the number of points to use in the calibration by asking matlab for calpoints belonging to specific device
 const useNumPointsInCalibration = (deviceType, deviceName) => {
   const [calibrationPoints, setCalibrationPoints] = useMatlabVariable(
     "calpoints",
@@ -34,16 +34,20 @@ export const useCalibrateMode = ({
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const handleClick = (x, y) => {
+    //when new click on image comes in:
+    //If we've clicked all of the calibration points, append final click and finish calibration
     if (clickedPoints.length === NUM_POINTS_IN_CALIBRATION - 1) {
       const allPoints = [...clickedPoints, [x, y]];
       setClickedPoints((prevPoints) => [...prevPoints, [x, y]]);
       finishCalibration(allPoints);
+      //Otherwise, append click and project new point.
     } else {
       projectCalibrationPattern(clickedPoints.length + 2, deviceName); // add one more point to the calibration pattern
       setClickedPoints((prevPoints) => [...prevPoints, [x, y]]);
     }
   };
 
+  //When all points have been clicked, call this to perform calibration calculations
   const finishCalibration = (pts) => {
     setIsCalibrateMode(false);
 
@@ -86,6 +90,7 @@ export const useCalibrateMode = ({
     setIntervalId(interval);
   };
 
+  //Main function that executes upon clicking "Calibrate" button
   const handleButtonClick = (prevIsSelected, clearAllShapes) => {
     if (!prevIsSelected) {
       clearAllShapes();
@@ -113,6 +118,7 @@ export const useCalibrateMode = ({
     if (intervalId !== null) clearInterval(intervalId);
   };
 
+  //Graphics object that is returned (appears as "Calibrate" button)
   return {
     shapes: clickedPoints,
     setShapes: (pts) => {

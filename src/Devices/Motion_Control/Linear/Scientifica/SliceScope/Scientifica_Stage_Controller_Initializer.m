@@ -6,6 +6,7 @@ classdef Scientifica_Stage_Controller_Initializer < Linear_Controller_Initialize
         %		z
         microstep_size
         driver string
+        zStageFlag
     end
     methods
         function obj = Scientifica_Stage_Controller_Initializer()

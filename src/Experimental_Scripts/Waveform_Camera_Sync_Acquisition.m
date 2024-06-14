@@ -9,6 +9,7 @@ app.makeExperimentFolder(options.tag);
 dq_session = app.getDevice('DAQ');
 cam = app.getDevice('Camera');
 DMD = app.getDevice('DMD');
+SLM = app.getDevice('SLM_Device');
 cfcl = app.getDevice('Scanning_Device');
 if ~isempty(cfcl)
     cfcl.camera_detection = 1;
@@ -25,7 +26,7 @@ if numel(cam) > 1
 else
     %dq_session.trigger=char(cam.trigger); Removed this safety to allow
     %other readout modes. Will put back in with an if-switch later. -HD
-    %dq_session.clock = char(cam.clock);
+  %  dq_session.clock = char(cam.clock);
     if ~isempty(strip(dq_session.clock))
         clock_rate = cam.hsync_rate;
     else
@@ -39,10 +40,10 @@ end
 
 if ~isempty(dq_session.buffered_tasks)
     app.assignMasterDevice(dq_session);
-    app.assignDevicesForMonitoring([cfcl, cam, DMD, dq_session]);
+    app.assignDevicesForMonitoring([cfcl, cam, DMD, SLM, dq_session]);
     for i = 1:numel(cam)
         if ~isempty(cam(i).vsync)
-            dq_session.Counter_Inputs(i) = DQ_Edge_Count(cam(i).vsync, dq_session.buffered_tasks(1).numsamples, cam_clock_rate, 'name', ['Camera', num2str(i), 'Frame Counter']);
+            dq_session.Counter_Inputs(i) = DQ_Edge_Count(cam(i).vsync, dq_session.buffered_tasks(1).numsamples, clock_rate, 'name', ['Camera', num2str(i), 'Frame Counter']);
         end
     end
     if ~strcmp(cam(1).frametrigger_source, "Off")
@@ -62,7 +63,7 @@ else
     else
         app.assignMasterDevice(cam);
     end
-    app.assignDevicesForMonitoring([cam, DMD, Laser]);
+    app.assignDevicesForMonitoring([cam, DMD, SLM, Laser]);
     
 end
 if app.VR_On
@@ -70,8 +71,9 @@ if app.VR_On
     writeline(app.VRclient, "start");
 end
 for i = 1:numel(cam)
-    cam(i).Prepare_Sync_Aq(cam(i).Get_Exposure(), cam(i).Get_ROI(), bin);
+    cam(i).Prepare_Sync_Aq(cam(i).exposuretime, cam(i).getROIForAcquisition(), bin);
 end
+pause(0.5); % Leave in for Kinetix cam, otherwise returns blank frames
 for i = 1:numel(cam)
     cam(i).Start_Acquisition(cam(i).frames_requested, strcat(app.expfolder, ['\frames', num2str(i)]));
 end
@@ -84,4 +86,11 @@ end
 while ~app.exp_complete
     pause(0.5);
 end
+
+% restart camera at the end (do this on Kinetix Cam on Firefly)
+for i = 1:numel(cam)
+    cam(i).Set_ROI(int32([cam(i).ROI(1), cam(i).ROI(2), cam(i).ROI(3), cam(i).ROI(4)]));
 end
+
+end
+

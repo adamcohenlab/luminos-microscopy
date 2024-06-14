@@ -58,7 +58,10 @@ Scanning_Device::Scanning_Device(int DAQ_Vendor_Code, string galvox_physport_in,
   aidatamutex = CreateMutex(NULL, FALSE, NULL);
   fullROImode = false;
 }
-Scanning_Device::~Scanning_Device() { Cleanup(); }
+Scanning_Device::~Scanning_Device() { 
+    Cleanup(); 
+    Display.cleanup();
+}
 
 int Scanning_Device::Restart_Live_Acq(double minx, double maxx, double miny,
                                       double maxy, double binning) {
@@ -270,6 +273,10 @@ int Scanning_Device::Startup(double *galvoxdata, double *galvoydata,
 
   error = Galvo_Sync_Counter->Start_Task();
   error = AO_Task->Write_Data();
+  if (error) {
+    Cleanup();
+    return 0;
+  }
   error = AO_Task->Start_Task();
   if (galvos_only == 0) {
     isCapturing = true;
@@ -429,11 +436,11 @@ int Scanning_Device::Cleanup() {
   isCapturing = false;
   isRecording = false;
   uint32_t taskdone = 0;
-
   if (AI_Task) {
-    while (taskdone == 0) {
-      AI_Task->Is_Task_Done(&taskdone);
-    }
+    //while (taskdone == 0) { //prone to getting stuck. Cleanup should be able to kill stuck or incorrectly configured tasks. The client should be in charge of avoiding new cleanup() calls while data is being acquired.
+    //  AI_Task->Is_Task_Done(&taskdone);
+    //}
+    AI_Task->Stop_Task();
     while (lastframecleared == false) {
     };
     AI_Task->Clear_Task();

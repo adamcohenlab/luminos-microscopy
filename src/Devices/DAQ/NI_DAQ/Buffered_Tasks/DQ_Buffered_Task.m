@@ -71,7 +71,7 @@ classdef DQ_Buffered_Task < matlab.mixin.Heterogeneous & handle
         function obj = Configure_Task(obj)
             if obj.task_configured
                 obj.ResetTask();
-                warning('Task was already configured.')
+                % warning('Task was already configured.')
             end
             obj.Configure_Channels(); %Defined in subclass
             obj.Configure_Timing();

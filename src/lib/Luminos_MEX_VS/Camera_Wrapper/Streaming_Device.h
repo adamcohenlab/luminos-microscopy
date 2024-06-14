@@ -13,6 +13,7 @@ public:
   bool isRecording;
   HANDLE ghMutexCapturing;
   SDL_Rect ROI;
+  SDL_Rect oldROI;
   CamFrame *LastFrame;
   double exposureTimeSeconds;
   int bin;

@@ -226,11 +226,18 @@ public:
         return;
       }
 
-      // Request specified binning level
+      // Set specified binning level
       if (STREQ(cmd, "Set_Binning")) {
         const TypedArray<uint32_t> binArray = std::move(inputs[2]);
         uint32_t binning = binArray[0];
         instance->Set_Binning(binning);
+        return;
+      }
+
+      // Get current binning level
+      if (STREQ(cmd, "Get_Binning")) {
+        auto nn = factory.createScalar<double>(instance->Get_Binning());
+        outputs[0] = nn;
         return;
       }
 

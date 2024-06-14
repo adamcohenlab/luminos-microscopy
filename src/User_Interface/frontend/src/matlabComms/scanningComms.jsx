@@ -98,6 +98,16 @@ export const getFramerate = async () => {
   return framerate;
 };
 
+//Request current resolution (points_per_volt) from Matlab object.
+export const getResolution = async () => {
+  const mpp = await galvoMethod({
+    type: "dev_method",
+    method: "get_resolution",
+    args: [],
+  });
+  return mpp;
+};
+
 export const updateFramerate = async (framerate) => {
   const success = await galvoMethod({
     type: "dev_method",
@@ -232,6 +242,14 @@ export const projectGalvoCalPattern = async (
     "Scanning_Device",
     deviceName || []
   );
+};
+
+export const findPointCentroid = async (ptIndex) => {
+  const success = await galvoMethod({
+    method: "findCalSpotLocation",
+    args: [ptIndex],
+  });
+  return success;
 };
 
 export const calculateGalvoCalibrationTransform = async (

@@ -33,7 +33,7 @@ classdef DAQ < Device
     properties (SetObservable = true) % SetObservable = true means that changes to these properties will trigger a callback
         %%TaskContainers
         Dedicated_Camtrig_Counter;
-        cfclsync_coutner_configured = false;
+        cfclsync_counter_configured = false;
         cfclsync_counter = DQ_CO_Ticks.empty;
         buffered_tasks = DQ_Buffered_Task.empty;
         Counter_Inputs = DQ_Edge_Count.empty;
@@ -98,14 +98,14 @@ classdef DAQ < Device
         end
 
         function Add_Scanning_Sync_Counter(obj, numsamples)
-            if obj.cfclsync_coutner_configured
+            if obj.cfclsync_counter_configured
                 obj.cfclsync_counter.ResetTask();
             else
                 obj.cfclsync_counter = DQ_CO_Ticks('Enabled Scanning Counter', 'Dev2/Ctr1', '/Dev2/ao/SampleClock', round(numsamples/2), numsamples-round(numsamples/2));
             end
             obj.cfclsync_counter.Configure_Channels();
             obj.cfclsync_counter.AddTrigger('/Dev2/Ctr0InternalOutput', 'rising');
-            obj.cfclsync_coutner_configured = true;
+            obj.cfclsync_counter_configured = true;
         end
 
         function Add_Dedicated_Camtrig_Counter(obj, frame_period_ms, counter, timebase_source, trigger_source, options)
@@ -170,6 +170,34 @@ classdef DAQ < Device
 
         end
 
+        function task = Build_Waveforms_Combined(obj, wavedata, timing_data, type, task)
+            % wavedata: {port, name, wfminfo?,...}
+            % type: "ao" or "do" or "ai"
+
+            if isempty(wavedata)
+                return
+            end
+
+            if (type == "ao") && (isempty(task))
+                task = obj.Add_AO_Task();
+            elseif type == "do" && (isempty(task))
+                task = obj.Add_DO_Task();
+            end
+
+            data = obj.Calculate_Waveform(timing_data, wavedata(1));
+            for i = 2:numel(wavedata)
+                data = data.*obj.Calculate_Waveform(timing_data, wavedata(i));
+            end
+
+            obj.Attach_Channel_THandle(task, wavedata(1).name, ...
+                wavedata(1).port, 'data', data);
+            
+        end
+
+        % DI 2/24 additions:
+        % Duplicate waveforms for the same device are multiplied together
+        % instead of causing error.
+
         function success = Build_Waveforms(obj)
             % global_props: {total_time, rate, clock_source, trigger_source, folder}
             % wfm_data: {ao, do, ai, ctri}
@@ -186,8 +214,64 @@ classdef DAQ < Device
             obj.trigger = strcat('/', obj.remove_al(obj.global_props.trigger_source)); %device specific trigger
             obj.DAQ_Master = obj.global_props.daq_master;
 
-            obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ao), obj.global_props, "ao");
-            obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do), obj.global_props, "do");
+
+            % Process AO waveforms
+            if (~isempty(obj.wfm_data.ao))
+                ao_names = {obj.wfm_data.ao.name};
+                [uniqueNames, ~, idx] = unique(ao_names);
+                counts = accumarray(idx, 1);
+                duplicateIdx = find(counts > 1);
+    
+                if isempty(duplicateIdx)
+                    obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ao), obj.global_props, "ao");
+                else
+                    task = [];
+                    for i = 1:length(uniqueNames)
+                        if ismember(i, duplicateIdx)
+                            % Find all occurrences of this name
+                            dupIndices = find(idx == i);
+                            task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.ao(dupIndices)), obj.global_props, "ao", task);
+                        else
+                            % Find the index of this unique name
+                            index = find(idx == i, 1, 'first');
+                            task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.ao(index)), obj.global_props, "ao",task);
+                        end
+                    end
+                end
+            else
+                obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ao), obj.global_props, "ao");
+            end
+
+            % Process DO waveforms
+            if (~isempty(obj.wfm_data.do))
+                do_names = {obj.wfm_data.do.name};
+                [uniqueNames, ~, idx] = unique(do_names);
+                counts = accumarray(idx, 1);
+                duplicateIdx = find(counts > 1);
+                
+                if isempty(duplicateIdx)
+                    obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do), obj.global_props, "do");
+                else
+                    task = [];
+                    for i = 1:length(uniqueNames)
+                        if ismember(i, duplicateIdx)
+                            % Find all occurrences of this name
+                            dupIndices = find(idx == i);
+                            % Assuming Build_Waveforms_Combined can handle multiple indices
+                            task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.do(dupIndices)), obj.global_props, "do",task);
+                        else
+                            % Find the index of this unique name
+                            index = find(idx == i, 1, 'first');
+                            task = obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do(index)), obj.global_props, "do", task);
+                        end
+                    end
+                end
+            else
+                obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do), obj.global_props, "do");
+            end
+
+            % Analog input don't check for duplicate tasks. Returns error
+            % as it should.
             obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ai), obj.global_props, "ai");
 
             if ~isempty(obj.wfm_data.ctri) % counter input; used for VR rotary encoder
@@ -272,7 +356,7 @@ classdef DAQ < Device
             end
             if obj.DAQ_Master %If DAQ is serving as the master trigger.
                 obj.trigger_output_task = DQ_DO_On_Demand(0, obj.trigger);
-                display(obj.trigger)
+                fprintf('Triggering on %s\n', obj.trigger);
                 obj.trigger_output_task.OD_Write(1);
                 pause(.001); %Flush to make sure the previous write completes
                 obj.trigger_output_task.OD_Write(0);

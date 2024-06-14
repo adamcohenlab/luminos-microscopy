@@ -10,7 +10,7 @@ int main() {
   int numSamples = 10;
   int sampling_rate = 500000;
   std::string galovox_physport =
-      "Dev3/ai1"; // dev3 is the name of the USB port on your computer that the
+      "Dev2/ai1"; // dev3 is the name of the USB port on your computer that the
                   // DAQ is connected to, ai1 means the first analog input port
                   // on the DAQ (see metal plate on DAQ for where ai1 is)
 

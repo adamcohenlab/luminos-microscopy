@@ -21,6 +21,7 @@ import {
 } from "../../matlabComms/nodeServerComms";
 import { useState } from "react";
 import { useGlobalAppVariables } from "../../components/GlobalAppVariablesContext";
+import { PlayIcon } from "./PlayIcon";
 
 export const TopWfmButtons = () => {
   const { enqueueSnackbar } = useSnackbar();
@@ -42,6 +43,7 @@ export const TopWfmButtons = () => {
           }}
         >
           Run Waveforms
+          <PlayIcon />
         </Button>
         <SaveWaveformsButton />
         <LoadWaveformsButton />
@@ -62,6 +64,7 @@ const LoadWaveformsButton = () => {
     // load the following variables from a file
     // tvec, wfm, globalProps, analogOutputs, digitalOutputs, analogInputs
     const data = await loadFromFile(selectedFile);
+    console.log(selectedFile);
     waveformControls.setGlobalProps(data.globalProps);
     waveformControls.setAnalogOutputs(data.analogOutputs);
     waveformControls.setDigitalOutputs(data.digitalOutputs);

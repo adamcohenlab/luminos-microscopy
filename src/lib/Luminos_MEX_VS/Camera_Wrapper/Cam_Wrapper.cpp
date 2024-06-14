@@ -9,6 +9,10 @@
 #include "Hamamatsu_Cam.h"
 #endif
 
+#ifdef KINETIX_CONFIGURED
+#include "Kinetix_Cam.h"
+#endif
+
 #include "Cam_Emulator.h"
 // Add any other specific camera implementations above.
 
@@ -50,7 +54,19 @@ Cam_Wrapper::Cam_Wrapper(int cam_type, const char *camid)
         "Andor drivers not installed. Please install Andor drivers and "
         "recompile. See documentation for details."));
 #endif
-  } else {
+  }
+
+  else if (cam_type == TYPE_KINETIX) {
+#ifdef KINETIX_CONFIGURED
+    cam = new Kinetix_Cam();
+#else
+    throw(std::invalid_argument(
+        "Kinetix drivers not installed. Please install Kinetix drivers and "
+        "recompile. See documentation for details."));
+#endif
+  }
+
+  else {
     throw(std::invalid_argument("Invalid Camera Type Code. Valid codes are "
                                 "enumerated in Cam_Wrapper.h"));
     printf("Invalid camera type");
@@ -68,6 +84,8 @@ Cam_Wrapper::~Cam_Wrapper() {
   }
 }
 
+// stop the previous acquisition, set the parameters
+
 // Prepare camera for triggered acquisition. Provide desired exposuretime (in
 // seconds), ROI, and binning.
 // ROI should be array of integers (units of pixels) as follows: [x, w, y, h];
@@ -83,16 +101,24 @@ void Cam_Wrapper::Prepare_Sync_Acquisition(double exposuretime, int32 *ROI_in,
   ROI = cam->ROI;
 }
 
-// Start triggered acquisition defined by numframes and fpath, denoting file
-// destination to save frames.
+/*
+Start acquiring data
+
+Arguments
+- numframes: number of frames to acquire
+- fpath: destination to save frames.
+
+*/
 bool Cam_Wrapper::Start_Acquisition(int32 numframes, const char *fpath) {
   return (cam->aq_sync_start(numframes, fpath));
 }
 
 // Stop triggered acquisition
+// never gets used
 void Cam_Wrapper::Stop_Sync_Acquisition() { cam->aq_sync_stop(); }
 
 // Stop live acquisition
+// never gets used
 void Cam_Wrapper::Stop_Live_Acquisition() { cam->aq_live_stop(); }
 
 // Take single snapshot from streamed camera data. Client provides memory
@@ -117,7 +143,8 @@ bool Cam_Wrapper::Is_Cam_Recording() { return ((bool)cam->isRecording); }
 // Set exposure time of camera. Request exposure of exp_request (in seconds).
 // Returns resulting exposure time (in seconds).
 double Cam_Wrapper::Set_Exposure(double exp_request) {
-  cam->aq_live_restart(cam->ROI, 1, exp_request);
+  int32_t binning = Get_Binning();
+  cam->aq_live_restart(cam->ROI, binning, exp_request);
   return ((double)cam->exposureTimeSeconds);
 }
 
@@ -152,13 +179,15 @@ bool Cam_Wrapper::Set_ROI(int32 *ROI_in) {
 // Set binning mode. Also adjusts ROI to compensate for new binning.
 bool Cam_Wrapper::Set_Binning(uint32_t binning) {
   bool result;
-  ROI.x = cam->ROI.x / binning;
-  ROI.w = cam->ROI.w / binning;
-  ROI.y = cam->ROI.y / binning;
-  ROI.h = cam->ROI.h / binning;
+  ROI.x = cam->ROI.x;
+  ROI.w = cam->ROI.w;
+  ROI.y = cam->ROI.y;
+  ROI.h = cam->ROI.h;
   result = cam->aq_live_restart(ROI, binning, cam->exposureTimeSeconds);
   return result;
 }
+
+double Cam_Wrapper::Get_Binning() { return ((double)cam->bin); }
 
 // Returns size of available data in the roi_buff that collects ROI mean data.
 // This roi is the SDisplay sum_rect ROI, which may not correspond to the camera

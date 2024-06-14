@@ -1,5 +1,5 @@
 #pragma once
-//CamFrame class holds frame data along with ROI metadata.
+// CamFrame class holds frame data along with ROI metadata.
 typedef long int32;
 typedef unsigned long _ui32;
 class CamFrame {

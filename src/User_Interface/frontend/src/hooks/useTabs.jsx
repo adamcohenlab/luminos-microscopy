@@ -5,7 +5,9 @@ import DMD from "../tabs/DMD";
 import Lasers from "../tabs/Lasers";
 import Scanning from "../tabs/Scanning/Scanning";
 import { useEffect } from "react";
+import SLM from "../tabs/SLM/SLM";
 import SpinningDisk from "../tabs/SpinningDisk";
+import Hadamard from "../tabs/Hadamard";
 import { getTabs } from "../matlabComms/miscellaneousComms";
 
 export const useTabs = () => {
@@ -15,7 +17,9 @@ export const useTabs = () => {
     DMD,
     Lasers,
     Scanning,
+    SLM,
     SpinningDisk,
+    Hadamard,
   };
 
   // tabs that are in use (e.g. if DMD is not in use, don't show the DMD tab)

@@ -10,7 +10,7 @@ import {
 } from "../matlabComms/dmdComms";
 import { usePolygonMode } from "../components/Patterning/PatterningModes/usePolygonMode";
 import { useCircleMode } from "../components/Patterning/PatterningModes/useCircleMode";
-import { useCalibrateMode } from "../components/Patterning/PatterningModes/useCalibrateMode";
+import { useAutoPatternCalibrateMode } from "../components/Patterning/PatterningModes/useAutoPatternCalibrateMode";
 import { useFreeformMode } from "../components/Patterning/PatterningModes/useFreeformMode";
 import { useFullMode } from "../components/Patterning/PatterningModes/useFullMode";
 import {
@@ -39,7 +39,7 @@ const DMDDraw = ({ imgHeight, ...props }) => {
 const DMDDrawPatterns = ({ dmdDeviceName, ...props }) => {
   const polygonMode = usePolygonMode();
   const circleMode = useCircleMode();
-  const calibrateMode = useCalibrateMode({
+  const calibrateMode = useAutoPatternCalibrateMode({
     calculateCalibration: calculateDMDCalibrationTransform,
     projectCalibrationPattern: projectDMDCalPattern,
     deviceType: "DMD",

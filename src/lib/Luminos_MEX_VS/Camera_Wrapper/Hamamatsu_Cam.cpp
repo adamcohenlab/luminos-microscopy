@@ -2,8 +2,6 @@
 #include "Cam_Wrapper.h"
 #ifdef HAMAMATSU_CONFIGURED
 #include "Hamamatsu_Cam.h"
-#include "atlbase.h"
-#include "atlstr.h"
 #include <stdexcept>
 
 // no argument wrapper for constructor
@@ -422,6 +420,10 @@ bool Hamamatsu_Cam::aq_sync_prepare(SDL_Rect inputROI, int binning,
     result = get_property("TIMING_READOUTTIME", DCAM_IDPROP_TIMING_READOUTTIME);
     readoutTimeSeconds = result;
     readoutTimeMilliseconds_ceil = (int)ceil(readoutTimeSeconds * 1e3);
+
+    int result_i;
+    result_i = get_property("BINNING",DCAM_IDPROP_BINNING);
+    bin = result_i;
   } else {
     printf("no camera open\n");
   }
@@ -574,6 +576,9 @@ bool Hamamatsu_Cam::aq_live_restart(SDL_Rect inputROI, int binning,
     readoutTimeSeconds = result;
     readoutTimeMilliseconds_ceil = (int)ceil(readoutTimeSeconds * 1e3);
 
+    int result_i;
+    result_i = get_property("BINNING", DCAM_IDPROP_BINNING);
+    bin = result_i;
     // start aq: wait and buffer, no recording, start camera
     if (!isWaitAndBufferOpen) {
       int32 bufferFrames = 50;

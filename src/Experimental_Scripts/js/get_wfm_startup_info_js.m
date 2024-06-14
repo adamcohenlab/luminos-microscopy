@@ -46,38 +46,38 @@ info.clock_options = add_aliases(info.clock_options);
 
 % -------- helper functions --------
 
-function ports = get_full_port_name(port_struct)
-ports = strcat({port_struct.Device}, '/', {port_struct.PortID});
-end
-
-function filenames = filenames_in_folder(folder)
-filenames = dir(folder);
-filenames = {filenames.name};
-end
-
-function ports = add_aliases(ports)
-port_alias_list = dq_session.alias_list;
-
-for j = 1:size(port_alias_list, 1)
-    aliasindex = find(strcmp(port_alias_list{j, 1}, ports));
-    if ~isempty(aliasindex)
-        ports{aliasindex} = port_alias_list{j, 2};
+    function ports = get_full_port_name(port_struct)
+    ports = strcat({port_struct.Device}, '/', {port_struct.PortID});
     end
-end
-end
+
+    function filenames = filenames_in_folder(folder)
+    filenames = dir(folder);
+    filenames = {filenames.name};
+    end
+
+    function ports = add_aliases(ports)
+    port_alias_list = dq_session.alias_list;
+
+    for j = 1:size(port_alias_list, 1)
+        aliasindex = find(strcmp(port_alias_list{j, 1}, ports));
+        if ~isempty(aliasindex)
+            ports{aliasindex} = port_alias_list{j, 2};
+        end
+    end
+    end
 
 % move the default to the top of the list
-function options = add_default(options, default)
-if default == ""
-    return
-end
+    function options = add_default(options, default)
+    if strcmp(default,"")
+        return
+    end
 
-default_index = find(strcmp(default, options));
-if isempty(default_index)
-    warning("Default value not found in list of options")
-    return
-end
-options = [options(default_index), options(1:default_index-1)', options(default_index+1:end)'];
-end
+    default_index = find(strcmp(default, options));
+    if isempty(default_index)
+        warning("Default value: [%s] not found in list of options",default)
+        return
+    end
+    options = [options(default_index), options(1:default_index-1)', options(default_index+1:end)'];
+    end
 
 end

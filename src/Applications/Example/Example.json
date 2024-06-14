@@ -1,13 +1,13 @@
 {
   "objectType": "Rig_Initializer",
   "dataDirectory": "C:\\Users\\Labmember\\Data",
+  "tabs": ["Main", "Waveforms", "DMD"],
   "devices": [
     {
       "deviceType": "DAQ",
       "name": "Dev1",
       "defaultClock": "Dev1/PFI0",
-      "default_trigger": "Dev1/PFI12",
-      "alias_init": "Dev1/ao0, Analog_Out_0, Dev1/ai0, Analog_In_0"
+      "default_trigger": "Dev1/PFI12"
     },
     {
       "deviceType": "Camera",

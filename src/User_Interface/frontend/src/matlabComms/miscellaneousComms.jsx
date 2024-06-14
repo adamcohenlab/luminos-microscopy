@@ -1,6 +1,7 @@
 // miscellaneous matlab comms
 
 import { getMatlabAppProperty, matlabAppMethod } from "./matlabHelpers";
+const user = await getMatlabAppProperty("User");
 
 // save the data
 export const closeApp = async ({ save = false }) => {
@@ -20,8 +21,11 @@ export const getTabs = async () => {
   return tabs;
 };
 
+//Return location for saving temporary images (in \luminos\src\User_Interface\relay\imgs\)
+//Why not just use the Matlab snaps folder in the data directory?
 export const getImageFolderPath = async () => {
-  const user = await getMatlabAppProperty("User");
+  //const user = await getMatlabAppProperty("User"); //This is silly. There must be a way to get and then store the name for later
+  //rather than requesting anew each time.
 
   // Get the current date in the computer's local time zone
   const currentDate = new Date();

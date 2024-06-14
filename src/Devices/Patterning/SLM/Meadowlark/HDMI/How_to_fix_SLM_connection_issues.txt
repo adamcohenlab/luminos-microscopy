@@ -1,0 +1,16 @@
+Under some conditions (particularly after work was done on a computer), the Meadowlark driver
+can fail to connect to the SLM, causing crashes. 
+If trying to start the Blink 1920 HDMI program results in the following error: 
+"Debug Error! Program..." Then it is likely the result of the COM port assigned to the SLM USB being
+out of the range the program can handle.
+
+Steps to fix:
+-Open Device Manager on the computer
+-Under "Ports (COM & LPT), find the port corresponding to the SLM. You can unplug the SLM and see which entry disappears. Then plug it back in to verify.
+-If the number of this port is high (e.g. "COM15"), then manually set it to a low number (e.g. "COM2") as follows
+-Right click on the device, select "Properties"
+-On the "Port Settings" tab, click "Advanced"
+-Using the drop-down at the top, choose a low port number that is not marked "(in use)"
+-If other devices are using all of the low numbers, you can manually reassign those other devices to higher numbers. Well-coded drivers (i.e. not Meadowlark) shouldn't care.
+-In order to free up unused ports that haven't been automatically cleared, you can return to the device manager main window, and under 'View', select 'Show hidden devices'
+-Then you can right click on any greyed-out COM devices and select 'Uninstall Device'. These entries often correspond to ghost devices that were plugged into a different port when the computer was off.

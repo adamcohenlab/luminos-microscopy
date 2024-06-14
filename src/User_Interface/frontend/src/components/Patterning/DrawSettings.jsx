@@ -146,6 +146,8 @@ const PatterningImageSelector = ({ deviceType, deviceName = [] }) => {
       });
     };
     // run getImgs every 0.5 seconds
+    // This may be too fast, as this requires MAtlab message passing
+    // to get the user every time.
     const interval = setInterval(() => {
       getImgs();
     }, 500);

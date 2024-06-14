@@ -1,6 +1,5 @@
-classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
+classdef Thorlabs_PM400 < Power_Meter & matlab.mixin.Copyable
     %Thorlabs_PM400 Matlab class to control Thorlabs power meters
-    % From Matlab File Exchange: https://www.mathworks.com/matlabcentral/fileexchange/92803-matlab-driver-for-thorlabs-power-meter
     %   Driver for Thorlabs power meter
     %   It is a 'wrapper' to control Thorlabs devices via the Thorlabs .NET
     %   DLLs.
@@ -63,7 +62,6 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
 
     properties
         % These properties are within Matlab wrapper
-        isConnected = false; % Flag set if device connected
         resourceName; % USB resource name
         resourceNameConnected; % USB resource name
         modelName; % Power meter model name
@@ -79,11 +77,8 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
         sensorFlags; % Sensor flag
         DarkOffset_Voltage; % (PM400 ONLY) Dark offset voltage
         DarkOffset_Voltage_Unit; % (PM400 ONLY) Dark offset voltage unit
-        meterPowerReading; % Power reading
-        meterPowerUnit; % Power reading unit
         meterVoltageReading; % Voltage reading
         meterVoltageUnit; % Voltage reading unit
-        autoconnect
     end
 
     properties (Transient) %(Hidden)
@@ -97,10 +92,11 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
             %   This function first loads the dlls from the path and then
             %   list all the device available. It will return a list of all
             %   the available device(s).
-            obj@Device(Initializer);
-            if obj.autoconnect == 1 || isempty(obj.autoconnect)
-                obj.connect()
+            obj@Power_Meter(Initializer);
+            if  isempty(obj.autoconnect) || obj.autoconnect == 1
+                obj.connect();
             end
+            
         end
 
         function delete(obj)
@@ -151,9 +147,9 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
                 for i = 1:1:size(obj.resourceName, 1)
                     fprintf('\t\t%d) %s\r', i, obj.resourceName(i, :));
                 end
-                fprintf('Use <Your_Meter_List>.connect(resourceName) to connect a single/the first device.\r');
-                fprintf('or\r');
-                fprintf('Use <Your_Meter_List>.connect(resourceName,index) to connect multiple devices.\r\r');
+                % fprintf('Use <Your_Meter_List>.connect(resourceName) to connect a single/the first device.\r');
+                % fprintf('or\r');
+                % fprintf('Use <Your_Meter_List>.connect(resourceName,index) to connect multiple devices.\r\r');
             end
 
             if ~obj.isConnected && obj.DeviceAvailable(resource_index)
@@ -172,6 +168,7 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
                 %obj.modelName=obj_copy.modelName;
                 %obj.serialNumber=obj_copy.serialNumber;
                 %obj.Manufacturer=obj_copy.Manufacturer;
+                obj.sensorInfo();
             else
                 warning('Device is already connected.');
             end
@@ -195,7 +192,7 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
             end
         end
 
-        function setWaveLength(obj, wavelength)
+        function setWavelength(obj, wavelength)
             %SETWAVELENGTH Set the sensor wavelength.
             %   Usage: obj.setWaveLength(wavelength);
             %   Set the sensor wavelength. This method will check the input
@@ -204,14 +201,17 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
             [~, wavelength_MAX] = obj.deviceNET.getWavelength(2);
             if (wavelength_MIN <= wavelength && wavelength <= wavelength_MAX)
                 obj.deviceNET.setWavelength(wavelength);
+                obj.wavelength = wavelength;
             else
                 if wavelength_MIN > wavelength
                     warning('Exceed minimum wavelength! Force to the minimum.');
                     obj.deviceNET.setWavelength(wavelength_MIN);
+                    obj.wavelength = wavelength_MIN;
                 end
                 if wavelength > wavelength_MAX
                     warning('Exceed maximum wavelength! Force to the maximum.');
                     obj.deviceNET.setWavelength(wavelength_MAX);
+                    obj.wavelength = wavelength_MAX;
                 end
             end
         end
@@ -368,13 +368,18 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
             sensorInfo.Flags = obj.sensorFlags;
         end
 
-        function updateReading(obj, period)
+        function result = readData(obj, period)
+            arguments
+                obj Thorlabs_PM400
+                period double = 0 %seconds to wait before returning measurement
+            end
             %UPDATEREADING Update the reading from power meter.
             %   Usage: obj.updateReading;
             %   Retrive the reading from power meter and store it in the
             %   properties of the object
 
-            [~, obj.meterPowerReading] = obj.deviceNET.measPower;
+            [~, result] = obj.deviceNET.measPower;
+            obj.meterPowerReading = result;
             pause(period)
             [~, meterPowerUnit_] = obj.deviceNET.getPowerUnit;
             switch meterPowerUnit_
@@ -401,6 +406,7 @@ classdef Thorlabs_PM400 < Device & matlab.mixin.Copyable
                 while DarkState
                     [~, DarkState] = obj.deviceNET.getDarkAdjustState;
                 end
+                obj.getDarkOffset();
             else
                 warning('This command is not supported on %s.', obj.modelName);
             end

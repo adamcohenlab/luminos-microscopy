@@ -30,6 +30,7 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
         
         gitInfo % Git information
         rigName % Name of the rig
+        tabs % Which tabs to show (Main, Waveforms, DMD, etc)
     end
     
     events
@@ -47,7 +48,7 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
 
             % clear the mex variables as a hack for some bad memory management
             clear mex
-            
+            warning('on','all');
             app.explistener = event.listener(app, 'exp_finished', @(src, evt)app.expFinishedCallback(src, evt));
             app.rigName = rigName;
             app.Experiment = options.Experiment;
@@ -114,7 +115,12 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
             app.datafile = datafile;
         end
         
-        % This method sets the source of the app's explistener to the master_device input. This will normally be a Device, but will sometimes be the app itself. When the specified master_device fires a exp_finished event notification, the app will execute the expFinishedCallback method. If multiple devices are used in the experiment, assign the device that will be the last to fire an exp_finished event notification.
+        % This method sets the source of the app's explistener to the master_device input. 
+        % This will normally be a Device, but will sometimes be the app itself. 
+        % When the specified master_device fires a exp_finished event notification, 
+        % the app will execute the expFinishedCallback method. 
+        % If multiple devices are used in the experiment, 
+        % assign the device that will be the last to fire an exp_finished event notification.
         % * master_device: The object to be assigned as the master_device and source for the app's explistener.
         function assignMasterDevice(app, master_device)
             app.explistener.Source = {master_device};
@@ -138,6 +144,11 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
             app.wasAppDeletedFromJS = true;
             app.delete();
             message = [];
+        end
+
+        % resets the app if there is a problem with the JS frontend
+        function reset(app)
+            app.jsServer.flush();
         end
         
         % Called automatically if the app object is cleared, and since we have it included in the CloseWindowCallback, it is also called when the window is closed. This method spawns a progress bar dialog that prompts the user to wait for their data to be copied over to the server, resets the DAQs, and then stops all of the timers.
@@ -211,7 +222,7 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
                 app.User = load_init(User_Key_filepath);
             end
             
-            if ~isfolder(app.Rig_Init.dataDirectory)
+            if (isempty(app.Rig_Init.dataDirectory) || ~isfolder(app.Rig_Init.dataDirectory))
                 switch questdlg(sprintf("Directory %s does not exist. Would you like to create it?", app.Rig_Init.dataDirectory), 'Directory not found', 'Create Directory', 'Cancel', 'Create Directory');
                     case 'Cancel'
                         error("Directory %s does not exist. Please modify init file with valid directory", app.Rig_Init.dataDirectory);
@@ -238,6 +249,9 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
             if ~exist(app.datafolder, 'dir')
                 mkdir(app.datafolder);
             end
+
+            % save tabs
+            app.tabs = app.Rig_Init.tabs;
         end
         
         % This method constructs the device objects specified in the Rig_Init object and stores them in the app's Devices property.

@@ -1,3 +1,5 @@
+/* This implements the discrete sections of the waveform tab (e.g. AO, AI, DO). 
+* Each section contains multiple rows, implemented in WaveformRow.jsx*/
 import { WaveformRow } from "./WaveformRow";
 import { PlusCircleIcon } from "@heroicons/react/20/solid";
 import { SectionHeader } from "../../components/SectionHeader";

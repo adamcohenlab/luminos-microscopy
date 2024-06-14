@@ -1,5 +1,7 @@
 /*
- * Main component for the Waveforms tab.
+ * Main component for the Waveforms tab. This gets the available Waveform options using useWaveformOptions.jsx
+ * and then creates a header, plot, and a set of waveform sections (AO, DO, AI). 
+ * The sections are implemented in WaveformSection.jsx.
  */
 
 import { useEffect } from "react";
@@ -21,7 +23,7 @@ export default function Waveforms() {
     digitalOutputOptions,
     analogInputOptions,
     getDefaultWaveform,
-  } = useWaveformOptions(waveformControls);
+  } = useWaveformOptions(waveformControls); //available options determined in useWaveformOptions.jsx
 
   const { VRon, setVRon } = useVR(waveformControls);
 

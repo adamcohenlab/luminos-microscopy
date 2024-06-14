@@ -13,6 +13,7 @@ classdef Scanning_Device_Initializer < Patterning_Device_Initializer
         DAQ_Vendor uint16
         feedback_scaling double
         galvos_only uint16
+        volts_per_pixel(1,1) double
     end
     methods
         function obj = Scanning_Device_Initializer()

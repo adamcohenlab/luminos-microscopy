@@ -2,7 +2,8 @@
 #include "Cam_Emulator.h"
 #include <chrono>
 
-/*Camera emulator provides a simulated Cam_Wrapper compatible camera. It provides a drifting diagonal grating.*/
+/*Camera emulator provides a simulated Cam_Wrapper compatible camera. It
+ * provides a drifting diagonal grating.*/
 Cam_Emulator::Cam_Emulator()
     : framecounter(), lastImageDataHeight(), lastImageDataWidth(), tbthread() {
   Em_Mutex = CreateMutex(NULL, FALSE, NULL);
@@ -20,14 +21,14 @@ Cam_Emulator::Cam_Emulator()
   exposureTimeSeconds = .15;
 }
 
-//destructor
+// destructor
 Cam_Emulator::~Cam_Emulator() {
   if (isCapturing == true) {
     dc_shutdown();
   }
 }
 
-//stop live acquisition
+// stop live acquisition
 void Cam_Emulator::aq_live_stop() {
   if (isCapturing) {
     WaitForSingleObject(ghMutexCapturing, INFINITE);
@@ -39,13 +40,13 @@ void Cam_Emulator::aq_live_stop() {
   }
 }
 
-//Restart live acquisition (no-arguments wrapper).
+// Restart live acquisition (no-arguments wrapper).
 bool Cam_Emulator::aq_live_restart() {
   aq_live_restart(ROI, 1, exposureTimeSeconds);
   return 0;
 }
 
-//restart live acquisition with given ROI, binning, and exposure time (s))
+// restart live acquisition with given ROI, binning, and exposure time (s))
 bool Cam_Emulator::aq_live_restart(SDL_Rect inputROI, int binning,
                                    double exposureTime) {
   WaitForSingleObject(ghMutexCapturing, INFINITE);
@@ -58,19 +59,21 @@ bool Cam_Emulator::aq_live_restart(SDL_Rect inputROI, int binning,
   bin = (int)binning;
   unsigned calcthreadid;
   isCapturing = true;
-  //start thread for producing simulated grating frames.
+  // start thread for producing simulated grating frames.
   tbthread = (HANDLE)_beginthreadex(NULL, (unsigned int)1e9, &DispCalcHD,
                                     (void *)this, 0, &calcthreadid);
   ReleaseMutex(ghMutexCapturing);
   return 0;
 }
 
-//Virtual Sensor size
+// Virtual Sensor size
 double Cam_Emulator::find_sensor_size() { return MAX_IMG_WIDTH; }
 
-//Calculate simulated sawtooth grating image. Currently only SSE2 version supported. If desired, scalar version could be enabled or
-//processor compatibility check introduced (see StreamDisplayHD.cpp), but SSE2 is supported by all 64 bit Intel and AMD processors,
-//so scalar versions are very likely unnecessary.
+// Calculate simulated sawtooth grating image. Currently only SSE2 version
+// supported. If desired, scalar version could be enabled or processor
+// compatibility check introduced (see StreamDisplayHD.cpp), but SSE2 is
+// supported by all 64 bit Intel and AMD processors, so scalar versions are very
+// likely unnecessary.
 unsigned __stdcall DispCalcHD(void *pArguments) {
   Cam_Emulator *cam = (Cam_Emulator *)pArguments;
   uint16_t __declspec(align(16)) tempbuffer[MAX_IMG_WIDTH * MAX_IMG_HEIGHT];
@@ -79,7 +82,7 @@ unsigned __stdcall DispCalcHD(void *pArguments) {
   auto time_to_wake = std::chrono::steady_clock::now();
   std::chrono::microseconds exposureTimeMicroseconds_chrono;
   while (cam->isCapturing) {
-      //Timing to produce steady frame rate.
+    // Timing to produce steady frame rate.
     exposureTimeMicroseconds_chrono =
         std::chrono::microseconds((int)(cam->exposureTimeSeconds * 1e6));
     std::chrono::steady_clock::time_point last_frame_time =
@@ -107,15 +110,15 @@ unsigned __stdcall DispCalcHD(void *pArguments) {
     // 64 bit Intel and all modern AMD processors. Significantly faster than
     // scalar version above. Phil Brooks 7-2022
 
-    __m128i mask_511 = _mm_set1_epi16(511); //Mask of 7 LSB (mod 512 operation)
+    __m128i mask_511 = _mm_set1_epi16(511); // Mask of 7 LSB (mod 512 operation)
     __m128i increments = _mm_set_epi16(7, 6, 5, 4, 3, 2, 1, 0);
     int maxx_adjusted =
         maxx -
         7; // make sure vectorized operations stop before they run out of room.
-    //iterate through rows:
+    // iterate through rows:
     for (int iy = cam->ROI.y; iy < maxy; iy++) {
       __m128i y_f = _mm_set1_epi16(iy + fc);
-      //Iterate through groups of 8 pixels
+      // Iterate through groups of 8 pixels
       for (ix = ROIx; ix < maxx_adjusted; ix += 8) {
         // Add row and column together, take mod 512 (using 7 bit mask), then
         // store in output buffer.
@@ -161,7 +164,7 @@ unsigned __stdcall DispCalcHD(void *pArguments) {
            cam->ROI.h * cam->ROI.w * sizeof(uint16_t));
     cam->newframe_avail = true;
     ReleaseMutex(cam->Em_Mutex);
-    //wait until next frame is due
+    // wait until next frame is due
     time_to_wake = last_frame_time + exposureTimeMicroseconds_chrono;
     // printf("%d\n",
     // std::chrono::duration_cast<std::chrono::milliseconds>(time_to_wake -
@@ -172,7 +175,7 @@ unsigned __stdcall DispCalcHD(void *pArguments) {
   return 0;
 }
 
-//copy and return snap frame data
+// copy and return snap frame data
 CamFrame *Cam_Emulator::aq_thread_snap() {
   WaitForSingleObject(Em_Mutex, INFINITE);
   if (newframe_avail) {
@@ -190,10 +193,10 @@ CamFrame *Cam_Emulator::aq_thread_snap() {
   }
 }
 
-//Return existing snap frame data
+// Return existing snap frame data
 CamFrame *Cam_Emulator::aq_snap() { return &Em_Data; }
 
-//Cleanup and shutdown
+// Cleanup and shutdown
 bool Cam_Emulator::dc_shutdown() {
   isCapturing = false;
   WaitForSingleObject(tbthread, INFINITE);

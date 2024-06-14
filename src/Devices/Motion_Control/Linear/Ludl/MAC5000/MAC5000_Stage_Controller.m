@@ -15,6 +15,10 @@ classdef MAC5000_Stage_Controller < Linear_Controller
         %wants position, client should call Get_Position() method.
         % pos
     end
+
+    properties (SetObservable, AbortSet)
+        zStageFlag = false;
+    end
     
     properties
         pos

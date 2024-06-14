@@ -4,8 +4,10 @@ arguments
     modulator_name
     options.numpoints = 200;
     options.tag = '';
+    options.pm_index = 1;
 end
-pm = app.getDevice('Thorlabs_PM400');
+pm = app.getDevice('Power_Meter');
+pm = pm(options.pm_index);
 %pm.connect();
 modulator = app.getDevice('NI_DAQ_Modulator', 'name', modulator_name);
 app.makeExperimentFolder(options.tag);
@@ -19,11 +21,11 @@ for i = 1:options.numpoints
     pause(.3);
     storeval = zeros(1, 10);
     for j = 1:10
-        pm.updateReading(.1);
-        storeval(j) = pm.meterPowerReading;
+        storeval(j) =pm.readData(.1);
     end
     curvevals(2, i) = mean(storeval);
 end
+modulator.level = 0;
 modulator.calibration_curve = curvevals;
 notify(app, 'exp_finished');
 end

@@ -100,7 +100,7 @@ export const updateWaveforms = async (waveformControls) => {
           : globalPropsDict.clock.value,
       daq_master:
         globalPropsDict["DAQ trigger"].value ===
-        globalPropsDict["DAQ trigger"].options[0], // turn into boolean for compatibility with matlab code
+        globalPropsDict["DAQ trigger"].options[0], // turn into boolean for compatibility with matlab code. options[0]='Self-Trigger, so this is checking whether triggering is self or ext.'
     };
     wfmDataToSend = {
       ao: processOutputWfmsForMatlab(analogOutputs, "ao"),

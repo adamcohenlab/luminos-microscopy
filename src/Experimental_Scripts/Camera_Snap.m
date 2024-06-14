@@ -17,6 +17,7 @@ snap.ref2d.XWorldLimits = double([cam.ROI(1), cam.ROI(1) + cam.ROI(2)]);
 snap.ref2d.YWorldLimits = double([cam.ROI(3), cam.ROI(3) + cam.ROI(4)]);
 snap.xdata = cam.ROI(1) + 1:cam.ROI(1) + cam.ROI(2);
 snap.ydata = cam.ROI(3) + 1:cam.ROI(3) + cam.ROI(4);
+snap.timestamp = datetime("now");
 if options.show_date
     ds = datestr(now, 'HHMMSS');
 else

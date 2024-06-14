@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { DrawROIs } from "../../components/Patterning/DrawROIs";
 import { useCircleMode } from "../../components/Patterning/PatterningModes/useCircleMode";
-import { useCalibrateMode } from "../../components/Patterning/PatterningModes/useCalibrateMode";
+import { useAutoPointwiseCalibrateMode } from "../../components/Patterning/PatterningModes/useAutoPointwiseCalibrateMode";
 import { useFreeformMode } from "../../components/Patterning/PatterningModes/useFreeformMode";
 import {
   DrawingControlsProvider,
@@ -69,8 +69,9 @@ const GalvoDrawPatterns = ({ galvoDeviceName, ...props }) => {
     handleCompletedPoints: generatePoints,
   });
 
-  const calibrateMode = useCalibrateMode({
-    calculateCalibration: calculateGalvoCalibrationTransform,
+    const calibrateMode = useAutoPointwiseCalibrateMode({
+      //assign specific values to wrapper variables:
+    calculateCalibration: calculateGalvoCalibrationTransform, //calls to calculateCalibration() resolve to calculateGalvoCalibrationTransform()
     projectCalibrationPattern: projectGalvoCalPattern,
     deviceType: "Scanning_Device",
     deviceName: galvoDeviceName,

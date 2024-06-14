@@ -47,8 +47,8 @@
 #define DCAMAPI_VERMIN 4000
 #endif
 
-#include "../inc/dcamsdk4/inc/dcamapi4.h"
-#include "../inc/dcamsdk4/inc/dcamprop.h"
+#include "../inc/custom/dcamsdk4/inc/dcamapi4.h"
+#include "../inc/custom/dcamsdk4/inc/dcamprop.h"
 
 // Commenting out the below because otherwise there will be a linker error
 // #if defined(_WIN64)

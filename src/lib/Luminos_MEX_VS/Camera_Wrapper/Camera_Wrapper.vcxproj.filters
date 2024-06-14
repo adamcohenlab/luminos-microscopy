@@ -72,6 +72,18 @@
     <ClInclude Include="..\Utilities\InstructionSet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CommonPV.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Kinetix_Cam.h">
+      <Filter>Header Files\Devices</Filter>
+    </ClInclude>
+    <!-- <ClInclude Include="Kinetix_Cam.h">
+      <Filter>Header Files\Devices</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonPV.h">
+      <Filter>Header Files\Devices</Filter>
+    </ClInclude> -->
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Cam_Wrapper.cpp">
@@ -98,12 +110,23 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files\Devices</Filter>
     </ClCompile>
+    <!-- <ClCompile Include="Kinetix_Cam.cpp">
+      <Filter>Source Files\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonPV.cpp">
+      <Filter>Source Files\Devices</Filter>
+    </ClCompile> -->
     <ClCompile Include="Hamamatsu_common.cpp">
       <Filter>Source Files\Devices</Filter>
+    </ClCompile>
+    <ClCompile Include="Kinetix_Cam.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonPV.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\inc\SDL2-2.0.12\lib\x64\SDL2.dll" />
-    <CopyFileToFolders Include="..\atmcd64d.dll" />
   </ItemGroup>
 </Project>

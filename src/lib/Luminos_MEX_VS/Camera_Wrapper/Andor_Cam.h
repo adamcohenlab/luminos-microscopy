@@ -1,7 +1,7 @@
 #pragma once
 #include "Cam_Control.h"
 
-#include "../inc/Andor_SDK/ATMCD32D.H"
+#include "../inc/custom/Andor_SDK/ATMCD32D.H"
 
 unsigned convertThreadFcn(void *pArguments);
 #pragma message("Need to be defined")

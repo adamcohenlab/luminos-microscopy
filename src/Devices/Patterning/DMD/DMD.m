@@ -57,11 +57,17 @@ classdef (Abstract) DMD < Patterning_Device
             
         end
         
-        % Project stored calibration pattern. Optional num_points_to_show
+        % Project AprilTag codes for registration on DMD
+        function Project_Cal_Pattern(obj)
+            obj.Generate_Calibration_Pattern();
+            obj.Write_Static();
+        end
+
+        % Project stored manual calibration pattern. Optional num_points_to_show
         % argument allows for showing only a prefix subset of the full
         % calibration pattern (in order, e.g. to step through the
         % calibration pattern interactively point-by-point.
-        function Project_Cal_Pattern(obj, num_points_to_show)
+        function Project_Manual_Cal_Pattern(obj, num_points_to_show)
             arguments
                 obj DMD;
                 num_points_to_show = -1;

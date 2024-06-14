@@ -6,6 +6,11 @@
 #include <algorithm>
 #include "Circular_Buffer.h"
 
+// for std::string
+#include <string>
+#include <cstring>
+#include <fstream>
+
 unsigned __stdcall framecheck(void *pArguments);
 unsigned __stdcall disp_wrapper(void *pArguments);
 unsigned __stdcall calc_wrapper(void *pArguments);
@@ -147,6 +152,9 @@ public:
   SDL_Color hot_colors[256];
   SDL_Color **cmap_pointers;
   int cmap_index;
+
+  // Time since last keyboard press for stability
+  uint32_t lastKeyPressTime;
 
 private:
   // The actual hardware texture

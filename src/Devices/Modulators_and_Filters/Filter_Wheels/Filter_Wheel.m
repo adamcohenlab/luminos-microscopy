@@ -19,6 +19,7 @@ classdef (Abstract) Filter_Wheel < Device
         end
 
         function active_filter = get.active_filter(obj)
+           % Get(obj)
             active_filter = obj.filterlist(Get(obj));
         end
 

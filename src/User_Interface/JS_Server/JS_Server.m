@@ -32,8 +32,14 @@ classdef JS_Server < handle
         end
         
         function delete(obj)
-            obj.server_socket.delete();
+            configureCallback(obj.server_socket,"off");
             obj.stopJsApp();
+            warning('off','MATLAB:class:DestructorError'); %The destructor produces a warning state because the app (including the tcpserver)
+            % is destroyed before the JS_Server tcpserver has returned.
+            % There's not much we can do about this, and it doesn't matter,
+            % so we just silence the warning.
+            %clear obj.server_socket;
+
         end
     end
     
@@ -65,6 +71,7 @@ classdef JS_Server < handle
             
             try
                 % run app method
+                
                 if msg.type == "app_method"
                     obj.runAndWriteBack(msg.return_event, msg.method, obj.app, msg.args);
                 else
@@ -160,7 +167,11 @@ classdef JS_Server < handle
         
         % run the method and write the return value back to the client
         function runAndWriteBack(obj, return_event, methodName, msgObj, argsArray)
-            
+            % if isprop(msgObj,'name') && strcmp(msgObj.name,"DMD_fast")
+            %     "found"
+            %     methodName
+            %     argsArray
+            % end
             args = toCell(argsArray);
             
             % get the number of output variables for the method

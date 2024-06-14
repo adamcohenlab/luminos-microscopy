@@ -11,13 +11,12 @@ import { getTvec, getWfm } from "../../../matlabComms/waveformComms";
 const isTooBigToPlot = (waveformControls) => {
   const numSamples =
     valueOfOrDefault(retrieveByName("length", waveformControls.globalProps)) *
-    valueOfOrDefault(retrieveByName("rate", waveformControls.globalProps));
+    valueOfOrDefault(retrieveByName("rate", waveformControls.globalProps)); 
   return numSamples ? numSamples > 1e6 : false;
 };
 
 export const useWaveformPlottingData = (waveformControls) => {
   const [wfmNames, setWfmNames] = useState([]);
-
   const [tvec, setTvec] = useState([]);
   const [wfm, setWfm] = useState([[]]);
 

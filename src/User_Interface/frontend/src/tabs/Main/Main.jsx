@@ -5,6 +5,7 @@ import { GrayBox } from "../../components/GrayBox";
 import { TextInput } from "../../components/TextInput";
 import Notes from "./Notes";
 import StageController from "./StageController";
+import ZStage from "./ZStage";
 import { Cameras } from "./Camera/Cameras";
 import { GeneralToggles } from "./GeneralToggles";
 import { ROIPlotter } from "./ROIPlotter";
@@ -19,6 +20,7 @@ export default function Main() {
         <Experiment />
         <GeneralToggles />
         <StageController />
+        <ZStage />
         <Notes />
       </VerticalStack>
       <VerticalStack>

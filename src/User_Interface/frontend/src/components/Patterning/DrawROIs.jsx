@@ -6,6 +6,7 @@ import { DrawSettings } from "./DrawSettings";
 
 import { isEmpty } from "lodash";
 import { useZoomMode } from "./PatterningModes/useZoomMode";
+import { useSnapMode } from "./PatterningModes/useSnapMode";
 
 const imgServerURL = "http://localhost:3011";
 
@@ -41,7 +42,8 @@ export const DrawROIs = ({ deviceType, deviceName, allModes, ...props }) => {
 
   // add default modes
   const zoomMode = useZoomMode();
-  allModes = [...allModes, zoomMode];
+  const snapMode = useSnapMode({ snap: () => console.log("hi") });
+  allModes = [snapMode, ...allModes, zoomMode];
 
   return (
     <>
@@ -248,7 +250,6 @@ const ROIShapes = ({
         {drawFull && <Full />}
         <Polygons polygons={polygons} />
         <Circles circles={circles} />
-        <Points points={points} />
         <Rects rects={rects} />
         <Donuts donuts={donuts} />
         <Curve curve={curve} />
@@ -257,6 +258,7 @@ const ROIShapes = ({
     </Svg>
   );
 };
+//<Points points={points} />
 
 const Full = () => (
   // make a rect that fills the full svg and is orange

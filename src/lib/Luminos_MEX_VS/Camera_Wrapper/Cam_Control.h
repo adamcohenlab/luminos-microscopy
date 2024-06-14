@@ -9,20 +9,39 @@
 #include <process.h> // for threads, mutex
 #include "Streaming_Device.h"
 class Streaming_Device;
-//Cam_Control prototype
-class Cam_Control: public Streaming_Device {
-#pragma message ("Cam_Control_Defined")
+
+// Cam_Control prototype
+
+class Cam_Control : public Streaming_Device {
+#pragma message("Cam_Control_Defined")
 public:
-	virtual CamFrame* aq_snap(void) = 0;
-	virtual CamFrame* aq_thread_snap(void) = 0;
-	virtual bool aq_live_restart()=0;
-	virtual bool aq_live_restart(SDL_Rect inputROI, int binning, double exposureTime) = 0;
-	virtual bool aq_sync_prepare(SDL_Rect inputROI, int binning, double exposureTime) = 0;
-	virtual bool aq_sync_start(int32 recordFrames, const char* fpath) = 0;
-	virtual void aq_sync_stop() = 0;
-	virtual bool dc_shutdown() = 0;
-	bool rdrive_mode;
-	int dropped_frame_count;
-	int acq_done;
-	int read_mode;
+  // take a snap every frame
+  virtual CamFrame *aq_thread_snap(void) = 0;
+
+  // Start acquiring frames for the live display
+  virtual bool aq_live_restart() = 0;
+
+  // every time there is a change to a camera property, we restart the
+  // camera.
+  virtual bool aq_live_restart(SDL_Rect inputROI, int binning,
+                               double exposureTime) = 0;
+
+  // Stop the previous acquisition, and set the parameters for a new camera
+  // acquisition
+  virtual bool aq_sync_prepare(SDL_Rect inputROI, int binning,
+                               double exposureTime) = 0;
+
+  // start the acquisition
+  virtual bool aq_sync_start(int32 recordFrames, const char *fpath) = 0;
+
+  // stops the acquisition
+  virtual void aq_sync_stop() = 0;
+
+  // gets called on shutdown
+  virtual bool dc_shutdown() = 0;
+
+  bool rdrive_mode;
+  int dropped_frame_count;
+  int acq_done;
+  int read_mode;
 };

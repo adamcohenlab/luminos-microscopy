@@ -13,9 +13,12 @@ user_logs.txt
 
 .DS_Store
 .vscode
+.vs
 
 build
 !/.vscode/extensions.json
 raffi_temp_data
+Daniel_temp_data
 
 .data
+Daniel_temp_data

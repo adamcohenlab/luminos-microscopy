@@ -1,18 +1,40 @@
+% Extract_Mov - Extracts a movie from a given path and returns the movie, average image, and device data.
+%
+% Syntax:
+%   [mov, avgImg, Device_Data] = Extract_Mov(path, options)
+%
+% Inputs:
+%   path - A string containing the path to the movie file.
+%   options - A struct containing optional parameters for the extraction process.
+%
+% Outputs:
+%   mov - A 3D matrix containing the movie frames.
+%   avgImg - A 2D matrix containing the average image of the movie.
+%   Device_Data - A struct containing device-specific data.
+%
+% Example:
+%   [mov, avgImg, Device_Data] = Extract_Mov('C:\Users\Labmember\Documents\', struct('option1', value1, 'option2', value2));
+%
 function [mov, avgImg, Device_Data] = Extract_Mov(path, options)
 arguments
     path
     options.dark_offset = 0;
     options.dark_frame_included = false;
     options.return_uint16 = false;
-    options.use_tiff = false;
+    options.use_tiff = false; %allows unpacking movie from Tiff instead of .bin for adaptability to other recording formats.
     options.cam_indices = [];
     options.unpack_singleton = true; % this function will output a single movie and average image if this is true. Change to false to get an iterable structure consistent with multi-cam movies.
 end
 metadata = load(fullfile(path, 'output_data.mat'));
 Device_Data = metadata.Device_Data;
 
+useOldNames = isfield(Device_Data{1},'Rig');
 % Leaving this the same as before
-cam = Extract_Device_Archive(Device_Data, 'Camera');
+if useOldNames
+    cam = Extract_Device_Archive(Device_Data, 'Cam_Controller');
+else
+    cam = Extract_Device_Archive(Device_Data, 'Camera');
+end
 
 % Optional manual selection of camera indices
 if isempty(options.cam_indices)
@@ -63,10 +85,18 @@ for ii = cam_indices
         [mov{ii}, ~] = readBinMov(bin_file, nrow, ncol);
     else
         info = imfinfo(bin_file);
+        t = Tiff(bin_file,'r'); %Tiff.read much faster on large multipage than imread, even with imfinfo.
         N_pages = numel(info);
-        mov{ii} = zeros(nrow, ncol, N_pages);
-        for k = 1:N_pages
-            mov{ii}(:, :, k) = imread(bin_file, k, 'Info', info);
+        mov{ii} = zeros(nrow,ncol,N_pages,'uint16');
+        mov{ii}(:,:,1) = t.read();
+        for k = 2:N_pages
+            %mov{ii}(:,:,k) = imread(bin_file,k,'Info',info);
+            t.nextDirectory();
+            mov{ii}(:,:,k) = t.read();
+
+            if ~mod(k,100)
+                sprintf("%d pages read",k)
+            end
         end
     end
     if ~options.return_uint16

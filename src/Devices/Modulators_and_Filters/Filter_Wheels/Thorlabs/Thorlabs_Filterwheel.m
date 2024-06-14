@@ -29,5 +29,9 @@ classdef Thorlabs_Filterwheel < Filter_Wheel
             readline(obj.SPORT); %Some Thorlabs FWs, at least, echo command, which should be ignored.
             filter_index = str2double(readline(obj.SPORT));
         end
+
+        function delete(obj)
+            clear obj.tcpObject;
+        end
     end
 end

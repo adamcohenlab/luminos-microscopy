@@ -71,8 +71,13 @@ classdef Trap_Device < Patterning_Device
                 roi = drawpoint(obj.tax);
                 registered_points(i, :) = roi.Position;
             end
-            [t_est, ~, ~, status] = estimateGeometricTransform(registered_points, [matcoord(:, 2), matcoord(:, 1)], ...
-                'affine');
+            if isMATLABReleaseOlderThan("R2022b")
+                [t_est, ~, ~, status] = estimateGeometricTransform(registered_points, [matcoord(:, 2), matcoord(:, 1)], ...
+                'affine'); %old pre-R2022b convention
+            else
+                t_est = estgeotform2d(registered_points, [matcoord(:, 2), matcoord(:, 1)], ...
+                'affine'); %new premultiply convention
+            end
             fixed = double(Target);
             fixed = imgaussfilt(fixed, 5);
             Rfixed = imref2d(size(fixed));

@@ -31,6 +31,7 @@ end
 % Function to recursively convert the struct to MATLAB objects
 function obj = struct2object(s)
 if isstruct(s)
+    genericStruct = false;
     if isfield(s, 'deviceType')
         % execute {deviceType}_Initializer() to create the object
         try
@@ -40,6 +41,10 @@ if isstruct(s)
         end
     elseif isfield(s, 'objectType')
         obj = eval(s.objectType);
+    else
+        % otherwise create a generic struct
+        obj = struct();
+        genericStruct = true;
     end
 
     props = fieldnames(s);
@@ -49,8 +54,9 @@ if isstruct(s)
         % Skip the objectType property
         if strcmp(propName, 'objectType')
             continue;
-            % Skip if the property is not writable
-        elseif ~is_writable(propName, obj)
+        
+        % Skip if the property is not writable (but if it's a generic struct, everything is writable)
+        elseif ~genericStruct && ~is_writable(propName, obj)
             continue;
         end
 
@@ -60,11 +66,16 @@ if isstruct(s)
         end
     end
 elseif iscell(s)
-    obj = [];
+    obj = {};
     for i = 1:numel(s)
-        obj = [obj, struct2object(s{i})];
+        obj{end+1} = struct2object(s{i});
     end
-    % cast char arrays to strings (because matlab concatenates char arrays into a single string)
+    % try to cast to array, if possible (if all elements are the same type)
+    try
+        obj = [obj{:}];
+    catch
+    end
+% cast char arrays to strings (because matlab concatenates char arrays into a single string)
 elseif ischar(s)
     obj = string(s);
 else

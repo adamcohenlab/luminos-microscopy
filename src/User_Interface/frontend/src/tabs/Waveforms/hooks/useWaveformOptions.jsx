@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { addValue, makeArrayIfNotAlready } from "../../../components/Utils";
 import { getWaveformStartupInfo } from "../../../matlabComms/waveformComms";
 
-// get the list of possible waveforms and the default
+// get the list of possible waveforms and the default for display on Waveforms tab (Waveforms.jsx)
+// Communications to Matlab in order to read info are implemented through waveformComms.jsx
 export const useWaveformOptions = (waveformControls) => {
   const [analogOutputOptions, setAnalogOutputOptions] = useState({});
   const [digitalOutputOptions, setDigitalOutputOptions] = useState({});

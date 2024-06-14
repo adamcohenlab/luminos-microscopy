@@ -42,7 +42,7 @@ classdef TI_DMD < DMD
     methods
         function obj = TI_DMD(Initializer) %
             obj@DMD(Initializer);
-            obj.tcpObject = tcpip('192.168.1.100', hex2dec('5555')); %connect to IP address and TCP port
+            obj.tcpObject = tcpclient('192.168.1.100', hex2dec('5555')); %connect to IP address and TCP port
             obj.tcpObject.OutputBufferSize = 55000; %ensures that larger bmp files can be sent through to DMD
             if obj.debug_mode == 0
                 obj.Dimensions = Initializer.Dimensions;
@@ -67,7 +67,7 @@ classdef TI_DMD < DMD
             end
         end
         function delete(obj)
-            fclose(obj.tcpObject);
+            clear obj.tcpObject;
         end
 
         % DMD specific helper functions
@@ -293,7 +293,7 @@ classdef TI_DMD < DMD
             if obj.debug_mode == 0
 
                 %pause(1) %sending the bits to the DMD takes a bit of time
-                fopen(obj.tcpObject); %open object
+                %fopen(obj.tcpObject); %open object
                 setModeStatic(obj)
 
                 img2 = img';
@@ -302,8 +302,8 @@ classdef TI_DMD < DMD
                 img = [bmpHeader; 255 * im_aux];
 
                 transferBitmap(obj, img)
-                pause(0.5) %sending the bits to the DMD takes a bit of time
-                fclose(obj.tcpObject);
+               % pause(0.5) %sending the bits to the DMD takes a bit of time
+              %  fclose(obj.tcpObject);
             else
                 imagesc(obj.demo_ax(1), double(img));
                 Rfixed = imref2d([2048, 2048]);

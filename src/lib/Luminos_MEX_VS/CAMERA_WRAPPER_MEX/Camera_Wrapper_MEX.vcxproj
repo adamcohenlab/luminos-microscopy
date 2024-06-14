@@ -97,19 +97,19 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>MATLAB_MEX_FILE;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MATLABDIR)\extern\include\MatlabDataArray;$(MATLABDIR)\extern\include\;..\Camera_Wrapper;..\inc\Andor_SDK;..\inc\dcimgsdk\inc;..\inc\dcamsdk4\inc;..\inc\SDL2_image-2.0.5\include;..\inc\SDL2_ttf-2.0.15\include;..\inc\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MATLABDIR)\extern\include\MatlabDataArray;$(MATLABDIR)\extern\include\;..\Camera_Wrapper;..\inc\Andor_SDK;..\inc\custom\dcimgsdk\inc;..\inc\custom\dcamsdk4\inc;..\inc\SDL2_image-2.0.5\include;..\inc\SDL2_ttf-2.0.15\include;..\inc\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(MATLABDIR)\extern\lib\win64\microsoft;..\x64\Debug;..\inc\dcamsdk4\lib\win64;..\inc\dcimgsdk\lib\win64;..\inc\SDL2_image-2.0.5\lib\x64;..\inc\SDL2_ttf-2.0.5\lib\x64;..\inc\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MATLABDIR)\extern\lib\win64\microsoft;..\x64\Debug;..\inc\custom\dcamsdk4\lib\win64;..\inc\custom\dcimgsdk\lib\win64;..\inc\SDL2_image-2.0.5\lib\x64;..\inc\SDL2_ttf-2.0.5\lib\x64;..\inc\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>CAMERA_WRAPPER.lib;SDL2.lib;SDL2main.lib;libmx.lib;libmex.lib;libmat.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libMatlabDataArray.lib;libMatlabEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       
       <!-- Conditionally add DCAM API from Hamamatsu -->
-      <AdditionalDependencies Condition="Exists('..\inc\dcamsdk4\inc\dcamapi4.h')">dcamapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="Exists('..\inc\custom\dcamsdk4\inc\dcamapi4.h')">dcamapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
 
       <!-- Conditionally add DCIMG from Hamamatsu (dcimgapi.lib) -->
-      <AdditionalDependencies Condition="Exists('..\inc\dcimgsdk\inc\dcimgapi.h')">dcimgapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="Exists('..\inc\custom\dcimgsdk\inc\dcimgapi.h')">dcimgapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
 
       <ModuleDefinitionFile>moddef.def</ModuleDefinitionFile>
       <AdditionalOptions>/export:mexFunction
@@ -155,7 +155,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>MATLAB_MEX_FILE;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MatlabDir)\extern\include\MatlabDataArray;$(MatlabDir)\extern\include;..\Camera_Wrapper;..\inc\Andor_SDK;..\inc\dcimgsdk\inc;..\inc\dcamsdk4\inc;..\inc\SDL2_image-2.0.5\include;..\inc\SDL2_ttf-2.0.15\include;..\inc\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MatlabDir)\extern\include\MatlabDataArray;$(MatlabDir)\extern\include;..\Camera_Wrapper;..\inc\Andor_SDK;..\inc\custom\dcimgsdk\inc;..\inc\custom\dcamsdk4\inc;..\inc\SDL2_image-2.0.5\include;..\inc\SDL2_ttf-2.0.15\include;..\inc\SDL2-2.0.12\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -163,14 +163,14 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ModuleDefinitionFile>moddef.def</ModuleDefinitionFile>
-      <AdditionalLibraryDirectories>$(MatlabDir)\extern\lib\win64\microsoft;..\x64\Release;..\inc\Andor_SDK;..\inc\dcamsdk4\lib\win64;..\inc\dcimgsdk\lib\win64;..\inc\SDL2_image-2.0.5\lib\x64;..\inc\SDL2_ttf-2.0.5\lib\x64;..\inc\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(MatlabDir)\extern\lib\win64\microsoft;..\x64\Release;..\inc\Andor_SDK;..\inc\custom\dcamsdk4\lib\win64;..\inc\custom\dcimgsdk\lib\win64;..\inc\SDL2_image-2.0.5\lib\x64;..\inc\SDL2_ttf-2.0.5\lib\x64;..\inc\SDL2-2.0.12\lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>CAMERA_WRAPPER.lib;SDL2.lib;SDL2main.lib;libmx.lib;libmex.lib;libmat.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;libMatlabDataArray.lib;libMatlabEngine.lib;%(AdditionalDependencies)</AdditionalDependencies>
       
        <!-- Conditionally add DCAM-API & DCIMG from Hamamatsu -->
-      <AdditionalDependencies Condition="Exists('..\inc\dcamsdk4\inc\dcamapi4.h') And Exists('..\inc\dcimgsdk\inc\dcimgapi.h')">dcamapi.lib; dcimgapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="Exists('..\inc\custom\dcamsdk4\inc\dcamapi4.h') And Exists('..\inc\custom\dcimgsdk\inc\dcimgapi.h')">dcamapi.lib; dcimgapi.lib;%(AdditionalDependencies)</AdditionalDependencies>
 
       <!-- Conditionally add Andor -->
-      <AdditionalDependencies Condition="Exists('..\inc\Andor_SDK\ATMCD32D.H')">atmcd64m.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies Condition="Exists('..\inc\custom\Andor_SDK\ATMCD32D.H')">atmcd64m.lib;%(AdditionalDependencies)</AdditionalDependencies>
 
       <AdditionalOptions>/export:mexFunction %(AdditionalOptions)</AdditionalOptions>
     </Link>

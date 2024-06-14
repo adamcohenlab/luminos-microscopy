@@ -33,6 +33,16 @@ export const projectCalPattern = async (
   return success;
 };
 
+// export const projectCalPatternDMD = async (deviceType, deviceName = []) => {
+//   console.log("projectCalPatternDMD");
+//   const success = await matlabDeviceMethod({
+//     method: "Project_Cal_Pattern_QR",
+//     devtype: deviceType,
+//     args: deviceName && { devname: deviceName },
+//   });
+//   return success;
+// };
+
 export const applyMask = async (
   mask,
   deviceType,

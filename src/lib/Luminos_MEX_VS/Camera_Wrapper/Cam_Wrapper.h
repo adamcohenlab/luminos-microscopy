@@ -1,16 +1,22 @@
 // check if hamamatsu camera is configured
-#if __has_include("../inc/dcamsdk4/inc/dcamapi4.h") &&                         \
-                  __has_include("../inc/dcimgsdk/inc/dcimgapi.h")
+#if __has_include("../inc/custom/dcamsdk4/inc/dcamapi4.h") &&                         \
+                  __has_include("../inc/custom/dcimgsdk/inc/dcimgapi.h")
 #define HAMAMATSU_CONFIGURED
 #endif
 
 // check if andor camera is configured
-#if __has_include("../inc/Andor_SDK/ATMCD32D.H")
+#if __has_include("../inc/custom/Andor_SDK/ATMCD32D.H")
 #define ANDOR_CONFIGURED
+#endif
+
+#if __has_include("../inc/custom/PVCAM/inc/pvcam.h")
+#define KINETIX_CONFIGURED
 #endif
 
 #include "StreamDisplayHD.h"
 #include "Cam_Control.h"
+
+#pragma once
 
 // This class is exported from the dll
 class LUMINOSCAMERA_API Cam_Wrapper {
@@ -38,6 +44,7 @@ public:
   bool Get_ROI_Buffer(double *dataout, int samps);
   bool Get_ROI_Sum_Buffer(double *dataout, int samps);
   bool Set_Binning(uint32_t binning);
+  double Get_Binning();
   void Stop_Sync_Acquisition();
   void Stop_Live_Acquisition();
   bool Set_ROI(int32 *ROI_in);

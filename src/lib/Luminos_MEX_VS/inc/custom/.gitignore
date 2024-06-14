@@ -1,0 +1,4 @@
+## Ignore custom proprietary driver folders added in ./custom
+/**
+!/Add_Hardware_SDKs_here.txt
+!/.gitignore
