@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { SectionHeader } from "../components/SectionHeader";
 import { DrawROIs } from "../components/Patterning/DrawROIs";
 import {
@@ -7,30 +7,38 @@ import {
   projectDMDCalPattern,
   writeStackToDMD,
   writeWhiteToDMD,
+  writeDarkToDMD,
+  writeWhiteToCurrentFov,
+  ExportShapesToMatlab,
+  getImageHeight,
+  getImageTform,
 } from "../matlabComms/dmdComms";
 import { usePolygonMode } from "../components/Patterning/PatterningModes/usePolygonMode";
 import { useCircleMode } from "../components/Patterning/PatterningModes/useCircleMode";
-import { useAutoPatternCalibrateMode } from "../components/Patterning/PatterningModes/useAutoPatternCalibrateMode";
+import { useAdvancedCalibrateMode } from "../components/Patterning/PatterningModes/useAdvancedCalibrateMode";
 import { useFreeformMode } from "../components/Patterning/PatterningModes/useFreeformMode";
 import { useFullMode } from "../components/Patterning/PatterningModes/useFullMode";
+import { useFovMode } from "../components/Patterning/PatterningModes/useFovMode";
+import { useExportToMatlab } from "../components/Patterning/PatterningModes/useExportToMatlab";
 import {
   DrawingControlsProvider,
   useDrawingControls,
 } from "../components/Patterning/DrawingControlsContext";
-import { useCallback } from "react";
 import { computeMask } from "../utils/computeMask";
 import { useStack } from "../components/Patterning/PatterningModes/useStack";
 
+const imageHeight = 600;
+
 export default function DMD({ deviceName = [] }) {
-  return <DMDDraw imgHeight={600} dmdDeviceName={deviceName} />;
+  return <DMDDraw imgHeight={imageHeight} dmdDeviceName={deviceName} />;
 }
 
-const DMDDraw = ({ imgHeight, ...props }) => {
+const DMDDraw = ({ imgHeight, dmdDeviceName }) => {
   return (
     <div>
       <SectionHeader>Draw DMD ROIs</SectionHeader>
       <DrawingControlsProvider imgHeight={imgHeight}>
-        <DMDDrawPatterns {...props} />
+        <DMDDrawPatterns dmdDeviceName={dmdDeviceName} />
       </DrawingControlsProvider>
     </div>
   );
@@ -38,8 +46,8 @@ const DMDDraw = ({ imgHeight, ...props }) => {
 
 const DMDDrawPatterns = ({ dmdDeviceName, ...props }) => {
   const polygonMode = usePolygonMode();
-  const circleMode = useCircleMode();
-  const calibrateMode = useAutoPatternCalibrateMode({
+  const circleMode = useCircleMode({ dmdDeviceName });
+  const calibrateMode = useAdvancedCalibrateMode({
     calculateCalibration: calculateDMDCalibrationTransform,
     projectCalibrationPattern: projectDMDCalPattern,
     deviceType: "DMD",
@@ -58,8 +66,71 @@ const DMDDrawPatterns = ({ dmdDeviceName, ...props }) => {
     [dmdDeviceName]
   );
 
+  const handleCurrentFovButtonClick = useCallback(
+    (prevIsSelected) => {
+      if (prevIsSelected) {
+        writeDarkToDMD(dmdDeviceName); 
+      } else {
+
+      clearLastMode();
+        writeWhiteToCurrentFov(dmdDeviceName); 
+      }
+    },
+    [dmdDeviceName] 
+  );
+
+  const handleExportButtonClick = useCallback(
+    (prevIsSelected = []) => {
+      if (!prevIsSelected) {
+        getFactors(dmdDeviceName)
+          .then(({ cameraFactor, dmdFactor }) => {
+            const scalingFactor = cameraFactor;
+            const scaleShape = (shape, factor) => {
+              if (shape.center && shape.radius) {
+                // Circle
+                return {
+                  center: shape.center.map((coord) => coord * factor),
+                  radius: shape.radius * factor,
+                };
+              } else if (Array.isArray(shape) && Array.isArray(shape[0])) {
+                // Polygon
+                return shape.map(([x, y]) => [x * factor, y * factor]);
+              }
+              return shape;
+            };
+
+            // Collect shapes
+            const shapes = {
+              polygons: [...polygonMode.shapes, ...freeformMode.shapes].map(
+                (polygon) => scaleShape(polygon, scalingFactor)
+              ),
+              circles: circleMode.shapes.map((circle) =>
+                scaleShape(circle, scalingFactor)
+              ),
+            };
+
+            // Export shapes to Matlab
+            console.log(shapes);
+            ExportShapesToMatlab(shapes, dmdDeviceName);
+          })
+          .catch((error) => {
+            console.error("Error in getting image dimensions:", error);
+          });
+      }
+    },
+    [polygonMode, freeformMode, circleMode] // Include the modes as dependencies
+  );
+
   const fullMode = useFullMode({
     handleButtonClick: handleFullModeButtonClick,
+  });
+
+  const fovMode = useFovMode({
+    handleButtonClick: handleCurrentFovButtonClick,
+  });
+
+  const exportMode = useExportToMatlab({
+    handleButtonClick: handleExportButtonClick,
   });
 
   // const { allModes, stack, isStackMode } = useStack({
@@ -72,8 +143,10 @@ const DMDDrawPatterns = ({ dmdDeviceName, ...props }) => {
     polygonMode,
     circleMode,
     fullMode,
+    fovMode,
     freeformMode,
     calibrateMode,
+    exportMode,
   ];
   const isStackMode = false;
   const stack = [];
@@ -112,12 +185,14 @@ const DMDDrawPatterns = ({ dmdDeviceName, ...props }) => {
   }, [polygonMode.shapes, circleMode.shapes, freeformMode.shapes, imgSelected]);
 
   return (
-    <DrawROIs
-      deviceType={"DMD"}
-      deviceName={dmdDeviceName}
-      allModes={allModes}
-      {...props}
-    />
+    <div>
+      <DrawROIs
+        deviceType={"DMD"}
+        deviceName={dmdDeviceName}
+        allModes={allModes}
+        {...props}
+      />
+    </div>
   );
 };
 
@@ -126,3 +201,31 @@ const findShapesOfType = (type, allModes) =>
     .filter((m) => m?.type === type)
     .map((p) => p.shapes)
     .flat();
+
+export const getFactors = async (dmdDeviceName) => {
+  let cameraFactor;
+  let dmdFactor;
+  try {
+    const cameraDimensions = await getImageHeight({
+      deviceType: "DMD",
+      deviceName: dmdDeviceName,
+    });
+    cameraFactor = cameraDimensions / imageHeight;
+  } catch (error) {
+    console.error(error);
+    cameraFactor = 1;
+  }
+
+  try {
+    const dmdDet = await getImageTform({
+      deviceType: "DMD",
+      deviceName: dmdDeviceName,
+    });
+
+    dmdFactor = cameraFactor * dmdDet;
+  } catch (error) {
+    console.error(error);
+    dmdFactor = 1;
+  }
+  return { cameraFactor, dmdFactor };
+};

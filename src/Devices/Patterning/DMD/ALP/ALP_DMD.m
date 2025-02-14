@@ -12,6 +12,7 @@ classdef ALP_DMD < DMD
         %Transform Calibration Information
         trigger DQ_DO_Finite; %DAQ or other I/O Device Channel.
         seq %Moved to transient by HD to prevent data loading issues.
+        shapes = [];
     end
     
     methods
@@ -97,7 +98,28 @@ classdef ALP_DMD < DMD
             end
         end
         
-        function Write_Stack(obj)
+        function Write_Stack(obj, varargin)
+            % Default mode is 'master'
+            mode = 'master';
+            
+            if ~isempty(varargin)
+                modeInput = varargin{1};
+                if ischar(modeInput)
+                    if strcmpi(modeInput, 'master')
+                        %disp('Setting mode to "master".');
+                        mode = 'master';
+                    elseif strcmpi(modeInput, 'slave')
+                        %disp('Setting mode to "slave".');
+                        mode = 'slave';
+                    else
+                        %disp('Invalid input. Setting mode to "master" by default.');
+                        mode = 'master';
+                    end
+                else
+                    disp('Invalid input. Setting mode to "master" by default.');
+                    mode = 'master';
+                end
+            end
             
             imgs = permute(obj.pattern_stack, [3, 2, 1]);
             imgs = imgs > .5;
@@ -120,7 +142,14 @@ classdef ALP_DMD < DMD
             [~, IlluminateTime] = obj.seq.inquire(obj.api.MIN_ILLUMINATE_TIME);
             obj.seq.timing(IlluminateTime, PictureTime, obj.api.DEFAULT, obj.api.DEFAULT, 0);
             obj.seq.put(PicOffset, PicNum, imgs);
-            obj.device.projcontrol(obj.api.PROJ_MODE, obj.api.MASTER);
+            
+            % Apply the selected mode
+            if strcmp(mode, 'master')
+                obj.device.projcontrol(obj.api.PROJ_MODE, obj.api.MASTER);
+            elseif strcmp(mode, 'slave')
+                obj.device.projcontrol(obj.api.PROJ_MODE, obj.api.SLAVE_VD);
+            end
+            
             ALP_PROJ_STEP = int32(2329); % was missing from the matlab bindings
             obj.device.projcontrol(ALP_PROJ_STEP, obj.api.EDGE_RISING);
             obj.device.startcont(obj.seq);

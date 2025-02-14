@@ -64,9 +64,9 @@ classdef Scanning_Device < Patterning_Device
     methods
         function obj = Scanning_Device(Initializer)
             obj@Patterning_Device(Initializer);
-            obj.calpoints = [1, -1; 1, 1; -1, 1; -1, -1]; %NOTE THIS SHOULD BE REPLACED WITH obj.calpoints=(obj.frac_calpoints-.5)*10;
+            obj.calpoints = obj.frac_calpoints;
             obj.roi_type = 'Raster';
-            obj.scanbounds = [-5, -5, 5, 5]; %Assuming -5 to 5 V scan
+            obj.scanbounds = obj.vbounds;
         end
 
         function Startup(obj)
@@ -339,12 +339,12 @@ classdef Scanning_Device < Patterning_Device
         function centroid = findCalSpotLocation(obj, spot_num)
             im = mat2gray(obj.refimage.img);
             binaryImage = imbinarize(im,mean(im,"all")+5*std(im,0,"all")); %Threshold image
-            figure();
-            tiledlayout('flow');
-            nexttile();
-            imshow(im);
-            nexttile();
-            imshow(binaryImage);
+            % figure();
+            % tiledlayout('flow');
+            % nexttile();
+            % imshow(im);
+            % nexttile();
+            % imshow(binaryImage);
             obj.refimage.timestamp
             datetime("now")
             cc = bwconncomp(binaryImage); %label remaining connected components
@@ -442,115 +442,116 @@ classdef Scanning_Device < Patterning_Device
             obj.additionalConfigData.set("tform", obj.tform);
         end
               
-        % Given pts, the locations of clicked points on display, calibration point locations
-        % in obj.calpoints, and image
-        % of projected calibration points saved in obj.refimage.img, first
-        % calculate approximate transform using clicked locations, and then
-        % refine using image.
-        function calculateCalibrationTransform_fromImage(obj, pts)
-            Width = .1;
-            [X, Y] = meshgrid(-5:.002:5, -5:.002:5);
-            gauss = @(x0, y0, w0) exp(-((X - x0).^2 + (Y - y0).^2)/w0.^2);
-            Target = zeros(size(X));
-            matcoord = zeros(size(obj.calpoints, 1),2);
-            for i = 1:size(obj.calpoints, 1)
-                Target = Target + gauss(obj.calpoints(i, 1), obj.calpoints(i, 2), Width);
-            end
-            for i = 1:size(obj.calpoints, 1)
-                [row, col] = find(abs(X-obj.calpoints(i, 1)) < 1e-6 & abs(Y-obj.calpoints(i, 2)) < 1e-6);
-                matcoord(i, :) = [row, col];
-            end
-
-            % estimate transform from matcoord to calpoints
-            if isMATLABReleaseOlderThan("R2022b")
-                im2volts_t = estimateGeometricTransform([matcoord(:, 2), matcoord(:, 1)], obj.calpoints, 'affine');
-            else
-                im2volts_t = estgeotform2d([matcoord(:, 2), matcoord(:, 1)], obj.calpoints, 'affine');
-            end
-            % display(pts)
-
-            % estimate transform from selected points to matcoord
-            if isMATLABReleaseOlderThan("R2022b")
-                [t_est, ~, ~, status] = estimateGeometricTransform(pts, [matcoord(:, 2), matcoord(:, 1)], ...
-                    'affine'); %old pre-R2022b convention
-            else
-                t_est = estgeotform2d(pts, [matcoord(:, 2), matcoord(:, 1)], ...
-                    'affine'); %new premultiply convention
-            end
-            t_est.A
-
-            fixed = double(Target);
-            fixed = imgaussfilt(fixed, 5);
-            Rfixed = imref2d(size(fixed));
-            moving = imgaussfilt(obj.refimage.img, 5);
-            %CAUTION: at this point, moving is uint16, so division to
-            %normalize will fail. We need mat2gray, which converts to
-            %double before normalizing.
-            fixed = mat2gray(fixed);
-            moving = mat2gray(moving);
-
-            figure
-            
-            subplot(3,1, 1)
-            imagesc(fixed./max(fixed(:)));
-            axis image;
-            subplot(3,1, 2)
-            movingRegistered_est = imwarp(moving, t_est, 'OutputView', Rfixed);
-            imagesc(movingRegistered_est)
-            axis image
-            subplot(3,1,3);
-            imshowpair(movingRegistered_est,fixed);
-            axis image;
-            sgtitle("Initial Estimate");
-            
-            [optimizer, metric] = imregconfig('multimodal');
-            optimizer.InitialRadius = optimizer.InitialRadius*10; %Hunter had this as /10, but t_est at this point was basically random.
-            optimizer.GrowthFactor = optimizer.GrowthFactor * 50; %Faster, but more likely to stop at local min. that's probably okay since we wouldn't expect local mins
-            optimizer.MaximumIterations = 100;
-
-            %CAUTION: Before R2022b, imregtform returns an affine2d object.
-            %Starting with R2022b, it returns an affinetform2d
-            %pre-multiplying transform. Imwarp can handle either type
-            %automatically, but be aware.
-            "Starting cal transform: "
-            tic;
-            finaltform = imregtform(moving, fixed, ...
-                'affine', optimizer, metric, 'InitialTransformation', t_est,'DisplayOptimization',true,'PyramidLevels',1);
-            %"Pyramid levels" (default 3) controls how many low-resolution
-            %layers the algorithm considers before final full-res pass (3
-            %levels would mean it first does registration on res/4 image,
-            %then res/2 image, then full res image). Since our features are
-            %entirely high-resolution, there's no point in using this. Set
-            %it to 1 to save time.
-            "Done: "
-            toc
-            movingRegistered = imwarp(moving, finaltform, 'OutputView', Rfixed);
-            
-
-            finaltform.A
-            figure
-            subplot(3,1, 1)
-            imagesc(fixed);
-            axis image;
-            title("fixed target");
-
-            subplot(3,1, 2)
-            imagesc(movingRegistered)
-            axis image
-            title("registered image")
-            subplot(3,1,3);
-            imshowpair(movingRegistered,fixed);
-            axis image;
-            title("overlay");
-            sgtitle("Final tform");
-            obj.tform = finaltform;
-            obj.tform.T = finaltform.T * im2volts_t.T;
-            obj.Initializer.tform = obj.tform.T;
-            obj.volts_per_pixel = sqrt(sum((obj.calpoints(1, :) - obj.calpoints(end, :)).^2)/sum((transformPointsInverse(obj.tform, obj.calpoints(1, :)) - transformPointsInverse(obj.tform, obj.calpoints(end, :))).^2));
-
-            % update the tform in the additional config data
-            obj.additionalConfigData.set("tform", obj.tform);
-        end
+        % Never used
+        % % Given pts, the locations of clicked points on display, calibration point locations
+        % % in obj.calpoints, and image
+        % % of projected calibration points saved in obj.refimage.img, first
+        % % calculate approximate transform using clicked locations, and then
+        % % refine using image.
+        % function calculateCalibrationTransform_fromImage(obj, pts)
+        %     Width = .1;
+        %     [X, Y] = meshgrid(-5:.002:5, -5:.002:5);
+        %     gauss = @(x0, y0, w0) exp(-((X - x0).^2 + (Y - y0).^2)/w0.^2);
+        %     Target = zeros(size(X));
+        %     matcoord = zeros(size(obj.calpoints, 1),2);
+        %     for i = 1:size(obj.calpoints, 1)
+        %         Target = Target + gauss(obj.calpoints(i, 1), obj.calpoints(i, 2), Width);
+        %     end
+        %     for i = 1:size(obj.calpoints, 1)
+        %         [row, col] = find(abs(X-obj.calpoints(i, 1)) < 1e-6 & abs(Y-obj.calpoints(i, 2)) < 1e-6);
+        %         matcoord(i, :) = [row, col];
+        %     end
+        % 
+        %     % estimate transform from matcoord to calpoints
+        %     if isMATLABReleaseOlderThan("R2022b")
+        %         im2volts_t = estimateGeometricTransform([matcoord(:, 2), matcoord(:, 1)], obj.calpoints, 'affine');
+        %     else
+        %         im2volts_t = estgeotform2d([matcoord(:, 2), matcoord(:, 1)], obj.calpoints, 'affine');
+        %     end
+        %     % display(pts)
+        % 
+        %     % estimate transform from selected points to matcoord
+        %     if isMATLABReleaseOlderThan("R2022b")
+        %         [t_est, ~, ~, status] = estimateGeometricTransform(pts, [matcoord(:, 2), matcoord(:, 1)], ...
+        %             'affine'); %old pre-R2022b convention
+        %     else
+        %         t_est = estgeotform2d(pts, [matcoord(:, 2), matcoord(:, 1)], ...
+        %             'affine'); %new premultiply convention
+        %     end
+        %     t_est.A
+        % 
+        %     fixed = double(Target);
+        %     fixed = imgaussfilt(fixed, 5);
+        %     Rfixed = imref2d(size(fixed));
+        %     moving = imgaussfilt(obj.refimage.img, 5);
+        %     %CAUTION: at this point, moving is uint16, so division to
+        %     %normalize will fail. We need mat2gray, which converts to
+        %     %double before normalizing.
+        %     fixed = mat2gray(fixed);
+        %     moving = mat2gray(moving);
+        % 
+        %     figure
+        % 
+        %     subplot(3,1, 1)
+        %     imagesc(fixed./max(fixed(:)));
+        %     axis image;
+        %     subplot(3,1, 2)
+        %     movingRegistered_est = imwarp(moving, t_est, 'OutputView', Rfixed);
+        %     imagesc(movingRegistered_est)
+        %     axis image
+        %     subplot(3,1,3);
+        %     imshowpair(movingRegistered_est,fixed);
+        %     axis image;
+        %     sgtitle("Initial Estimate");
+        % 
+        %     [optimizer, metric] = imregconfig('multimodal');
+        %     optimizer.InitialRadius = optimizer.InitialRadius*10; %Hunter had this as /10, but t_est at this point was basically random.
+        %     optimizer.GrowthFactor = optimizer.GrowthFactor * 50; %Faster, but more likely to stop at local min. that's probably okay since we wouldn't expect local mins
+        %     optimizer.MaximumIterations = 100;
+        % 
+        %     %CAUTION: Before R2022b, imregtform returns an affine2d object.
+        %     %Starting with R2022b, it returns an affinetform2d
+        %     %pre-multiplying transform. Imwarp can handle either type
+        %     %automatically, but be aware.
+        %     "Starting cal transform: "
+        %     tic;
+        %     finaltform = imregtform(moving, fixed, ...
+        %         'affine', optimizer, metric, 'InitialTransformation', t_est,'DisplayOptimization',true,'PyramidLevels',1);
+        %     %"Pyramid levels" (default 3) controls how many low-resolution
+        %     %layers the algorithm considers before final full-res pass (3
+        %     %levels would mean it first does registration on res/4 image,
+        %     %then res/2 image, then full res image). Since our features are
+        %     %entirely high-resolution, there's no point in using this. Set
+        %     %it to 1 to save time.
+        %     "Done: "
+        %     toc
+        %     movingRegistered = imwarp(moving, finaltform, 'OutputView', Rfixed);
+        % 
+        % 
+        %     finaltform.A
+        %     figure
+        %     subplot(3,1, 1)
+        %     imagesc(fixed);
+        %     axis image;
+        %     title("fixed target");
+        % 
+        %     subplot(3,1, 2)
+        %     imagesc(movingRegistered)
+        %     axis image
+        %     title("registered image")
+        %     subplot(3,1,3);
+        %     imshowpair(movingRegistered,fixed);
+        %     axis image;
+        %     title("overlay");
+        %     sgtitle("Final tform");
+        %     obj.tform = finaltform;
+        %     obj.tform.T = finaltform.T * im2volts_t.T;
+        %     obj.Initializer.tform = obj.tform.T;
+        %     obj.volts_per_pixel = sqrt(sum((obj.calpoints(1, :) - obj.calpoints(end, :)).^2)/sum((transformPointsInverse(obj.tform, obj.calpoints(1, :)) - transformPointsInverse(obj.tform, obj.calpoints(end, :))).^2));
+        % 
+        %     % update the tform in the additional config data
+        %     obj.additionalConfigData.set("tform", obj.tform);
+        % end
 
         %---------------------------------------------------------------------------
         % ROI/Scan control methods

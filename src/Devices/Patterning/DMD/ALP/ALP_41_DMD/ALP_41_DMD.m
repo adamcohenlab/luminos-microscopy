@@ -5,6 +5,7 @@ classdef ALP_41_DMD < DMD
     properties
         mexPointer;
         initialized
+        shapes = [];
     end
     methods
         function Wait_Until_Done(obj)
@@ -55,7 +56,7 @@ classdef ALP_41_DMD < DMD
             DMD_MEX('Project_Checkerboard', obj.mexPointer); %Only for Debug! Target Property not updated correctly.
         end
         
-        function Write_Stack(obj)
+        function Write_Stack(obj, varargin)
             error('Not Implemented');
         end
         

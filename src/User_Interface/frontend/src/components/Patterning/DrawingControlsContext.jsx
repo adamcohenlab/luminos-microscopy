@@ -9,9 +9,13 @@ export const DrawingControlsProvider = ({ children, imgHeight }) => {
   const [lastModes, setLastModes] = useState([]);
 
   const switchMode = (newMode) => {
-    setLastModes(mode);
-    setMode(newMode);
+    if (newMode === "export") {
+      return;
+    }
+    setLastModes(mode); 
+    setMode(newMode);  
   };
+  
 
   const popLastMode = () => {
     setLastModes((lastMode) => lastMode.slice(0, -1));
@@ -40,7 +44,7 @@ export const DrawingControlsProvider = ({ children, imgHeight }) => {
         popLastMode,
         pushLastMode,
         clearLastMode,
-        isDrawing: mode !== "" && mode !== "full", // full is for passing all light through
+        isDrawing: mode !== "" && mode !== "full" && mode !== "FOV", // full is for passing all light through
         imgHeight,
         imgWidth,
         setImgWidth,

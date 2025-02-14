@@ -188,7 +188,7 @@ const ROIDrawer = ({ allModes, handleEsc, ...props }) => {
       ]}
       donuts={[findCurrentShapeOfType("donut"), ...findShapesOfType("donut")]}
       curve={[]}
-      drawFull={mode === "full"}
+      drawFull={mode === "full" || mode === "FOV"}
       zoomRectangle={allModes.find((m) => m.type === "zoom")?.zoomRectangle}
       zoomDrawing={findCurrentShapeOfType("zoom")}
     />

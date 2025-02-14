@@ -9,6 +9,7 @@ classdef CL_RefImage < handle
         tform
         ref2d
         timestamp
+        bin
     end
 
     methods
@@ -16,9 +17,11 @@ classdef CL_RefImage < handle
             obj.name = 'none';
             obj.type = 'none';
             if isMATLABReleaseOlderThan("R2022b")
-                obj.tform = affine2d(eye(3)); %old pre-R2022b convention
+                obj.tform.name = [];
+                obj.tform.tform = affine2d(eye(3)); %old pre-R2022b convention
             else
-                obj.tform = affinetform2d(eye(3)); %new premultiply convention
+                obj.tform.name = [];
+                obj.tform.tform = affinetform2d(eye(3)); %new premultiply convention
             end
             obj.ref2d = imref2d();
         end

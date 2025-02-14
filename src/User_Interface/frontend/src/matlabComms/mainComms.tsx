@@ -26,6 +26,14 @@ export const getAutoNumFrames = async (totalTime, deviceName) => {
   return info;
 };
 
+export const getAutoNumFramesExternal = async (deviceName) => {
+  const N = await matlabAppMethod({
+    method: "calculate_pulse_number",
+    args: deviceName,
+  });
+  return N;
+};
+
 export const getRoiFromStream = async (deviceName: string | []) => {
   const roi = await cameraMethod({
     method: "getRoiFromStream",
@@ -42,6 +50,23 @@ export const getCameraProperties = async (properties, deviceName) => {
     deviceName
   );
   return info;
+};
+
+export const getCameras = async () => {
+  const info = await getProperties("Camera", ["name"]);
+  const cameraNames = Array.isArray(info.name) ? info.name : [info.name];
+  return cameraNames;
+};
+
+
+export const setCameraProperties = async (value, properties, deviceName) => {
+  const success = await setProperty(
+    "Camera",
+    properties,
+    value,
+    deviceName
+  );
+  return success;
 };
 
 export const setShutter = async (value, deviceName) => {
@@ -131,6 +156,43 @@ export const snap = async ({
   return success;
 };
 
+export const rotateCamFOV = async ( deviceName: string | [] = [] ) => {
+    const success = await cameraMethod({
+      method: "rotateCamFOV",
+      devname: deviceName,
+    });
+};
+
+export const rotateCamFOVcounter = async ( deviceName: string | [] = [] ) => {
+    const success = await cameraMethod({
+      method: "rotateCamFOVcounter",
+      devname: deviceName,
+    });
+};
+
+export const flipCamFOV = async (deviceName: string | [] = []) => {
+  const success = await cameraMethod({
+    method: "flipCamFOV",
+    devname: deviceName,
+  });
+};
+
+export const update_blanking = async ( blank ) => {
+  const success = await matlabAppMethod({
+    method: "update_blanking",
+    args: blank,
+  });
+  return success;
+};
+
+export const Check_for_ROI = async (deviceName) => {
+  const result = await cameraMethod({
+    method: "Check_for_ROI",
+    devname: deviceName,
+  });
+  return result;
+};
+
 export const startCamAcquisition = async (folder) => {
   const success = await matlabAppMethod({
     method: "cam_acquisition_js",
@@ -152,6 +214,18 @@ export const relaunchCamera = async (deviceName: string | [] = []) => {
   return success;
 };
 
+
+// Currently not used, restarts camera from JS
+export const restartCamera = async (deviceName: string | [] = []) => {
+  const success = await cameraMethod({
+    method: "restartCamera",
+    devname: deviceName,
+    args: [],
+  });
+  return success;
+};
+
+
 // filter wheel
 export const getFilterWheelProperties = async (propertyNames) => {
   return getPropertiesForMultipleDevices("Filter_Wheel", propertyNames);
@@ -161,7 +235,7 @@ export const setFilter = async (value, filterWheelName) => {
   return setProperty("Filter_Wheel", "active_filter", value, filterWheelName);
 };
 
-// stage. For z-stage, position.x is coarse, position.y is fine step size. 
+// xy(z) stage.
 export const applyStagePosition = async (position) => {
   const success = await matlabDeviceMethod({
     method: "Move_To_Position",
@@ -171,11 +245,21 @@ export const applyStagePosition = async (position) => {
   return success;
 };
 
+// z-stage. position.x is coarse, position.y is fine step size. 
+export const applyStagePositionZ = async (position) => {
+  const success = await matlabDeviceMethod({
+    method: "Move_To_Position",
+    devtype: "Linear1D_Controller",
+    args: [position.map((x) => Number(x))],
+  });
+  return success;
+};
+
 // Move z-stage relative to current position
 export const applyStagePositionRel = async (delta) => {
   const success = await matlabDeviceMethod({
     method: "moveToRel",
-    devtype: "Linear_Controller",
+    devtype: "Linear1D_Controller",
     args: delta,
   });
   return success;
@@ -186,17 +270,31 @@ export const getStagePosition = async () => {
   return properties.pos; // {x, y, z}
 };
 
+
+export const getStagePositionZ = async () => {
+  const properties = await getProperties("Linear1D_Controller", ["pos"]);
+  return properties.pos; // {fine, coarse, z}
+};
+
+// Home z-stage to resolve various weird states it can get into
+export const sendHomeZ = async () => {
+  const success = await matlabDeviceMethod({
+    method: "homeZ",
+    devtype: "Linear1D_Controller",
+  });
+  return success;
+};
+
 export const checkStageFlag = async () => {
   try {
-    const properties = await getProperties("Linear_Controller", ["zStageFlag"]);
-    if (properties && properties.hasOwnProperty('zStageFlag')) {
+    const properties = await getProperties("Linear1D_Controller", ["pos"]);
+    if (properties && properties.numDevices > 0) {
       return true;
     } else {
       return false;
     }
   } catch (error) {
-    console.error("Error fetching properties:", error);
-    return false;  // Return false in case of an error
+    return false;  
   }
 };
 

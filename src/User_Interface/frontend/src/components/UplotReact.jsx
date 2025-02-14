@@ -102,11 +102,16 @@ const UplotReact = ({
   }, []);
 
   const updateWindowSize = () => {
-    const clientWidth = targetRef.current.clientWidth;
-    const clientHeight = targetRef.current.clientHeight;
+    const clientWidth = targetRef.current
+      ? targetRef.current.clientWidth
+      : chartRef.current?.width;
+    const clientHeight = targetRef.current
+      ? targetRef.current.clientHeight
+      : chartRef.current?.height;
 
     const width = options.width || clientWidth;
     const height = options.height || clientHeight;
+
     if (height && width)
       chartRef.current.setSize({
         width,

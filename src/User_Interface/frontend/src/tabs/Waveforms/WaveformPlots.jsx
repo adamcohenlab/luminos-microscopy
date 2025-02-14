@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from "react";
 import { useGlobalAppVariables } from "../../components/GlobalAppVariablesContext";
-import { Plots } from "../../components/Plots";
+import { Plots } from "../../components/PlotsStatic";
 import { useWaveformPlottingData } from "./hooks/useWaveformPlottingData";
 
 // Added subsampling to make the plots more responsive. There is no need to plot 10e5 points per second. DI
@@ -15,10 +15,12 @@ export const WaveformPlots = ({ ...props }) => {
   // Use useMemo to rarefy tvec and wfm by the subsamplingRate
   const subsampleData = useMemo(() => {
     // Rarefy tvec
-    const subsampleTvec = tvec.filter((_, index) => index % subsamplingRate === 0);
+    const subsampleTvec = tvec.filter(
+      (_, index) => index % subsamplingRate === 0
+    );
 
     // Rarefy each waveform in wfm
-    const subsampleWfm = wfm.map(waveform =>
+    const subsampleWfm = wfm.map((waveform) =>
       waveform.filter((_, index) => index % subsamplingRate === 0)
     );
 

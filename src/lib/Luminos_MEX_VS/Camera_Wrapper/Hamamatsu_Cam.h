@@ -49,6 +49,7 @@ public:
   HDCAMREC hrec;
   int32 requestedframes;
   unsigned waitdonethreadid;
+  std::atomic<bool> terminate_child_thread;
 
 private:
   bool set_centered_roi(SDL_Rect ROItry);

@@ -3,6 +3,7 @@
 #ifdef HAMAMATSU_CONFIGURED
 #include "Hamamatsu_Cam.h"
 #include <stdexcept>
+#include <atomic>
 
 // no argument wrapper for constructor
 Hamamatsu_Cam::Hamamatsu_Cam() { Hamamatsu_Cam("\0"); }
@@ -19,7 +20,7 @@ Hamamatsu_Cam::Hamamatsu_Cam(const char *camid)
       vSensorSize(), hConvertThread(), fpath_dcimg_copy(), fext_dcimg_copy(),
       fpath_bin_temp_copy(), fext_bin_temp_copy(), fpath_bin_tgt_copy(),
       fext_bin_tgt_copy(), msg(), requestedframes(), waitdonethread(),
-      waitdonethreadid(), wide_recopen_path() {
+      waitdonethreadid(), wide_recopen_path(), terminate_child_thread(false) {
   read_mode = 0; // 0 gives External start trigger mode. 1 gives external
                  // synchronous trigger mode (one frame per trigger)
   exposureTimeSeconds = .15;
@@ -542,6 +543,7 @@ bool Hamamatsu_Cam::aq_live_restart() {
 // Restart live acquisition with given ROI, binning, exposureTime (s)
 bool Hamamatsu_Cam::aq_live_restart(SDL_Rect inputROI, int binning,
                                     double exposureTime) {
+
   static DCAMERR err;
   if (isDevOpen) {
     if (isCapturing) {
@@ -558,6 +560,16 @@ bool Hamamatsu_Cam::aq_live_restart(SDL_Rect inputROI, int binning,
     }
     // here assume capturing is stopped
     // set live imaging parameters
+
+     terminate_child_thread = true; 
+
+    // Wait for the child thread to finish
+    if (waitdonethread != NULL) {
+      WaitForSingleObject(waitdonethread, INFINITE);
+      CloseHandle(waitdonethread);
+      waitdonethread = NULL;
+    }
+
     bin = binning;
     set_property("BINNING", DCAM_IDPROP_BINNING, binning);
     set_arbitrary_roi(inputROI);
@@ -704,31 +716,38 @@ unsigned __stdcall waitdonefunction(void *pArguments) {
   DCAMERR err;
 
   DCAMREC_STATUS recstatus;
-  // get recording status
-  while (!bStop) {
+  memset(&recstatus, 0,
+         sizeof(recstatus)); // Properly initialize recstatus here
+  recstatus.size = sizeof(recstatus);
+
+  while (!bStop && !cam->terminate_child_thread) { // Check the flag here
+    // Reinitialize recstatus within the loop to reset any data
     memset(&recstatus, 0, sizeof(recstatus));
     recstatus.size = sizeof(recstatus);
+
     err = dcamrec_status(cam->hrec, &recstatus);
     if (failed(err)) {
       dcamcon_show_dcamerr(cam->hdcam, err, "dcamrec_status()", NULL);
       cam->acq_done = 1;
     } else {
-      printf("flags: 0x%08x, latest index: %06d, miss: 0x%06d, total: %d\n",
-             recstatus.flags, recstatus.currentframe_index,
-             recstatus.missingframe_count, recstatus.totalframecount);
       if (recstatus.totalframecount == cam->requestedframes) {
         bStop = true;
       }
     }
   }
+
+  // Ensure proper cleanup and exit
   cam->dropped_frame_count = recstatus.missingframe_count;
   cam->acq_done = 1;
-  printf("finished\n");
-  dcamcap_stop(cam->hdcam);
-  cam->aq_live_restart();
+  if (!cam->terminate_child_thread) { // Only stop if not resetting
+    dcamcap_stop(cam->hdcam);
+    cam->aq_live_restart();
+  }
+
   _endthreadex(0);
   return 0;
 }
+
 
 // thread to convert dcimg to binary.
 unsigned __stdcall convertThreadFcn(void *pArguments) {
@@ -812,6 +831,7 @@ inline const int my_dcamdev_string(DCAMERR &err, HDCAM hdcam, int32 idStr,
   return (failed(err) == 0); // Return true if failed(err) is 0, false
                              // otherwise.
 }
+
 
 // Initialize and open Hamamatsu camera controller
 HDCAM hd_dcamcon_init_open(const char *camid_requested) {

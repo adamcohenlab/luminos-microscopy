@@ -14,9 +14,6 @@ classdef Sutter_Stage_Controller < Linear_Controller
         %current_position
         pos % {x, y, z}
     end
-    properties (SetObservable, AbortSet)
-        zStageFlag = false;
-    end
 
     methods
         function obj = Sutter_Stage_Controller(Initializers)

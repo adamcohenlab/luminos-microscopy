@@ -24,7 +24,7 @@ export const Nav = ({
 const AppTitle = () => (
   <div className="flex-shrink-0">
     <a className="text-white font-bold text-base cursor-default">
-      Luminos v0.2
+      Luminos v0.4
     </a>
   </div>
 );

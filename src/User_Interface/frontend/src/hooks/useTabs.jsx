@@ -7,7 +7,7 @@ import Scanning from "../tabs/Scanning/Scanning";
 import { useEffect } from "react";
 import SLM from "../tabs/SLM/SLM";
 import SpinningDisk from "../tabs/SpinningDisk";
-import Hadamard from "../tabs/Hadamard";
+import AdvancedImaging from "../tabs/AdvancedImaging/AdvancedImaging";
 import { getTabs } from "../matlabComms/miscellaneousComms";
 
 export const useTabs = () => {
@@ -19,7 +19,7 @@ export const useTabs = () => {
     Scanning,
     SLM,
     SpinningDisk,
-    Hadamard,
+    AdvancedImaging,
   };
 
   // tabs that are in use (e.g. if DMD is not in use, don't show the DMD tab)
@@ -49,19 +49,23 @@ export const useTabs = () => {
 
   // add special tabs (for multiple instances of certain tab types e.g. DMDs, Scanning)
   for (const tabInfo of specialTabs) {
-    // iterate over all deviceNames for that tab
-    for (let i = 0; i < tabInfo.names.length; i++) {
+    // DI 10/24: It's useful to have the name even if there's only one DMD. This way, we can refer to it by name in all functions.
+    const namesArray = Array.isArray(tabInfo.names) ? tabInfo.names : [tabInfo.names];
+  
+    // Iterate over all device names for that tab
+    for (let i = 0; i < namesArray.length; i++) {
       const TabComponent = allTabs[tabInfo.type]; // dynamically get the React Component for that tab type
       if (TabComponent) {
-        tabs[`${tabInfo.names[i]}`] = {
+        tabs[`${namesArray[i]}`] = {
           component: TabComponent,
           props: {
-            deviceName: tabInfo.names[i],
+            deviceName: namesArray[i],
           },
         };
       }
     }
   }
+  
 
   return { tabs, currentTab, setCurrentTab };
 };

@@ -1,9 +1,13 @@
-function y = awfm_sin(t, Amplitude, freq, c, phase)
+function y = awfm_sin(t, A, freq, c, phase)
 % [DEFAULTS]
-% Amplitude, 1, V
-% freq, 10, Hz
-% c, 0, V
-% phase, 0, deg
+% A, 1
+% freq, 10
+% c, 0
+% phase, 0
 % [END]
-y = Amplitude * sin(t*2*pi*freq+phase*2*pi/360) + c;
+A = defcheck(A, 1);
+freq = defcheck(freq, 10);
+c = defcheck(c, 0);
+phase = defcheck(phase, 0);
+y = A * sin(t*2*pi*freq+phase*2*pi/360) + c;
 end

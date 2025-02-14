@@ -42,10 +42,11 @@ classdef DAQ < Device
         downsampling_counter;
         secondary_clock;
         secondary_trigger;
+        completion_trigger;
     end
     properties (SetObservable, Transient)
         counter_outputs = DQ_CO_Ticks.empty;
-        DAQ_Master
+        DAQ_Master %Does DAQ begin acquisition upon software command (true)? Otherwise (false), DAQ waits for digital trigger.
     end
     events
         tasks_done
@@ -107,7 +108,9 @@ classdef DAQ < Device
             obj.cfclsync_counter.AddTrigger('/Dev2/Ctr0InternalOutput', 'rising');
             obj.cfclsync_counter_configured = true;
         end
-
+        
+        %Dedicated counter that produces constant-period trigger waveform
+        %to individually trigger a series of camera frames.
         function Add_Dedicated_Camtrig_Counter(obj, frame_period_ms, counter, timebase_source, trigger_source, options)
             arguments
                 obj
@@ -162,6 +165,7 @@ classdef DAQ < Device
                     data = [];
                 else
                     data = obj.Calculate_Waveform(timing_data, wavedata(i));
+                    data(end) = 0; % Turn of device at the end of acquisition
                 end
 
                 obj.Attach_Channel_THandle(task, wavedata(i).name, ...
@@ -187,6 +191,7 @@ classdef DAQ < Device
             data = obj.Calculate_Waveform(timing_data, wavedata(1));
             for i = 2:numel(wavedata)
                 data = data.*obj.Calculate_Waveform(timing_data, wavedata(i));
+                data(end) = 0; % Turn of device at the end of acquisition
             end
 
             obj.Attach_Channel_THandle(task, wavedata(1).name, ...
@@ -203,88 +208,106 @@ classdef DAQ < Device
             % wfm_data: {ao, do, ai, ctri}
             % ao/do/ai: [{port, name, wfminfo?,...}, ...]
 
-            if isempty(obj.wfm_data.ao) && isempty(obj.wfm_data.do) && isempty(obj.wfm_data.ai)
-                error('Waveforms are empty. Add waveforms before building');
-            end
             delete(obj.buffered_tasks);
             obj.buffered_tasks(:) = [];
             obj.numsamples = round(obj.global_props.total_time*obj.global_props.rate);
             obj.rate = obj.global_props.rate;
             obj.clock = obj.remove_al(obj.global_props.clock_source); %device specific clock
             obj.trigger = strcat('/', obj.remove_al(obj.global_props.trigger_source)); %device specific trigger
-            obj.DAQ_Master = obj.global_props.daq_master;
 
+            % Handle no waveforms
+            if isempty(obj.wfm_data.ao) && isempty(obj.wfm_data.do) && isempty(obj.wfm_data.ai)
+                warning('Waveforms are empty. No waveforms built.');
 
-            % Process AO waveforms
-            if (~isempty(obj.wfm_data.ao))
-                ao_names = {obj.wfm_data.ao.name};
-                [uniqueNames, ~, idx] = unique(ao_names);
-                counts = accumarray(idx, 1);
-                duplicateIdx = find(counts > 1);
+            % Handle waveforms
+            else  
+                obj.DAQ_Master = obj.global_props.daq_master;
     
-                if isempty(duplicateIdx)
+                % Process AO waveforms
+                if (~isempty(obj.wfm_data.ao))
+                    ao_names = {obj.wfm_data.ao.name};
+                    [uniqueNames, ~, idx] = unique(ao_names);
+                    counts = accumarray(idx, 1);
+                    duplicateIdx = find(counts > 1);
+        
+                    if isempty(duplicateIdx)
+                        obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ao), obj.global_props, "ao");
+                    else
+                        task = [];
+                        for i = 1:length(uniqueNames)
+                            if ismember(i, duplicateIdx)
+                                % Find all occurrences of this name
+                                dupIndices = find(idx == i);
+                                task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.ao(dupIndices)), obj.global_props, "ao", task);
+                            else
+                                % Find the index of this unique name
+                                index = find(idx == i, 1, 'first');
+                                task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.ao(index)), obj.global_props, "ao",task);
+                            end
+                        end
+                    end
+                else
                     obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ao), obj.global_props, "ao");
-                else
-                    task = [];
-                    for i = 1:length(uniqueNames)
-                        if ismember(i, duplicateIdx)
-                            % Find all occurrences of this name
-                            dupIndices = find(idx == i);
-                            task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.ao(dupIndices)), obj.global_props, "ao", task);
-                        else
-                            % Find the index of this unique name
-                            index = find(idx == i, 1, 'first');
-                            task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.ao(index)), obj.global_props, "ao",task);
+                end
+    
+                % Process DO waveforms
+                if (~isempty(obj.wfm_data.do))
+                    do_names = {obj.wfm_data.do.name};
+                    [uniqueNames, ~, idx] = unique(do_names);
+                    counts = accumarray(idx, 1);
+                    duplicateIdx = find(counts > 1);
+                    
+                    if isempty(duplicateIdx)
+                        obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do), obj.global_props, "do");
+                    else
+                        task = [];
+                        for i = 1:length(uniqueNames)
+                            if ismember(i, duplicateIdx)
+                                % Find all occurrences of this name
+                                dupIndices = find(idx == i);
+                                task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.do(dupIndices)), obj.global_props, "do",task);
+                            else
+                                % Find the index of this unique name
+                                index = find(idx == i, 1, 'first');
+                                task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.do(index)), obj.global_props, "do", task);
+                            end
                         end
                     end
-                end
-            else
-                obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ao), obj.global_props, "ao");
-            end
-
-            % Process DO waveforms
-            if (~isempty(obj.wfm_data.do))
-                do_names = {obj.wfm_data.do.name};
-                [uniqueNames, ~, idx] = unique(do_names);
-                counts = accumarray(idx, 1);
-                duplicateIdx = find(counts > 1);
-                
-                if isempty(duplicateIdx)
+                else
                     obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do), obj.global_props, "do");
-                else
-                    task = [];
-                    for i = 1:length(uniqueNames)
-                        if ismember(i, duplicateIdx)
-                            % Find all occurrences of this name
-                            dupIndices = find(idx == i);
-                            % Assuming Build_Waveforms_Combined can handle multiple indices
-                            task = obj.Build_Waveforms_Combined(obj.remove_aliases(obj.wfm_data.do(dupIndices)), obj.global_props, "do",task);
-                        else
-                            % Find the index of this unique name
-                            index = find(idx == i, 1, 'first');
-                            task = obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do(index)), obj.global_props, "do", task);
-                        end
-                    end
                 end
-            else
-                obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.do), obj.global_props, "do");
+    
+                % Analog input don't check for duplicate tasks. Returns error
+                % as it should.
+                obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ai), obj.global_props, "ai");
+    
+                if ~isempty(obj.wfm_data.ctri) % counter input; used for VR rotary encoder
+                    wavedata = obj.wfm_data.ctri;
+                    roto = DQ_Edge_Count(wavedata(1).port, obj.numsamples, obj.rate, 'name', wavedata(1).name);
+                    obj.Counter_Inputs(1) = roto;
+                end
+                %di tasks currently unsupported but can be added later.
             end
-
-            % Analog input don't check for duplicate tasks. Returns error
-            % as it should.
-            obj.Build_Waveforms_Type(obj.remove_aliases(obj.wfm_data.ai), obj.global_props, "ai");
-
-            if ~isempty(obj.wfm_data.ctri) % counter input; used for VR rotary encoder
-                wavedata = obj.wfm_data.ctri;
-                roto = DQ_Edge_Count(wavedata(1).port, obj.numsamples, obj.rate, 'name', wavedata(1).name);
-                obj.Counter_Inputs(1) = roto;
-            end
-            %di tasks currently unsupported but can be added later.
-
-            obj.Configure_Simple_Sync_Finite();
+            %obj.Configure_Simple_Sync_Finite();
             obj.waveforms_built = true;
             success = 1;
 
+        end
+
+        function aoWfm = Retrieve_AO(obj)
+            if isempty(obj) || isempty(obj.wfm_data.ao)
+                aoWfm = NaN;
+            else
+                aoWfm = obj.wfm_data.ao;
+            end
+        end
+
+        function doWfm = Retrieve_DO(obj)
+            if isempty(obj) || isempty(obj.wfm_data.do)
+                doWfm = NaN;
+            else
+                doWfm = obj.wfm_data.do;
+            end
         end
 
         function port = remove_al(obj, port)
@@ -344,7 +367,75 @@ classdef DAQ < Device
             end
         end
 
-        function Start_Tasks(obj)
+        function success = reset(obj)
+            success = 0;
+            % Stop counters vsync and buffered tasks
+            for i = 1:numel(obj.buffered_tasks)
+                obj.buffered_tasks(i).complete = true;
+            end
+            for i = 1:numel(obj.Counter_Inputs)
+                obj.Counter_Inputs(i).complete = true;
+            end
+            delete(obj.taskdone_listeners);
+            obj.taskdone_listeners(:) = [];
+            delete(obj.buffered_tasks);
+            obj.buffered_tasks(:) = [];
+            delete(obj.Counter_Inputs);
+            obj.Counter_Inputs(:) = [];
+
+            % Shut down all running LEDs, shutters etc.
+            obj.turn_off_waveforms();
+
+            success = 1;
+        end
+            % Useful here??
+            % daqreset;
+            % for i = 1:numel(obj.Device_List)
+            %     [aa] = daq.ni.NIDAQmx.DAQmxResetDevice(obj.Device_List{i});
+            % end
+
+            function turn_off_waveforms(obj)
+            % Turn running DO and AO waveforms back to 0
+            for i = 1:numel(obj.wfm_data.ao)
+                taskAO = DQ_AO_On_Demand(0, obj.remove_al(obj.wfm_data.ao(i).port));
+                taskAO.OD_Write(0);
+                taskAO.ClearTask();
+            end
+            for i = 1:numel(obj.wfm_data.do)
+                taskDO = DQ_DO_On_Demand(0, obj.remove_al(obj.wfm_data.do(i).port));
+                taskDO.OD_Write(0);
+                taskDO.ClearTask();
+            end
+            end
+
+
+        % Set output trigger upon completion of acquisition
+        function set_completion_trigger(obj, port_name)
+            if ~strcmp(port_name,"None")
+                port = obj.remove_al(port_name);
+                obj.completion_trigger = port;
+            else
+                obj.completion_trigger = [];
+            end
+        end
+
+        % Give software command to all buffered tasks and counter inputs to
+        % start. Behavior depends on obj.DAQ_Master.
+        % If obj.DAQ_Master == true, an on-demand trigger pulse is sent
+        % onto the line defined by obj.trigger. Any buffered tasks pending
+        % on this line (by default, all of them) will then start upon
+        % sensing this trigger.
+        % If obj.DAQ_Master == false, no trigger pulse will be sent. All
+        % tasks pending on the line defined by obj.trigger (by default, all
+        % of them) will continue pending until they detect a trigger pulse
+        % on this line (provided by external hardware).
+        % If multiple cameras need a well timed initial trigger pulse, 
+        % use varargin to pass the ports and send pulse if obj.DAQ_Master == true
+        function Start_Tasks(obj, varargin)
+            additional_pulses = [];
+            if ~isempty(varargin)
+                additional_pulses = varargin{1}; 
+            end
             for i = 1:numel(obj.taskdone_listeners)
                 obj.taskdone_listeners(i).Enabled = true;
             end
@@ -360,6 +451,16 @@ classdef DAQ < Device
                 obj.trigger_output_task.OD_Write(1);
                 pause(.001); %Flush to make sure the previous write completes
                 obj.trigger_output_task.OD_Write(0);
+            end
+            if isempty(additional_pulses)
+                for i = 1:length(additional_pulses)
+                    task(i) = DQ_DO_On_Demand(0, additional_pulses(i));
+                    task(i).OD_Write(1);
+                end
+                pause(0.001);
+                for i = 1:length(additional_pulses)
+                    task(i).OD_Write(0);
+                end
             end
         end
 

@@ -54,7 +54,7 @@ classdef DCServo_TCube < Motion_Controller
             end
             obj@Motion_Controller(Initializer);
             if ~isempty(Initializer)
-                obj.serialnumber = obj.Initializer.serial_number;
+                obj.serialnumber = obj.Initializer.serialnumber; % Changed this from serial_number to match Initalizer params - DI
             else
                 obj.serialnumber = options.serialnumber;
             end
@@ -72,6 +72,9 @@ classdef DCServo_TCube < Motion_Controller
 
         function connect(obj) % Connect device
             snumberlist = obj.listdevices();
+            if ~ismember(obj.serialnumber, snumberlist)
+                error("Requested serialnumber not found in devicelist.");
+            end
             obj.deviceNET = Thorlabs.MotionControl.TCube.DCServoCLI.TCubeDCServo.CreateTCubeDCServo(obj.serialnumber);
             obj.deviceNET.ClearDeviceExceptions(); % Clear device exceptions via .NET interface
             obj.deviceNET.Connect(obj.serialnumber); % Connect to device via .NET interface

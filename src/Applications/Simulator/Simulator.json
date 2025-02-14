@@ -1,64 +1,50 @@
 {
   "objectType": "Rig_Initializer",
-  "dataDirectory": "C:\\Users\\Labmember\\Data",
-  "tabs": ["Main", "Waveforms", "DMD"],
+  "dataDirectory": "C:\\Users\\danie\\Documents\\GitHub\\luminos\\daniel_temp_data",
+  "tabs": ["Main", "Waveforms", "AdvancedImaging"],
   "devices": [
     {
       "deviceType": "Camera",
       "name": "Simulated_Cam",
-      "trigger": "",
+      "trigger": "Dev2/port0/line0",
       "clock": "",
       "hsync_rate": 100000,
       "vsync": "",
       "daqTrigCounter": [],
       "type": 0,
       "rdrivemode": [],
-      "cam_id": "\\0",
-      "virtualSensorSize": 2048,
+      "virtualSensorSize": 1024,
       "Prop_Allowed_Vals": []
     },
     {
-      "deviceType": "Voltage_Shutter",
-      "name": "PMT Shutter",
-      "port": "Dev5/ao0",
-      "offVoltage": 0,
-      "onVoltage": 0.7,
+      "deviceType": "Camera",
+      "name": "Simulated_Cam2",
+      "trigger": "Dev2/port0/line1",
+      "clock": "",
+      "hsync_rate": 100000,
+      "vsync": "",
+      "daqTrigCounter": [],
+      "type": 0,
+      "rdrivemode": [],
+      "virtualSensorSize": 1024,
       "Prop_Allowed_Vals": []
     },
     {
       "deviceType": "DAQ",
-      "name": "Simulator_DAQ",
-      "alias_init": "Dev5/ao0,Modulator",
-      "defaultClock": "",
-      "default_trigger": "",
-      "Prop_Allowed_Vals": []
-    },
-    {
-      "deviceType": "NI_DAQ_Modulator",
-      "name": "mod594",
-      "port": "Dev5/ao1",
-      "min": 0,
-      "max": 5,
+      "name": "DAQ_Session",
+      "alias_init": "Dev2/port0/line2, shutter594, Dev2/port0/line3, test shutter",
       "Prop_Allowed_Vals": []
     },
     {
       "deviceType": "NI_DAQ_Shutter",
       "name": "shutter594",
-      "port": "Dev5/port0/line1",
-      "Prop_Allowed_Vals": []
-    },
-    {
-      "deviceType": "NI_DAQ_Modulator",
-      "name": "mod488",
-      "port": "Dev5/ao2",
-      "min": 0,
-      "max": 5,
+      "port": "Dev2/port0/line2",
       "Prop_Allowed_Vals": []
     },
     {
       "deviceType": "NI_DAQ_Shutter",
-      "name": "shutter488",
-      "port": "Dev5/port0/line0",
+      "name": "test shutter",
+      "port": "Dev2/port0/line3",
       "Prop_Allowed_Vals": []
     }
   ]

@@ -32,8 +32,7 @@ classdef (Abstract) DMD < Patterning_Device
         function Write_Stack_JS(obj, stack)
             % stack is (frame,x,y)
             obj.pattern_stack = stack;
-            obj.Write_Stack();
-            
+            obj.Write_Stack();        
         end
         
         function Add_Pattern_to_Alignment(obj, name)
@@ -47,22 +46,94 @@ classdef (Abstract) DMD < Patterning_Device
                 obj.Target = pattern;
                 obj.Write_Static();
             else
-                display('Pattern Not Found!')
+                disp('Pattern Not Found!');
             end
         end
         
         function Write_White(obj)
             obj.Target = true(obj.Dimensions);
             obj.Write_Static();
-            
         end
-        
-        % Project AprilTag codes for registration on DMD
-        function Project_Cal_Pattern(obj)
-            obj.Generate_Calibration_Pattern();
+
+        function Write_White_Current_FOV(obj)
+            pattern = true(obj.ref_im_dims);
+            if ~isempty(pattern)
+                obj.setPatterningROI(pattern);
+            end
+        end
+
+        function Write_Dark(obj)
+            obj.Target = false(obj.Dimensions);
             obj.Write_Static();
         end
 
+        function Export_Shapes_To_Matlab(obj, ShapeArray)
+            if size(ShapeArray.polygons, 1) == 1
+                ShapeArray.polygons = {squeeze(ShapeArray.polygons)};
+            end
+            if size(ShapeArray.polygons, 3) > 1
+                poly_array = ShapeArray.polygons;
+                ShapeArray.polygons = {};
+                for i = 1:size(poly_array,3)
+                    ShapeArray.polygons{i,1} = squeeze(poly_array(i,:,:));
+                end
+            end
+            obj.shapes = ShapeArray;
+            obj.pattern_stack = genMasks(obj);
+            disp('Exported patterns to dmd.shapes.');
+        end
+        
+        % function masks = Shapes_To_ROI(obj)
+        %     for i = 1:length(obj.shapes)
+        %         masks(:,:,i) = ;
+        %     end
+        % end
+        
+        % Project AprilTag codes for registration on DMD
+        function Project_Cal_Pattern(obj, april_tag_number)
+            if april_tag_number == "M"
+                obj.Project_Manual_Cal_Pattern(-1);
+            else
+                obj.Generate_Calibration_Pattern(str2double (april_tag_number));
+                obj.Write_Static();
+            end
+        end
+        
+        function result = Generate_Hadamard(obj, varargin)
+            result = false;
+        
+            if isempty(varargin)
+                nlocations_and_offset = [63, 14];
+            else
+                nlocations_and_offset = varargin{1};
+            end
+            
+            hadamard_patterns = alp_btd_to_logical(hadamard_patterns_scramble_nopermutation(nlocations_and_offset));
+          
+            if ~(isequal(obj.Dimensions, [1024, 768]) || isequal(obj.Dimensions, [768, 1024]))
+                [pattern_height, pattern_width, ~] = size(hadamard_patterns);
+                
+                % If the dimensions are smaller, crop the patterns
+                if obj.Dimensions(1) < pattern_height || obj.Dimensions(2) < pattern_width
+                    hadamard_patterns = hadamard_patterns(1:obj.Dimensions(1), 1:obj.Dimensions(2), :);
+                
+                % If the dimensions are larger, replicate the patterns
+                elseif obj.Dimensions(1) > pattern_height || obj.Dimensions(2) > pattern_width
+                    rep_height = ceil(obj.Dimensions(1) / pattern_height);
+                    rep_width = ceil(obj.Dimensions(2) / pattern_width);
+                    
+                    hadamard_patterns = repmat(hadamard_patterns, rep_height, rep_width, 1);
+                    hadamard_patterns = hadamard_patterns(1:obj.Dimensions(1), 1:obj.Dimensions(2), :);
+                end
+        
+            end
+            obj.pattern_stack = permute(hadamard_patterns, [2, 1, 3]);
+            obj.all_patterns = obj.pattern_stack;
+            Write_Stack(obj, 'slave');    
+            result = true;
+        end
+
+         
         % Project stored manual calibration pattern. Optional num_points_to_show
         % argument allows for showing only a prefix subset of the full
         % calibration pattern (in order, e.g. to step through the
@@ -118,4 +189,6 @@ classdef (Abstract) DMD < Patterning_Device
             end
         end
     end
+
+
 end

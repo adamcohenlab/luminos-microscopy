@@ -3,6 +3,7 @@ classdef TI_DMD < DMD
         tcpObject
         width
         height
+        shapes = [];
     end
 
     properties (Constant)
@@ -218,8 +219,11 @@ classdef TI_DMD < DMD
             warning('Write Video not currently supported by TI_DMD')
         end
 
-        function obj = Write_Stack(obj)
+        function obj = Write_Stack(obj, varargin)
 
+            if ~isempty(varargin)
+                warning("Master and Slave mode not implemented for TI_DMD.");
+            end
             imgs = obj.pattern_stack;
             imgs = imgs < .5;
             patternNum = size(imgs, 3);

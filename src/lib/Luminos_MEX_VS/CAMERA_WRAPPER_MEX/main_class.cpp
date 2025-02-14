@@ -234,6 +234,55 @@ public:
         return;
       }
 
+      // Rotate camera stream 90 deg clockwise
+      if (STREQ(cmd, "RotateCamFOV")) {
+        int result = instance->RotateCamFOV();
+        outputs[0] = factory.createScalar(result);
+        return;
+      }
+
+      // Restart camera
+      if (STREQ(cmd, "aq_live_restart")) {
+        instance->aq_live_restart();
+        outputs[0] = factory.createScalar(1);
+        return;
+      }
+
+      // Rotate camera stream 90 deg counter-clockwise
+      if (STREQ(cmd, "RotateCamFOVcounter")) {
+        int result = instance->RotateCamFOVcounter();
+        outputs[0] = factory.createScalar(result);
+        return;
+      }
+
+      // Flip camera stream horizontally
+      if (STREQ(cmd, "FlipCamFOV")) {
+        bool result = instance->FlipCamFOV();
+        outputs[0] = factory.createScalar(result);
+        return;
+      }
+
+      // Stop stream for shutdown
+      if (STREQ(cmd, "Stop")) {
+        instance->Stop_Live_Acquisition();
+        return;
+      }
+
+      // Check if camera has sub ROI selected
+      if (STREQ(cmd, "Check_for_ROI")) {
+        int result = instance->Check_for_ROI();
+        outputs[0] = factory.createScalar(result);
+        return;
+      }
+
+      // Set Magnification times microns per camera pixel to calculate distances
+      if (STREQ(cmd, "Set_Magnification")) {
+        const TypedArray<double> magArray = std::move(inputs[2]);
+        double magnification = magArray[0];
+        instance->Set_Magnification(magnification);
+        return;
+      }
+
       // Get current binning level
       if (STREQ(cmd, "Get_Binning")) {
         auto nn = factory.createScalar<double>(instance->Get_Binning());
@@ -274,6 +323,16 @@ public:
         return;
       }
 
+      // Switch between camera master (wait until camera is done until returning acq_done) and slave (return acq_done immediately)
+      if (STREQ(cmd, "Set_Master")) {
+        instance->Set_Master(1);
+        return;
+      }
+      if (STREQ(cmd, "Set_Slave")) {
+        instance->Set_Master(0);
+        return;
+      }
+
       // Set fractional colormap limits of live display (0 to 1).
       // Third argument is low threshold
       // Fourth is high threshold
@@ -294,8 +353,16 @@ public:
         return;
       }
 
+      // Delete underlying Cam_Wrapper instance for Kinetix.
+      if (STREQ(cmd, "deleteKin")) {
+        mexUnlock();
+        destroyObject<Cam_Wrapper>(handl);
+        return;
+      }
+
       // Delete underlying Cam_Wrapper instance.
       if (STREQ(cmd, "delete")) {
+        instance->Cleanup();
         mexUnlock();
         destroyObject<Cam_Wrapper>(handl);
         return;

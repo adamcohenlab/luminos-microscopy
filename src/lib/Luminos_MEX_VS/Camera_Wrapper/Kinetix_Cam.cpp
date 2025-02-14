@@ -339,7 +339,7 @@ bool Kinetix_Cam::aq_sync_prepare(SDL_Rect inputROI, int binning,
   // set the object property bin to the input binning
   bin = binning;
   double exposureTimeMicroseconds = exposureTime * 1e+6;
-  acq_done = 0;
+  acq_done = !master;
   // Assuming inputROI represents the ROI with x, y as the top-left corner
   // and w, h as the width and height of the ROI respectively
   set_arbitrary_roi(inputROI.x, inputROI.w, inputROI.y, inputROI.h);
@@ -379,6 +379,7 @@ struct ThreadParams {
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!
 bool Kinetix_Cam::aq_sync_start(int32 recordFrames, const char *fpath) {
+
   WaitForSingleObject(ghMutexCapturing, INFINITE);
   isRecording = true;
   isCapturing = true;

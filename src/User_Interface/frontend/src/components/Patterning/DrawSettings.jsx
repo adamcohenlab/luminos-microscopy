@@ -126,7 +126,7 @@ const PatterningImageSelector = ({ deviceType, deviceName = [] }) => {
     const getImgs = async () => {
       var imgs = await getListOfImages(false);
       //console.log("Images in snaps dir:",imgs);
-      //If no images present, snap a new one and set
+      // If no images present, snap a new one and set
       // it to be the active image.
       if (imgs.length < 1) {
         snap({ folder: "temp", showDate: false });
@@ -145,12 +145,12 @@ const PatterningImageSelector = ({ deviceType, deviceName = [] }) => {
         imgObj.src = imgSrc(img);
       });
     };
-    // run getImgs every 0.5 seconds
+    // run getImgs every 2 seconds
     // This may be too fast, as this requires MAtlab message passing
     // to get the user every time.
     const interval = setInterval(() => {
       getImgs();
-    }, 500);
+    }, 2000);
     return () => clearInterval(interval);
   }, []);
 

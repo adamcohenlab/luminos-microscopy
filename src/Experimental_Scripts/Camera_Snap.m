@@ -8,8 +8,31 @@ end
 cam = app.getDevice('Camera', 'name', options.devicename);
 cam.Get_ROI();
 snap = CL_RefImage();
-snap.tform.T = eye(3);
+% Get all available DMD devices
+dmd = app.getDevice('DMD');
+
+if ~isempty(dmd)
+    snap.tform(length(dmd)).tform = affine2d();
+    for i = 1:length(dmd)
+        snap.tform(i).name = dmd(i).name;
+        snap.tform(i).tform = dmd(i).tform;
+    end
+else
+    % Handle case where no DMDs are found
+    snap.tform = [];
+end
+
+
+snap.bin = cam.bin;
 snap.img = cam.Snap();
+
+% Reshape if depending on binning - DI 6/24
+sizes_bin = size(snap.img)/snap.bin;
+snap.img = reshape(snap.img(1:ceil(sizes_bin(1)/snap.bin),:)',sizes_bin(2),ceil(sizes_bin(1)/snap.bin)*snap.bin)';
+extra_lines = ceil(sizes_bin(1)/snap.bin)*snap.bin - sizes_bin(1);
+snap.img = snap.img(1:end-extra_lines,:);
+%figure; imagesc(snap.img); disp(size(snap.img));
+
 snap.type = 'Camera';
 snap.name = cam.name;
 snap.ref2d.ImageSize = size(snap.img);

@@ -15,10 +15,6 @@ classdef MAC5000_Stage_Controller < Linear_Controller
         %wants position, client should call Get_Position() method.
         % pos
     end
-
-    properties (SetObservable, AbortSet)
-        zStageFlag = false;
-    end
     
     properties
         pos
@@ -39,7 +35,7 @@ classdef MAC5000_Stage_Controller < Linear_Controller
             set(obj.serial_com, 'FlowControl', 'none');
             set(obj.serial_com, 'Parity', 'none');
             set(obj.serial_com, 'StopBits', 2);
-            set(obj.serial_com, 'Timeout', 10);
+            set(obj.serial_com, 'Timeout', 0.2);
             %Set to high-level control format
             obj.serial_com.write(255, 'uint8');
             obj.serial_com.write(65, 'uint8');
@@ -69,14 +65,7 @@ classdef MAC5000_Stage_Controller < Linear_Controller
                 line = strip(obj.serial_com.readline());
                 a = a + 1;
             end
-        end
-        
-        function pos = get.pos(obj)
-            pos_arr = obj.Get_Current_Position();
-            pos.x = pos_arr(1);
-            pos.y = pos_arr(2);
-            obj.pos = pos;
-        end
+        end 
         
         %Check whether any axis is currently moving (useful for checking
         %before sending next command or before checking position). If
@@ -125,16 +114,92 @@ classdef MAC5000_Stage_Controller < Linear_Controller
         %The movements start at the same time, but may finish at different
         %times depending on the individual axis speed and distance to
         %travel.
+
+        % These 5 functions modified by DI:
+        % Hardcoded IDs to avoid various bugs.
+        % AFAIK these are the only ones that work properly.
         function Move_To_Position(obj, position)
             % keep only x, y
             position = position(1:2);
             flush(obj.serial_com);
             IDs = {'X', 'Y'};
-            message = join(["MOVE", strcat(IDs, "=", string(round(position./obj.microstep_size)))]);
+            ms_size = obj.microstep_size;
+            if size(ms_size,1) > 1
+                ms_size = ms_size';
+            end            
+            message = join(["MOVE", strcat(IDs, "=", string(round(position./ms_size)))]);
             obj.serial_com.writeline(message);
-            obj.error_check();
-            
+            pause(0.5);
+            while (obj.checkMoving()) %Wait until motor stops moving
+                pause(0.1);
+            end
         end
+
+        function isMoving = checkMoving(obj)
+            result_received = 0;
+            message = "STATUS";
+            while ~result_received
+                obj.serial_com.writeline(message);
+                reply = obj.serial_com.read(1, 'char');
+                switch reply
+                    case 'N'
+                        isMoving = false;
+                        result_received = 1;
+                    case 'B'
+                        isMoving = true;
+                        result_received = 1;
+                end
+            end
+        end
+
+        function pos = get.pos(obj)
+            pos_arr = obj.Get_Current_Position();
+            % Checks to prevent errors during moving
+            if ~(pos_arr == [NaN, NaN])
+                pos.x = pos_arr(1);
+                pos.y = pos_arr(2);
+                obj.pos = pos;
+            else
+                pos = pos_arr;
+            end
+        end
+
+        function pos = Get_Current_Position(obj)
+            pos_ms = obj.Get_Current_Position_Microsteps(); 
+            % Checks to prevent errors during moving
+            if ~(pos_ms == [NaN, NaN])
+                ms_size = obj.microstep_size;
+                if size(ms_size,1) > 1
+                    ms_size = ms_size';
+                end
+                pos = pos_ms .* ms_size;
+            else 
+                pos = pos_ms;
+            end
+        end
+
+        function pos = Get_Current_Position_Microsteps(obj)
+            obj.serial_com.flush();
+            %while (obj.Get_Status()) %Wait until motor stops moving
+            %end
+            % Checks to prevent errors during moving
+            if strcat(obj.axes.ID) == "XY"
+                message = strcat("WHERE ", "XY");
+                obj.serial_com.writeline(message);
+                line = obj.serial_com.readline();
+                if ~isempty(line)
+                pos = split(strip(line));
+                pos = str2double(pos(2:end))';
+                else 
+                   pos = [NaN, NaN];
+                end
+            else 
+                pos = [NaN, NaN];
+            end
+        end
+
+        
+
         %%Move motor axes specified by IDs array to absolute position specified by position array.
         %Position should be specified as an integer number of pulses. This
         %method completes the move using a constant, independent speed for each axis.
@@ -226,19 +291,25 @@ classdef MAC5000_Stage_Controller < Linear_Controller
             obj.serial_com.writeline(message);
             obj.error_check();
         end
-        
-        function pos = Get_Current_Position(obj)
-            pos = obj.Get_Current_Position_Microsteps() .* obj.microstep_size;
-        end
-        function pos = Get_Current_Position_Microsteps(obj)
+
+        function pos = Get_Current_Position_Manual(obj)
             obj.serial_com.flush();
             while (obj.Get_Status()) %Wait until motor stops moving
             end
             message = strcat("WHERE ", strcat(obj.axes.ID));
             obj.serial_com.writeline(message);
             line = obj.serial_com.readline();
-            pos = split(strip(line));
-            pos = str2double(pos(2:end))';
+            if isempty(line)
+                pos = [NaN, NaN];
+            else
+                pos = split(strip(line));
+                pos = str2double(pos(2:end))';
+            end
+            ms_size = obj.microstep_size;
+            if size(ms_size,1) > 1
+                ms_size = ms_size';
+            end  
+            pos = pos .* ms_size;
         end
         
         %Configure movement steady-state speed.
@@ -256,6 +327,7 @@ classdef MAC5000_Stage_Controller < Linear_Controller
             speeds = speeds ./ obj.microstep_size;
             Set_Speed_Microsteps(obj, IDs, speeds);
         end
+
         %Configure movement steady-state speed.
         %omitted speeds argument will cause that parameter to be set to a
         %default value (speed = 25000Hz)

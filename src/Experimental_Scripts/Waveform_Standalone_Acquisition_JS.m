@@ -16,6 +16,7 @@ app.makeExperimentFolder(folder);
 dq.DAQ_Master = true;
 app.assignMasterDevice(dq);
 app.assignDevicesForMonitoring([dq]); %,cf]);
+dq.Configure_Simple_Sync_Finite();
 
 if app.VR_On
     try

@@ -6,6 +6,7 @@ import { TextInput } from "../../components/TextInput";
 import Notes from "./Notes";
 import StageController from "./StageController";
 import ZStage from "./ZStage";
+import ObjTL from "./Objectives";
 import { Cameras } from "./Camera/Cameras";
 import { GeneralToggles } from "./GeneralToggles";
 import { ROIPlotter } from "./ROIPlotter";
@@ -26,6 +27,7 @@ export default function Main() {
       <VerticalStack>
         <Cameras />
         <ROIPlotter />
+        <ObjTL />
       </VerticalStack>
     </div>
   );

@@ -44,4 +44,6 @@ public:
   int dropped_frame_count;
   int acq_done;
   int read_mode;
+  double distance_per_pixel = 1;
+  bool master = true;
 };

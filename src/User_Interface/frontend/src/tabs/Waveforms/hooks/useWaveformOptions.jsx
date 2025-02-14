@@ -1,14 +1,12 @@
 import { useEffect, useState } from "react";
 import { addValue, makeArrayIfNotAlready } from "../../../components/Utils";
 import { getWaveformStartupInfo } from "../../../matlabComms/waveformComms";
-
 // get the list of possible waveforms and the default for display on Waveforms tab (Waveforms.jsx)
 // Communications to Matlab in order to read info are implemented through waveformComms.jsx
 export const useWaveformOptions = (waveformControls) => {
   const [analogOutputOptions, setAnalogOutputOptions] = useState({});
   const [digitalOutputOptions, setDigitalOutputOptions] = useState({});
   const [analogInputOptions, setAnalogInputOptions] = useState({});
-
   const [defaultAnalogInputWaveform, setDefaultAnalogInputWaveform] = useState(
     {}
   );
@@ -16,15 +14,12 @@ export const useWaveformOptions = (waveformControls) => {
     useState({});
   const [defaultDigitalOutputWaveform, setDefaultDigitalOutputWaveform] =
     useState({});
-
   const defaultGlobalProps = getDefaultGlobalProps();
-
   // fetch the data from matlab on startup
   useEffect(() => {
     // make async function to fetch the data from matlab
     const fetchInfo = async () => {
       const info = await getWaveformStartupInfo();
-
       waveformControls.setGlobalProps(
         defaultGlobalProps.map((prop) => {
           if (prop.name === "clock") {
@@ -39,17 +34,21 @@ export const useWaveformOptions = (waveformControls) => {
               value: info.trigger_options[0],
               options: info.trigger_options,
             };
+          } else if (prop.name === "completion_trigger") {
+            return {
+              ...prop,
+              value: "None",
+              options: ["None", ...info.do_ports],
+            };
           } else {
             return prop;
           }
         })
       );
-
       setDefaultAnalogInputWaveform({
         name: "",
         port: info.ai_ports[0],
       });
-
       setDefaultAnalogOutputWaveform({
         name: "",
         port: info.ao_ports[0],
@@ -58,7 +57,6 @@ export const useWaveformOptions = (waveformControls) => {
           makeArrayIfNotAlready(info.analog_wfm_funcs[0].args)
         ),
       });
-
       setDefaultDigitalOutputWaveform({
         name: "",
         port: info.do_ports[0],
@@ -67,7 +65,6 @@ export const useWaveformOptions = (waveformControls) => {
           makeArrayIfNotAlready(info.digital_wfm_funcs[0].args)
         ),
       });
-
       setAnalogOutputOptions({
         ports: info.ao_ports,
         fcns: info.analog_wfm_funcs
@@ -79,7 +76,6 @@ export const useWaveformOptions = (waveformControls) => {
             a.name.toLowerCase().localeCompare(b.name.toLowerCase())
           ),
       });
-
       setDigitalOutputOptions({
         ports: info.do_ports,
         fcns: info.digital_wfm_funcs
@@ -91,14 +87,12 @@ export const useWaveformOptions = (waveformControls) => {
             a.name.toLowerCase().localeCompare(b.name.toLowerCase())
           ),
       });
-
       setAnalogInputOptions({
         ports: info.ai_ports,
       });
     };
     fetchInfo();
   }, []);
-
   const getDefaultWaveform = (waveformType, idx) => {
     switch (waveformType) {
       case "analogOutput":
@@ -111,7 +105,6 @@ export const useWaveformOptions = (waveformControls) => {
         return {};
     }
   };
-
   // set default global props if they haven't been set yet
   useEffect(() => {
     // check if globalProps has been set
@@ -120,7 +113,6 @@ export const useWaveformOptions = (waveformControls) => {
       waveformControls.setGlobalProps(defaultGlobalProps);
     }
   }, [waveformControls.globalProps]);
-
   return {
     analogOutputOptions,
     digitalOutputOptions,
@@ -128,7 +120,6 @@ export const useWaveformOptions = (waveformControls) => {
     getDefaultWaveform,
   };
 };
-
 const getDefaultGlobalProps = () => {
   return [
     {
@@ -149,6 +140,13 @@ const getDefaultGlobalProps = () => {
     },
     { name: "clock", value: "", options: [], type: "menu" },
     {
+      name: "trigger",
+      displayName: "Start Trigger Port (Input)",
+      value: "",
+      options: [],
+      type: "menu",
+    },
+    {
       name: "DAQ trigger",
       value: "Self-Trigger",
       options: ["Self-Trigger", "External"],
@@ -156,8 +154,8 @@ const getDefaultGlobalProps = () => {
       type: "menu",
     },
     {
-      name: "trigger",
-      displayName: "Write on trigger to",
+      name: "completion_trigger",
+      displayName: "Completion Trigger Port (Output)",
       value: "",
       options: [],
       type: "menu",

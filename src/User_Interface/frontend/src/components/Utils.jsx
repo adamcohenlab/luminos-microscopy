@@ -103,7 +103,7 @@ export const portToChannelName = (port) => {
 
 // function to help with polling to matlab
 // if callback returns false, stop polling (so we don't get infinite errors in matlab)
-export const useInterval = (callback, delay = 1000) => {
+export const useInterval = (callback, delay = 250) => {
   // Save a reference to the callback function
   const savedCallback = useRef();
   // Save a reference to the interval ID

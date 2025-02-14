@@ -7,9 +7,13 @@
 
 
 int main(int argc, char *argv[]) {
-  std::string ppath = "E:\\Luminos_data\\testbench\\test";
-  Cam_Wrapper *cwrapper = new Cam_Wrapper(Cam_Wrapper::TYPE_KINETIX, "");
+  std::string ppath = "E:\\Luminos_data\\testbench\\test2";
+  Cam_Wrapper *cwrapper = new Cam_Wrapper(Cam_Wrapper::TYPE_HAMAMATSU, "");
+ // Cam_Wrapper *cwrapper = new Cam_Wrapper(Cam_Wrapper::TYPE_EMULATOR, "");
+//  Cam_Wrapper *cwrapper2 = new Cam_Wrapper(Cam_Wrapper::TYPE_EMULATOR, "");
 
+
+  cwrapper->Set_Exposure(0.1);
 
   bool keepgoing = true;
   int i, j;
@@ -79,6 +83,18 @@ int main(int argc, char *argv[]) {
       cwrapper->Set_Read_Mode(1);
     }
 
+    if (ix == 'y') {
+      cwrapper->Set_Read_Mode(0);
+    }
+
+    if (ix == 'w') {
+      cwrapper->FlipCamFOV();
+    }
+
+    if (ix == 'd') {
+      cwrapper->RotateCamFOV();
+    }
+
     if (ix == 'b') {
       for (i = 0; i < 4; i++) {
         std::cin >> roicoords[i];
@@ -101,7 +117,7 @@ int main(int argc, char *argv[]) {
       printf("\n");
       cwrapper->Prepare_Sync_Acquisition(0.00125, roicoords, 1);
       Sleep(1);
-      cwrapper->Start_Acquisition(10000, ppath.c_str());
+      cwrapper->Start_Acquisition(1000, ppath.c_str());
       //Sleep(20000);
       //cwrapper->Set_Exposure(0.00125);
     }

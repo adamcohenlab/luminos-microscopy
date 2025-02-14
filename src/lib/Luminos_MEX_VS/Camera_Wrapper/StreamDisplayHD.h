@@ -53,12 +53,22 @@ public:
   void ROI_Update(int x, int y);
   void launch_disp_threads(void);
   void calcROImean(void);
+  void calcROImedian(void);
   void Contour_Update(int x, int y);
+  void Colorbar();
+  void Histogram();
   void update_cont_vals();
   void getROIdata(double *dataout);
   void getROIcoords(int coordsout[]);
   void keyresponse(SDL_Keycode key);
   void Launch_Handoff_Thread();
+  void calculateHistogram(const uint16_t *imageData, int width, int height,
+                          int loThresholdCounts, int hiThresholdCounts);
+  std::vector<uint8_t> calculate_cdf(const std::vector<float> &histogram);
+  void adjust_colormap_with_cdf(SDL_Color *adjusted_colors,
+                                const SDL_Color *original_colors,
+                                const std::vector<uint8_t> &cdf,
+                                int num_colors);
   // Deallocates texture
   void free_all();
   // threads
@@ -71,6 +81,7 @@ public:
   HANDLE ghMutexLims;
   HANDLE HandoffMutex;
   HANDLE ghMutexCapturing;
+  HANDLE renderingMutex;
   HANDLE calcthread;
   HANDLE dispthread;
   HANDLE ROIthread;
@@ -112,7 +123,7 @@ public:
   SDL_Rect drawrect[5];
   SDL_Rect sum_rect;
   bool ROI_Buff_Toggle_Flag;
-  bool ROI_click_toggle;
+  int ROI_click_toggle;
   double ROImean;
   double *roimeanstore;
   double *ROImeanvec;
@@ -149,12 +160,27 @@ public:
   SDL_Palette *cPalette;
   SDL_Color jet_colors[256];
   SDL_Color grey_colors[256];
+  SDL_Color grey_inverted_colors[256];
   SDL_Color hot_colors[256];
   SDL_Color **cmap_pointers;
   int cmap_index;
+  std::vector<float> histogram;
+  HANDLE histMutex;
+  // Timer for histogram plotting, update once every 500ms
+  std::chrono::steady_clock::time_point lastCalculationTime;
 
   // Time since last keyboard press for stability
   uint32_t lastKeyPressTime;
+
+  static double Px_to_um;
+  bool color_fixed;
+  int color_fixed_low;
+  int color_fixed_high;
+  bool equalized;
+
+  bool flipped;
+  int rotated;
+
 
 private:
   // The actual hardware texture
@@ -176,4 +202,9 @@ private:
 
   // Supports SSE4.1?
   bool use_sse;
+
+  // Text for distance measurements
+  char distText[64];
+  char UmDistText[64];
+
 };

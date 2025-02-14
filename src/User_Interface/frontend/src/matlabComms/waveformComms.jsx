@@ -67,7 +67,6 @@ export const updateWaveforms = async (waveformControls) => {
     digitalOutputs,
     counterInputs,
   } = waveformControls;
-
   const processOutputWfmsForMatlab = (wfms, type) =>
     wfms.map((wfm) => ({
       name: wfm.name || portToChannelName(wfm.port),
@@ -82,18 +81,25 @@ export const updateWaveforms = async (waveformControls) => {
       }),
     }));
 
+  // Ensure completion_trigger has a default value if undefined
+  if (globalPropsDict.completion_trigger === undefined) {
+    globalPropsDict.completion_trigger = { value: "None" };
+  } else if (globalPropsDict.completion_trigger.value === undefined) {
+    globalPropsDict.completion_trigger.value = "None";
+  }
+
   const processInputWfmsForMatlab = (wfms) =>
     wfms.map((wfm) => ({
       name: wfm.name || wfm.port,
       ...wfm,
     }));
-
   let globalPropsToSend, wfmDataToSend;
   try {
     globalPropsToSend = {
       rate: parseFloat(valueOfOrDefault(globalPropsDict.rate)),
       total_time: parseFloat(valueOfOrDefault(globalPropsDict.length)),
       trigger_source: globalPropsDict.trigger.value,
+      completion_trigger: globalPropsDict.completion_trigger.value,
       clock_source:
         globalPropsDict.clock.value === "Internal"
           ? " "
@@ -133,6 +139,14 @@ export const buildWaveforms = async () => {
     args: [],
   });
   return success;
+}
+
+export const resetDAQ = async () => {
+  const success = await daqMethod({
+    method: "reset",
+    args: [],
+  });
+  return success;
 };
 
 export const initializeVR = async () => {
@@ -149,4 +163,20 @@ export const closeVR = async () => {
     args: [],
   });
   return success;
+};
+
+export const retrieveAO = async () => {
+  const aoWfm = await daqMethod({
+    method: "Retrieve_AO",
+    args: [],
+  });
+  return aoWfm;
+};
+
+export const retrieveDO = async () => {
+  const doWfm = await daqMethod({
+    method: "Retrieve_DO",
+    args: [],
+  });
+  return doWfm;
 };

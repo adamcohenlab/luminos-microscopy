@@ -5,6 +5,7 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
         Devices = Device.empty; % Array of Device objects for virtual devices
         monitored_devices_index % Logical indexing vector for data-saving portion
         explistener % Listener object for exp_finished event
+        blank_listener % Listener object for blank screen during acquisition
         Experiment % Name of the experiment type
         expfolder % Folder for storing individual experiment data
         datafile % File for saving virtual device data
@@ -14,9 +15,9 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
         Rig_Init Rig_Initializer % Rig_Initializer object
         User User_Key % User_Key object
         logfile % File for recording log data
-        screen_blanked = false; % Flag indicating screen blanking status
         exp_complete = false; % Flag indicating experiment completion
         isDataAcquired = false; % Flag indicating if any data has been acquired
+        blank_fig_handles = []; % Handles for figures for blank screen during acquisition
         
         jsServer JS_Server; % JS_Server object for communication with the JS frontend
         VR_On logical = false; % Flag for VR mode
@@ -27,12 +28,15 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
     
     properties
         % Additional properties
-        
         gitInfo % Git information
         rigName % Name of the rig
         tabs % Which tabs to show (Main, Waveforms, DMD, etc)
     end
-    
+
+    properties (Transient, SetObservable)
+        screen_blanked = false; % Flag indicating screen blanking status
+    end
+
     events
         exp_finished % Event for experiment completion
     end
@@ -138,18 +142,53 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
         end
         
         function message = deleteJs(app, save)
+            message = [];
+            % Shut down all lasers, LEDs, shutters etc.
+            for i = 1:length(app.Devices)
+                if isa(app.Devices(i),"NI_DAQ_Modulator")
+                    app.Devices(i).level = 0;
+                elseif isa(app.Devices(i),"NI_DAQ_Shutter")
+                    app.Devices(i).State = 0;
+                end
+            end
+
+            cam = app.getDevice('Camera');
+            for i = 1:length(cam)
+                cam(i).Stop();
+            end
+
+            % Save data to server if requested
             if save
                 app.copyToServer();
-            end
+            end 
+
+            % Delete app object
             app.wasAppDeletedFromJS = true;
             app.delete();
-            message = [];
         end
 
         % resets the app if there is a problem with the JS frontend
         function reset(app)
             app.jsServer.flush();
         end
+
+        % function reset_DAQ(app)
+        %     if ~isempty(timerfindall)
+        %         stop(timerfindall());
+        %         delete(timerfindall());
+        %     end
+        %     dq_session = app.getDevice('DAQ');
+        %     dq_session.rate = [];
+        %     dq_session.trigger = [];
+        %     dq_session.clock = [];
+        %     dq_session.numsamples = [];
+        %     dq_session.trigger_output_task = 
+        %     if ~isempty(dq_session.buffered_tasks)
+        %        dq_session.buffered_tasks = [];
+        %     end
+        % 
+        %     dq_session.waveforms_built = 0;
+        % end
         
         % Called automatically if the app object is cleared, and since we have it included in the CloseWindowCallback, it is also called when the window is closed. This method spawns a progress bar dialog that prompts the user to wait for their data to be copied over to the server, resets the DAQs, and then stops all of the timers.
         function delete(app)
@@ -166,13 +205,12 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
         
         % Callback when an experiment finishes. If screen was blanked, it turns it back on. Collects and saves data from tracked devices.
         function expFinishedCallback(app, src, evt)
-            disp("Done with experiment");
+            disp(app.explistener.Source{1}.name + " has completed acquisition.");
             if app.screen_blanked
                 app.screen_blanked = false;
-                try
-                    system('taskkill /f /im scrnsave.scr')
-                catch
-                end
+                % Briefly toggle to trigger listener if not aborted.
+                pause(0.05);
+                app.screen_blanked = true;
             end
             if app.VR_On
                 writeline(app.VRclient, "stop")
@@ -184,6 +222,7 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
             for i = 1:numel(tracked_devices)
                 tracked_devices(i).Wait_Until_Done();
             end
+            disp("Done with experiment."); % Display finish message when all tracked devices are done.
             Device_Data{1} = app.buildAppArchive();
             for i = 1:numel(tracked_devices)
                 Device_Data{i+1} = tracked_devices(i).Build_Archive;
@@ -196,13 +235,83 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
             app.exp_complete = true;
             app.isDataAcquired = true;
         end
-    end
+
+        function blank_all_screens(app)
+            screens = get(0, 'MonitorPositions'); % Get monitor positions
+            numScreens = size(screens, 1);        % Number of monitors
+            app.blank_fig_handles = gobjects(numScreens, 1);       % Store figure handles
+
+            % Create a listener for app.screen_blanked
+            app.blank_listener = addlistener(app, 'screen_blanked', 'PostSet', @(src, evt) app.check_screen_status());
+
+            % Create a fullscreen figure for each monitor
+            for i = 1:numScreens
+                app.blank_fig_handles(i) = figure('Name', 'Black Screen', ...
+                                 'NumberTitle', 'off', ...
+                                 'Color', 'black', ...
+                                 'MenuBar', 'none', ...
+                                 'ToolBar', 'none', ...
+                                 'KeyPressFcn', @(src, event) close_all_figures(app), ...
+                                 'Resize', 'off');
+                
+                % Vertically scale figure to cover up window border and
+                % expose task bar at the bottom
+                % screens(i,2) = screens(i,2) + 40;  
+                % screens(i,4) = screens(i,4) + 80;  
+
+                % Set the figure position and size to match the monitor
+                set(app.blank_fig_handles(i), 'Position', screens(i, :), ...
+                             'WindowState', 'normal', ...
+                             'Units', 'pixels');
+
+                drawnow; % Ensure the figure is fully created
+                warning("off","all");
+                try
+                    javaFrame = get(handle(app.blank_fig_handles(i)), 'JavaFrame');
+                    javaFrame_fHGClient = javaFrame.fHG2Client.getWindow();
+                    javaFrame_fHGClient.setAlwaysOnTop(true);
+                end
+                warning("on","all");
+            end
+        end
+
+        function check_screen_status(app)
+            % Close figures if screen_blanked is set to false
+            if ~app.screen_blanked
+                warning('off','all');
+                app.close_all_figures();
+                warning('on','all');
+            end
+        end
     
+        function close_all_figures(app)
+            % Close all valid figures and clear the handles
+            if ~isempty(app.blank_fig_handles)
+                for i = 1:numel(app.blank_fig_handles)
+                    if isvalid(app.blank_fig_handles(i))
+                        close(app.blank_fig_handles(i));
+                    end
+                end
+            end
+            app.blank_fig_handles = gobjects(0); 
+
+            % Delete the listener if it exists
+            if isvalid(app.blank_listener)
+                delete(app.blank_listener);
+            end
+           % app.blank_listener = []; % Clear the listener property
+        end
+
+        function update_blanking(app, blank)
+            app.screen_blanked = blank;
+        end
+    end
+
     methods (Access = private)
         
-        % This method searches the Rig_Initializer_Files folder for a .mat file whos name matches the app's Rig property.
+        % This method searches the Rig_Initializer_Files folder for a .json file whos name matches the app's Rig property.
         % It loads the Rig_Init object stored in that file and then stores it in the app's Rig_Init property.
-        % It then searches the Users folder for a .mat file whos name matches the app's username property, loads the User_Key object from that file,
+        % It then searches the Users folder for a .json file whos name matches the app's username property, loads the User_Key object from that file,
         % and assignes the User_Key object to the User property of the app.
         % Next, the method opens the rig's logfile and notes the time and the user who is running the app.
         % It then stores the paths to directories into which experimental data will be written.
@@ -327,5 +436,5 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
         end
         
     end
-    
+
 end

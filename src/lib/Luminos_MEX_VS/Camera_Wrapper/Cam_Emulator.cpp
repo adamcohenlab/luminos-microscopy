@@ -18,7 +18,7 @@ Cam_Emulator::Cam_Emulator()
   ROI.y = 0;
   ROI.w = MAX_IMG_WIDTH;
   ROI.h = MAX_IMG_HEIGHT;
-  exposureTimeSeconds = .15;
+  exposureTimeSeconds = 0.1;
 }
 
 // destructor

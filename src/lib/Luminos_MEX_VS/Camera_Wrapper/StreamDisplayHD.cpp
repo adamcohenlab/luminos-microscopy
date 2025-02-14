@@ -2,9 +2,14 @@
 #include "StreamDisplayHD.h"
 #include "InstructionSet.h"
 #include <emmintrin.h> //SSE2, SSE, MMX intrinsics
+#include <algorithm>
+#include <chrono>
+
+#include "SDL2_gfxPrimitives.h"
 
 using namespace std::chrono;
 const InstructionSet::InstructionSet_Internal InstructionSet::CPU_Rep;
+double StreamDisplayHD::Px_to_um = 1;
 
 /* StreamDisplay class implements a multi-threaded data-streaming, display, and
 handoff module. This takes image data from a camera and streams it to a live
@@ -18,13 +23,13 @@ StreamDisplayHD::StreamDisplayHD()
     : imgToggleFlag(0x0), MONITOR_INDEX(DEFAULT_MONITOR_INDEX),
       SCREEN_WIDTH(DEFAULT_SCREEN_WIDTH), SCREEN_HEIGHT(DEFAULT_SCREEN_HEIGHT),
       lastImageDataWidth(MAX_IMG_WIDTH), lastImageDataHeight(MAX_IMG_HEIGHT),
-      ReadyImgMutex(), ghMutexCapturing(), HandoffMutex(), window(),
-      lastImageData(), loThresholdCounts(1), hiThresholdCounts(2048),
+      ReadyImgMutex(), ghMutexCapturing(), renderingMutex(), HandoffMutex(),
+      window(), lastImageData(), loThresholdCounts(1), hiThresholdCounts(2048),
       myReadyImgSurf(), myWork1ImgSurf(), myWork2ImgSurf(), myImgTex(),
       renderer(), imgSrcRect(), imgDestRect(), ROI_on(false),
       ready_for_render(false), new_frame_available(false),
       new_frame_available_roi(false), new_frame_available_img(false),
-      ROI_Active(false), ROI_click_toggle(false), ROI_Rect_mutex(), ROI_Rect(),
+      ROI_Active(false), ROI_click_toggle(0), ROI_Rect_mutex(), ROI_Rect(),
       ROI_Buff_Toggle_Flag(), ROITex(), drawrect(), ROImeanvec(),
       roibufferlength(), newframemutex(), newframeroimutex(),
       newframeimgmutex(), contour_click_toggle(), Contour_Active(),
@@ -36,7 +41,9 @@ StreamDisplayHD::StreamDisplayHD()
       contour_points(), ghMutexLims(), ROIthread(), calcthread(), dispthread(),
       disp_handoff_thread(), sd_thread(), framecheckthread(), handoffthreadid(),
       mHeight(), mPitch(), mPixels(), mWidth(), pixel_fmt(), sum_rect(),
-      workImgSurfBuffer(), interaction_event(), use_sse()
+      workImgSurfBuffer(), interaction_event(), use_sse(), color_fixed(false),
+      color_fixed_low(0), color_fixed_high(65536), equalized(), flipped(false),
+      rotated(0), histMutex(), lastCalculationTime(std::chrono::steady_clock::now())
 
 {
   cmap_high = 1; // cmap bounds
@@ -46,6 +53,8 @@ StreamDisplayHD::StreamDisplayHD()
   keydelta = DEFAULT_KEY_DELTA;
   cam_attached = false;
   lastKeyPressTime = 0;
+  histogram.resize(256, 0);
+  equalized = false;
 
   // buffers to hold subroi, contour, and image data.
   Contour_DrawGuides =
@@ -130,6 +139,24 @@ StreamDisplayHD::StreamDisplayHD()
       grey_colors[i + j * 64].a = 0xFF;
     }
   }
+  // Create inverted greyscale colormap
+  int gr_inverted_blue_checks[5] = {0xFF, 0xBF, 0x80, 0x40, 0x00};
+  int gr_inverted_green_checks[5] = {0xFF, 0xBF, 0x80, 0x40, 0x00};
+  int gr_inverted_red_checks[5] = {0xFF, 0xBF, 0x80, 0x40, 0x00};
+  for (int j = 0; j < 4; j++) {
+    for (int i = 0; i < 64; i++) {
+      grey_inverted_colors[i + j * 64].r =
+          (Uint8)(gr_inverted_red_checks[j] * (((float)(64 - i)) / 64.0) +
+                  gr_inverted_red_checks[j + 1] * (((float)i) / 64.0));
+      grey_inverted_colors[i + j * 64].g =
+          (Uint8)(gr_inverted_green_checks[j] * (((float)(64 - i)) / 64.0) +
+                  gr_inverted_green_checks[j + 1] * (((float)i) / 64.0));
+      grey_inverted_colors[i + j * 64].b =
+          (Uint8)(gr_inverted_blue_checks[j] * (((float)(64 - i)) / 64.0) +
+                  gr_inverted_blue_checks[j + 1] * (((float)i) / 64.0));
+      grey_inverted_colors[i + j * 64].a = 0xFF;
+    }
+  }
   // Create 'hot' colormap
   int hot_blue_checks[5] = {0x00, 0x00, 0x00, 0x80, 0xFF};
   int hot_green_checks[5] = {0x00, 0x00, 0xFF, 0xFF, 0xFF};
@@ -148,10 +175,14 @@ StreamDisplayHD::StreamDisplayHD()
       hot_colors[i + j * 64].a = 0xFF;
     }
   }
+
   cmap_pointers[0] = grey_colors;
-  cmap_pointers[1] = hot_colors;
-  cmap_pointers[2] = jet_colors;
+  cmap_pointers[1] = grey_inverted_colors;
+  cmap_pointers[2] = hot_colors;
+  cmap_pointers[3] = jet_colors;
   cmap_index = 0; // default is greyscale colormap (0)
+
+  StreamDisplayHD::Px_to_um = 1;
 
   // Create unowned mutexes. Mutexes are objects that allow synchronization
   // between threads. A mutex can be 'owned'
@@ -168,6 +199,9 @@ StreamDisplayHD::StreamDisplayHD()
   ROI_Cont_mutex = CreateMutex(NULL, FALSE, NULL);
   roidatamutex = CreateMutex(NULL, FALSE, NULL);
   contourstoremutex = CreateMutex(NULL, FALSE, NULL);
+  renderingMutex = CreateMutex(NULL, FALSE, NULL);
+  histMutex = CreateMutex(NULL, FALSE, NULL);
+
 
   // Create events that will be used to signal between threads. Events are
   // configured by second argument (True) to be manual-resettable.
@@ -317,20 +351,27 @@ unsigned __stdcall SDL_Event_wrapper(void *pArguments) {
         int x, y, width, height;
         SDL_GetMouseState(&x, &y);
         SDL_GetWindowSize(disp_ptr->window, &width, &height);
-        printf("Widow h,w %d , %d", width, height);
-        disp_ptr->ScaleX = (float)disp_ptr->imgDestRect.w /
-                           (float)disp_ptr->lastImageDataWidth;
-        disp_ptr->ScaleY = (float)disp_ptr->imgDestRect.h /
-                           (float)disp_ptr->lastImageDataHeight;
-        printf("clicked on %f , %f ", ((float)(x)) / ((float)disp_ptr->ScaleX),
-               ((float)(y)) / ((float)disp_ptr->ScaleY));
-        x = (int)((x - disp_ptr->imgDestRect.x) / (disp_ptr->ScaleX));
-        y = (int)((y - disp_ptr->imgDestRect.y) / (disp_ptr->ScaleY));
-        printf("rounded to %d , %d \n", x, y);
-        if (interaction_event.button.button == SDL_BUTTON_LEFT) {
-          disp_ptr->ROI_Update(x, y);
-        } else if (interaction_event.button.button == SDL_BUTTON_RIGHT) {
-          disp_ptr->Contour_Update(x, y);
+
+        // Check if the click is in the rightmost 150 pixels of the window.
+        // These are part of the colormap and histogram.
+
+        if (x < width - 150) {
+          printf("Widow h,w %d , %d", width, height);
+          disp_ptr->ScaleX = (float)disp_ptr->imgDestRect.w /
+                             (float)disp_ptr->lastImageDataWidth;
+          disp_ptr->ScaleY = (float)disp_ptr->imgDestRect.h /
+                             (float)disp_ptr->lastImageDataHeight;
+          printf("clicked on %f , %f ",
+                 ((float)(x)) / ((float)disp_ptr->ScaleX),
+                 ((float)(y)) / ((float)disp_ptr->ScaleY));
+          x = (int)((x - disp_ptr->imgDestRect.x) / (disp_ptr->ScaleX));
+          y = (int)((y - disp_ptr->imgDestRect.y) / (disp_ptr->ScaleY));
+          printf("rounded to %d , %d \n", x, y);
+          if (interaction_event.button.button == SDL_BUTTON_LEFT) {
+            disp_ptr->ROI_Update(x, y);
+          } else if (interaction_event.button.button == SDL_BUTTON_RIGHT) {
+            disp_ptr->Contour_Update(x, y);
+          }
         }
       }
       // keyboard press
@@ -345,6 +386,32 @@ unsigned __stdcall SDL_Event_wrapper(void *pArguments) {
               currentTime; // Update the last key press time
         }
       }
+      if (interaction_event.type == SDL_MOUSEWHEEL) {
+        WaitForSingleObject(disp_ptr->renderingMutex, INFINITE);
+        if (disp_ptr->color_fixed == true) {
+          int x, y, width, height;
+          SDL_GetMouseState(&x, &y);
+          SDL_GetWindowSize(disp_ptr->window, &width, &height);
+          if (x > width - 150 && y < height / 3) {
+            disp_ptr->color_fixed_high += interaction_event.wheel.y * 100;
+            if (disp_ptr->color_fixed_high > 65535) {
+              disp_ptr->color_fixed_high = 65535;
+            } else if (disp_ptr->color_fixed_high < disp_ptr->color_fixed_low) {
+              disp_ptr->color_fixed_high = disp_ptr->color_fixed_low;
+            }
+
+          } else if (x > width - 150 && y > height * 2 / 3) {
+            disp_ptr->color_fixed_low += interaction_event.wheel.y * 100;
+            if (disp_ptr->color_fixed_low < 0) {
+              disp_ptr->color_fixed_low = 0;
+            } else if (disp_ptr->color_fixed_low > disp_ptr->color_fixed_high) {
+              disp_ptr->color_fixed_low = disp_ptr->color_fixed_high;
+            }
+          }
+        }
+        ReleaseMutex(disp_ptr->renderingMutex);
+      }
+
     } else {     // If the event wasn't for this window, it may have been for
                  // another instance (another camera)
       Sleep(10); // Sleep the event thread to make sure other window gets the
@@ -439,28 +506,245 @@ void StreamDisplayHD::update_rendering() {
   if (myReadyImgSurf) {      // in case these pointers are NULL
     // ensure myReadyImgSurf read while not writing elsewhere
     WaitForSingleObject(ReadyImgMutex, INFINITE);
-    myImgTex = SDL_CreateTextureFromSurface(renderer, myReadyImgSurf);
+    WaitForSingleObject(renderingMutex, INFINITE);
+
+    WaitForSingleObject(histMutex, INFINITE);
+    auto cdf = calculate_cdf(histogram);
+    Histogram();
+    if (equalized == true) {
+      if (cmap_index == 0) {
+        SDL_Color adjusted_grey_colors[256];
+        adjust_colormap_with_cdf(adjusted_grey_colors, grey_colors, cdf, 256);
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette,
+                             adjusted_grey_colors, 0, 256);
+      } else if (cmap_index == 1) {
+        SDL_Color adjusted_grey_inverted_colors[256];
+        adjust_colormap_with_cdf(adjusted_grey_inverted_colors,
+                                 grey_inverted_colors, cdf, 256);
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette,
+                             adjusted_grey_inverted_colors, 0, 256);
+      } else if (cmap_index == 2) {
+        SDL_Color adjusted_hot_colors[256];
+        adjust_colormap_with_cdf(adjusted_hot_colors, hot_colors, cdf, 256);
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette,
+                             adjusted_hot_colors, 0, 256);
+      } else if (cmap_index = 3) {
+        SDL_Color adjusted_jet_colors[256];
+        adjust_colormap_with_cdf(adjusted_jet_colors, jet_colors, cdf, 256);
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette,
+                             adjusted_jet_colors, 0, 256);
+      }
+    }
+    ReleaseMutex(histMutex);
+
+    if (equalized == false) {
+      if (cmap_index == 0) {
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette, grey_colors, 0,
+                             256);
+      } else if (cmap_index == 1) {
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette,
+                             grey_inverted_colors, 0, 256);
+      } else if (cmap_index == 2) {
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette, hot_colors, 0,
+                             256);
+      } else if (cmap_index = 3) {
+        SDL_SetPaletteColors(myReadyImgSurf->format->palette, jet_colors, 0,
+                             256);
+      }
+    }
+
+    Colorbar();
+
+    // Check for flipping and rotation
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
+    if (flipped) {
+      flip = SDL_FLIP_HORIZONTAL; // Set flip to horizontal
+    }
+
+    int angle = 0;
+    if (rotated != 0) {
+      angle = (rotated % 4) * 90; // Calculate angle based on rotated value
+    }
+
+    SDL_Texture *myImgTex =
+        SDL_CreateTextureFromSurface(renderer, myReadyImgSurf);
+    if (!myImgTex) {
+      SDL_Log("Failed to create texture: %s", SDL_GetError());
+    } else {
+      // Render the texture with rotation and flipping
+      if (SDL_RenderCopyEx(renderer, myImgTex, &imgSrcRect, &imgDestRect, angle,
+                           NULL, flip) != 0) {
+        SDL_Log("Failed to render with transformations: %s", SDL_GetError());
+      }
+    }
+
+    SDL_DestroyTexture(myImgTex); // free texture
     ready_for_render = false;
     ResetEvent(readyforrender_event);
-    ReleaseMutex(ReadyImgMutex);
+
     SDL_RenderCopy(renderer, myImgTex, &imgSrcRect, &imgDestRect);
+
     // Draw sub-roi rectangle or contour on top of image:
     if (ROI_Active) {
       int code;
       WaitForSingleObject(ROI_Rect_mutex, INFINITE);
+      SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
       code = SDL_RenderDrawRects(renderer, drawrect, 5);
       ReleaseMutex(ROI_Rect_mutex);
     } else if (Contour_Active) {
       int code;
       WaitForSingleObject(ROI_Cont_mutex, INFINITE);
+      SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
       code =
           SDL_RenderDrawLines(renderer, Contour_DrawGuides, LINE_THICKNESS * 2);
+
+      // Print pixel distance between contour ends
+      stringRGBA(renderer, SCREEN_WIDTH - 210, SCREEN_HEIGHT - 30, distText,
+                 255, 0, 0, 255);
+      stringRGBA(renderer, SCREEN_WIDTH - 130, SCREEN_HEIGHT - 15, UmDistText,
+                 255, 0, 0, 255);
+      printf("%s \n", UmDistText);
+
       ReleaseMutex(ROI_Cont_mutex);
     }
-    SDL_DestroyTexture(myImgTex); // free texture
+    //SDL_DestroyTexture(myImgTex); // free texture
+    ReleaseMutex(ReadyImgMutex);
+    ReleaseMutex(renderingMutex);
   }
+  SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
   SDL_RenderPresent(renderer); // put the rendering to screen
-}
+};
+
+// Draw Colorbar
+void StreamDisplayHD::Colorbar() {
+  const int colormap_width = 30;
+  const int colormap_height = floor(SCREEN_HEIGHT / 256);
+  const int colormap_x = SCREEN_WIDTH + 10;
+  const int colormap_y = round((SCREEN_HEIGHT - colormap_height * 256) / 2);
+
+  // Constants for the border around the colormap
+  const int border_width = colormap_width + 2;
+  const int border_height = colormap_height * 256 + 2;
+  const int border_x = colormap_x - 1;
+  const int border_y = colormap_y - 1;
+
+  // Draw the black border around the colormap
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_Rect borderRect = {border_x, border_y, border_width, border_height};
+  SDL_RenderFillRect(renderer, &borderRect);
+
+  SDL_SetRenderDrawColor(renderer, 122, 122, 122, 255);
+  SDL_Rect insideRect = {colormap_x, colormap_y, colormap_width, 256};
+  SDL_RenderFillRect(renderer, &insideRect);
+
+  // Define current_cmap based on cmap_index
+  SDL_Color *current_cmap = cmap_pointers[cmap_index];
+
+  for (int i = 0; i < 256; i++) {
+    // Set the color for the current colormap
+    SDL_SetRenderDrawColor(renderer, current_cmap[255 - i].r,
+                           current_cmap[255 - i].g, current_cmap[255 - i].b,
+                           current_cmap[255 - i].a);
+
+    SDL_Rect colorStripe = {colormap_x, colormap_y + colormap_height * i, 30,
+                            colormap_height};
+    SDL_RenderFillRect(renderer, &colorStripe);
+  }
+
+  // Display threshold values
+  char hiThresholdText[64];
+  char loThresholdText[64];
+  sprintf(hiThresholdText, "%d", hiThresholdCounts);
+  sprintf(loThresholdText, "%d", loThresholdCounts);
+
+  // Render the text
+  stringRGBA(renderer, SCREEN_WIDTH + 5, colormap_y - 12, hiThresholdText, 0, 0,
+             0, 255);
+  stringRGBA(renderer, SCREEN_WIDTH + 5, colormap_y + border_height + 5,
+             loThresholdText, 0, 0, 0, 255);
+};
+
+void StreamDisplayHD::Histogram() {
+  const int numDisplayBins = 256; // Display histogram with 256 bins
+  const int edge_x = SCREEN_WIDTH + 50;
+  const int bar_width_def = floor(SCREEN_HEIGHT / 256.0);
+  const int target_height = bar_width_def * 256;
+  int current_y = round((SCREEN_HEIGHT - (bar_width_def * 256)) / 2.0) + 1;
+
+  // Draw the thin vertical line
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderDrawLine(renderer, edge_x, current_y, edge_x,
+                     current_y + target_height);
+
+  // Calculate CDF from histogram
+  std::vector<float> cdf(numDisplayBins, 0.0f);
+  float total_pixels = 0.0f;
+  for (int i = 0; i < numDisplayBins; ++i) {
+    total_pixels += histogram[i];
+  }
+
+  if (total_pixels > 0) {
+    cdf[0] = histogram[0] / total_pixels;
+    for (int i = 1; i < numDisplayBins; ++i) {
+      cdf[i] = cdf[i - 1] + (histogram[i] / total_pixels);
+    }
+  }
+
+  uint64_t maxBinValue = *std::max_element(histogram.begin(), histogram.end());
+
+  // Step 1: Calculate bar widths based on high-precision CDF only for non-zero
+  // bins
+  std::vector<int> bar_widths(numDisplayBins, 0); // Initialize with 0 width
+  int unscaled_total_width = 0;
+
+  // if (equalized && total_pixels > 0) {
+  if (false) {
+    for (int i = 0; i < numDisplayBins - 1; ++i) {
+      float cdf_diff = cdf[i + 1] - cdf[i];
+      if (histogram[255 - i] > 0) { // Only consider non-zero bins
+        bar_widths[i] = static_cast<int>(cdf_diff * target_height);
+        if (bar_widths[i] < 1)
+          bar_widths[i] = 1;
+        unscaled_total_width += bar_widths[i];
+      }
+    }
+  } else {
+    // If not equalized, use default width for non-zero bins
+    for (int i = 0; i < numDisplayBins - 1; ++i) {
+      bar_widths[i] = bar_width_def;
+      unscaled_total_width += bar_width_def;
+    }
+  }
+
+  // Normalize bar widths to fit into target height
+  double scale_factor =
+      static_cast<double>(target_height) / unscaled_total_width;
+
+  for (int i = 0; i < numDisplayBins - 1; ++i) {
+    bar_widths[i] = static_cast<int>(bar_widths[i] * scale_factor);
+  }
+
+  // Calculate cumulative positions for drawing, skipping zero-width
+  // bars
+  std::vector<int> cumulative_positions(numDisplayBins, current_y);
+  for (int i = 1; i < numDisplayBins; ++i) {
+    cumulative_positions[i] = cumulative_positions[i - 1] +
+                              (bar_widths[i - 1] > 0 ? bar_widths[i - 1] : 0);
+  }
+
+  // Draw the histogram bars
+  for (int i = 0; i < numDisplayBins - 1; ++i) {
+    int bar_length =
+        (maxBinValue > 0) ? (histogram[255 - i] * 100 / maxBinValue) : 0;
+    int bar_width = bar_widths[i];
+
+    if (bar_length > 1 && bar_width > 0) { // Only draw non-zero width bars
+      thickLineRGBA(renderer, edge_x, cumulative_positions[i],
+                    edge_x + bar_length, cumulative_positions[i], bar_width, 0,
+                    0, 0, 255);
+    }
+  }
+};
 
 // Respond to Key presses:
 void StreamDisplayHD::keyresponse(SDL_Keycode key) {
@@ -514,6 +798,8 @@ void StreamDisplayHD::keyresponse(SDL_Keycode key) {
     case SDLK_z:
       if (ROI_Active) {
         ROItry = sum_rect;
+        printf("x %d y %d w  %d h %d\n", ROItry.x, ROItry.y, ROItry.w,
+               ROItry.h);
         ROItry.x = ROItry.x * cam->bin;
         ROItry.y = ROItry.y * cam->bin;
         ROItry.w = ROItry.w * cam->bin;
@@ -547,14 +833,53 @@ void StreamDisplayHD::keyresponse(SDL_Keycode key) {
       res = cam->aq_live_restart(ROItry, cam->bin, cam->exposureTimeSeconds);
       break;
 
+    case SDLK_s:
+      // Swtich from fixed scale to auto scale
+      color_fixed = !color_fixed;
+      if (color_fixed) {
+        color_fixed_high = hiThresholdCounts;
+        color_fixed_low = loThresholdCounts;
+      }
+      break;
+
+    // For debugging
+    case SDLK_m:
+      WaitForSingleObject(ReadyImgMutex, INFINITE);
+      WaitForSingleObject(renderingMutex, INFINITE);
+      color_fixed_high = ceil(color_fixed_high / 2);
+
+      printf("Color Fixed High: %d\n", color_fixed_high);
+      ReleaseMutex(ReadyImgMutex);
+      ReleaseMutex(renderingMutex);
+      break;
+
+    // For debugging
+    case SDLK_n:
+      WaitForSingleObject(ReadyImgMutex, INFINITE);
+      WaitForSingleObject(renderingMutex, INFINITE);
+      color_fixed_high =
+          min(static_cast<int>(ceil(color_fixed_high * 2.0)), 65535);
+      printf("Color Fixed High: %d\n", color_fixed_high);
+      ReleaseMutex(ReadyImgMutex);
+      ReleaseMutex(renderingMutex);
+      break;
+
     // c cycles through available colormaps
     case SDLK_c:
-      cmap_index = (cmap_index + 1) % 3;
+      cmap_index = (cmap_index + 1) % 4;
       WaitForSingleObject(ReadyImgMutex, INFINITE);
       SDL_SetPaletteColors(myWork1ImgSurf->format->palette,
                            cmap_pointers[cmap_index], 0, 256);
       SDL_SetPaletteColors(myWork2ImgSurf->format->palette,
                            cmap_pointers[cmap_index], 0, 256);
+      ReleaseMutex(ReadyImgMutex);
+      break;
+
+    // h toggles histogram equalization
+    case SDLK_h:
+      printf("Toggled equalization\n");
+      WaitForSingleObject(ReadyImgMutex, INFINITE);
+      equalized = !equalized;
       ReleaseMutex(ReadyImgMutex);
       break;
     }
@@ -682,9 +1007,42 @@ void StreamDisplayHD::Contour_Update(int x, int y) {
       scale_line(Contour_Ends, Contour_DrawGuides, ScaleX, ScaleY,
                  imgDestRect.x, imgDestRect.y, LINE_THICKNESS);
       refresh_cont_points();
-      Contour_Active = true;
-      ReleaseMutex(ROI_Cont_mutex);
+
+      // Calculate Pythagorean distance
+      int dx = Contour_Ends[1].x - Contour_Ends[0].x;
+      int dy = Contour_Ends[1].y - Contour_Ends[0].y;
+      float distance = sqrt(dx * dx + dy * dy);
+      // Convert the distance to a string
+      sprintf(distText, "Distance: %.2f pixel", distance);
+      double UmDistance = Px_to_um * distance;
+      if (UmDistance < 1000) {
+        sprintf(UmDistText, "%.2f microns", UmDistance);
+      } else if (UmDistance < 10000) {
+        sprintf(UmDistText, "%.2f mm", (UmDistance) / 1000);
+      } else {
+        sprintf(UmDistText, "%.2f cm", (UmDistance) / 10000);
+      }
+
+      // const char *debugText = "Debug Text";
+      // SDL_Color textColor = {255, 255, 255, 255}; // Yellow color for
+      // visibility
+
+      // // Get the width and height of the renderer or window
+      // int windowWidth, windowHeight;
+      // SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
+
+      // // Calculate position near the top right corner with a small margin
+      // int textX =
+      //     windowWidth - 150; // Adjust '150' based on the length of your text
+      // int textY = 20;        // Margin from the top
+
+      // // Render the text
+      // stringRGBA(renderer, textX, textY, distText, textColor.r, textColor.g,
+      //            textColor.b, textColor.a);
     }
+
+    Contour_Active = true;
+    ReleaseMutex(ROI_Cont_mutex);
   }
 }
 
@@ -779,18 +1137,20 @@ void StreamDisplayHD::update_cont_vals() {
 // Update subROI coordinates based on mouse click coordinates.
 void StreamDisplayHD::ROI_Update(int x, int y) {
   Contour_Active = false;
+  printf("ROI click toggle %d \n", ROI_click_toggle);
   contour_click_toggle = 0x0;
-  if (!ROI_click_toggle) {
+
+  if (ROI_click_toggle == 0) {
     ROI_Active = false;
-    // roibuffptr = ROImeanvec;
-    /// roibufftail = roibuffptr;
-    ROI_click_toggle = 0x1;
+    ROI_click_toggle = 1;
     ROIPoints[0].x = x;
     ROIPoints[0].y = y;
-  } else {
-    ROI_click_toggle = 0x0;
+  } else if (ROI_click_toggle == 1) {
+    ROI_click_toggle = 2;
     ROIPoints[1].x = x;
     ROIPoints[1].y = y;
+
+    // Set ROI_Rect based on ROIPoints[0] and ROIPoints[1]
     if (ROIPoints[0].x < ROIPoints[1].x) {
       ROI_Rect.x = ROIPoints[0].x;
       ROI_Rect.w = ROIPoints[1].x - ROIPoints[0].x;
@@ -805,12 +1165,56 @@ void StreamDisplayHD::ROI_Update(int x, int y) {
       ROI_Rect.y = ROIPoints[1].y;
       ROI_Rect.h = ROIPoints[0].y - ROIPoints[1].y;
     }
+
+    int real_x = ROI_Rect.x, real_y = ROI_Rect.y, real_w = ROI_Rect.w,
+        real_h = ROI_Rect.h;
+
+    // ROI should draw where clicked, but account for possible rotations for
+    // zooming and ROI means calculation. In stream, flip is applied first,
+    // then rotation. To reverse this, first account for rotation, then for
+    // flip.
+
+    // Undo rotation
+    int temp_x = real_x, temp_y = real_y;
+    switch (rotated) {
+    case 1: // 90 degrees counterclockwise
+      real_x = (temp_y * ScaleY + imgDestRect.y - imgDestRect.x) / ScaleX;
+      temp_x = (temp_x * ScaleX + imgDestRect.x - imgDestRect.y) / ScaleY;
+      std::swap(real_w, real_h);
+      real_y = lastImageDataHeight - 1 - temp_x - real_h;
+      break;
+    case 2: // 180 degrees
+      real_x = lastImageDataWidth - 1 - temp_x - real_w;
+      real_y = lastImageDataHeight - 1 - temp_y - real_h;
+      break;
+    case 3: // 270 degrees counterclockwise (90 degrees clockwise)
+      temp_y = (temp_y * ScaleY + imgDestRect.y - imgDestRect.x) / ScaleX;
+      real_y = (temp_x * ScaleX + imgDestRect.x - imgDestRect.y) / ScaleY;
+      std::swap(real_w, real_h);
+      real_x = lastImageDataWidth - 1 - temp_y - real_w;
+      break;
+    }
+
+    // Undo flip if flipped is true
+    if (flipped) {
+      real_x = lastImageDataWidth - 1 - real_x - real_w;
+    }
+
+    // Set sum_rect to real (untransformed) coordinates
     WaitForSingleObject(ROI_Rect_mutex, INFINITE);
-    scale_rect(ROI_Rect, drawrect, ScaleX, ScaleY, imgDestRect.x, imgDestRect.y,
-               5);
-    sum_rect = ROI_Rect;
+    sum_rect.x = real_x;
+    sum_rect.y = real_y;
+    sum_rect.w = real_w;
+    sum_rect.h = real_h;
     ROI_Active = true;
     ReleaseMutex(ROI_Rect_mutex);
+
+    // Scale and set drawrect based on the transformed ROI_Rect for display
+    scale_rect(ROI_Rect, drawrect, ScaleX, ScaleY, imgDestRect.x, imgDestRect.y,
+               5);
+  } else {
+    ROI_Active = false;
+    ROI_click_toggle = 0;
   }
 }
 
@@ -845,6 +1249,11 @@ void StreamDisplayHD::calcROImean() {
   roi_buff.put(ROImean);
   roi_sum_buff.put(adder);
   // ReleaseMutex(roidatamutex);
+}
+
+// Calculate ROI median:
+void StreamDisplayHD::calcROImedian() {
+  // Implement later.
 }
 
 // Copy Contour or subROI data into *dataout location. Caution. Make sure
@@ -898,9 +1307,10 @@ void StreamDisplayHD::start_SDL_window(uint16_t *windowLocationParams) {
          MONITOR_INDEX);
 
   /* Create the window where we will draw. */
-  window = SDL_CreateWindow("live image", displayBounds.x + SCREEN_X_POSITION,
-                            displayBounds.y + SCREEN_Y_POSITION, SCREEN_WIDTH,
-                            SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+  window =
+      SDL_CreateWindow("live image", displayBounds.x + SCREEN_X_POSITION,
+                       displayBounds.y + SCREEN_Y_POSITION, SCREEN_WIDTH + 160,
+                       SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
   /* We must call SDL_CreateRenderer in order for draw calls to affect this
    * window. */
@@ -969,11 +1379,16 @@ void StreamDisplayHD::extractmaxmin(uint16_t *data, uint64_t length) {
   // calculate colormap scaling limits
   cmap_max = (uint16_t)lround(max_val * cmap_high);
   cmap_min = (uint16_t)lround(min_val + (max_val - min_val) * cmap_low);
+  hiThresholdCounts = cmap_max - 1;
+  if (cmap_min == 0) {
+    loThresholdCounts = cmap_min;
+  } else {
+    loThresholdCounts = cmap_min - 1;
+  }
+
   if (cmap_max == cmap_min) {
     cmap_max = cmap_min + 1;
   }
-  hiThresholdCounts = cmap_max;
-  loThresholdCounts = cmap_min;
 }
 
 // Perform image scaling based on colormap and limits:
@@ -1000,9 +1415,16 @@ void StreamDisplayHD::calc_and_update_image() {
   // new_frame_available_img = false;
   ReleaseMutex(HandoffMutex);
 
-  // calculate max and min of image data to know how far to scale.
-  extractmaxmin(myImageData,
-                (uint64_t)myImageDataWidth * (uint64_t)myImageDataHeight);
+  // switch between color fixed and auto scale - DI 7/24
+  WaitForSingleObject(ReadyImgMutex, INFINITE);
+  if (color_fixed) {
+    loThresholdCounts = color_fixed_low;
+    hiThresholdCounts = color_fixed_high;
+  } else {
+    extractmaxmin(myImageData,
+                  (uint64_t)myImageDataWidth * (uint64_t)myImageDataHeight);
+  }
+  ReleaseMutex(ReadyImgMutex);
 
   // toggle and select which buffer to work on (alternate buffers so SDL can
   // display the other one while we load into one).
@@ -1145,10 +1567,6 @@ void StreamDisplayHD::calc_and_update_image() {
     }
   }
 
-  // auto stop = high_resolution_clock::now();
-  // auto duration = duration_cast<milliseconds>(stop - start);
-  // printf("%d\n", duration.count());
-
   // adjust drawing areas to reflect changes in image size
   imgSrcRect.x = tox;
   imgSrcRect.y = toy;
@@ -1167,6 +1585,7 @@ void StreamDisplayHD::calc_and_update_image() {
     imgDestRect.w = (int)(SCREEN_WIDTH * whr);
     imgDestRect.h = SCREEN_WIDTH;
   }
+
   // ensure myReadyImgSurf write while not reading elsewhere
   WaitForSingleObject(ReadyImgMutex, INFINITE);
   // set surface pointer to the buffer we just worked on
@@ -1174,6 +1593,19 @@ void StreamDisplayHD::calc_and_update_image() {
   ready_for_render = true;
   SetEvent(readyforrender_event);
   ReleaseMutex(ReadyImgMutex);
+
+  auto currentTime = std::chrono::steady_clock::now();
+  auto timeElapsed = std::chrono::duration_cast<std::chrono::seconds>(
+      currentTime - lastCalculationTime);
+  if (timeElapsed.count() >= 0.5) {
+    WaitForSingleObject(histMutex, INFINITE);
+    std::vector<float> histogram;
+    calculateHistogram(myImageData, myImageDataWidth, myImageDataHeight,
+                       loThresholdCounts, hiThresholdCounts);
+    ReleaseMutex(histMutex);
+    // Update the timer to the current time after calculation
+    lastCalculationTime = currentTime;
+  }
 }
 
 // Copy subROI coordinates into coordsout (CAUTION: ensure that coordsout is
@@ -1202,5 +1634,95 @@ void scale_rect(SDL_Rect rectin, SDL_Rect *rectout, float scaleX, float scaleY,
     rectout[i].y = (int)(rectin.y * scaleY) - i + oy;
     rectout[i].w = (int)((rectin.w + 1) * scaleX) + 2 * i;
     rectout[i].h = (int)((rectin.h + 1) * scaleY) + 2 * i;
+  }
+}
+
+void StreamDisplayHD::calculateHistogram(const uint16_t *imageData, int width,
+                                         int height, int loThresholdCounts,
+                                         int hiThresholdCounts) {
+  std::vector<float> temp_histogram;
+  temp_histogram.resize(256, 0);
+  std::fill(temp_histogram.begin(), temp_histogram.end(), 0);
+
+  // Check for division by zero
+  if (hiThresholdCounts == loThresholdCounts) {
+    printf(
+        "Error: hiThresholdCounts and loThresholdCounts cannot be the same.\n");
+    return;
+  }
+  int sampling = 1;
+  int max_samples = 20000;
+  if (width * height > max_samples) {
+    sampling = std::sqrt((width * height / max_samples));
+  };
+
+  // Calculate the histogram
+  for (int y = 0; y < height; y = y + sampling) {
+    for (int x = 0; x < width; x = x + sampling) {
+      uint16_t pixelValue = imageData[y * width + x];
+
+      if (pixelValue < loThresholdCounts || pixelValue > hiThresholdCounts) {
+        continue;
+      }
+
+      // Calculate the bin position as a floating-point number
+      double binPosition = (pixelValue - loThresholdCounts) * 255.0 /
+                           (hiThresholdCounts - loThresholdCounts);
+
+      // Calculate the lower and upper bin indices
+      int lowerBin = static_cast<int>(floor(binPosition));
+      int upperBin = lowerBin + 1;
+
+      // Calculate the fractional part
+      double fractionalPart = binPosition - lowerBin;
+
+      // Distribute the counts to lower and upper bins
+      if (lowerBin >= 0 && lowerBin < temp_histogram.size()) {
+        temp_histogram[lowerBin] += (1.0 - fractionalPart);
+      }
+      if (upperBin >= 0 && upperBin < temp_histogram.size()) {
+        temp_histogram[upperBin] += fractionalPart;
+      }
+    }
+  }
+
+  histogram = temp_histogram;
+}
+
+std::vector<uint8_t>
+StreamDisplayHD::calculate_cdf(const std::vector<float> &histogram) {
+  int num_bins = histogram.size();
+  std::vector<uint8_t> cdf(num_bins, 0);
+
+  double total_pixels = 0.0;
+  for (const auto &value : histogram) {
+    total_pixels += value;
+  }
+
+  if (total_pixels == 0) {
+    std::fill(cdf.begin(), cdf.end(), 0);
+    return cdf;
+  }
+
+  // Calculate the cumulative sum of the histogram
+  double cumulative = 0.0;
+  for (int i = 0; i < num_bins; ++i) {
+    cumulative += histogram[i];
+    cdf[i] = static_cast<uint8_t>((cumulative / total_pixels) * 255.0);
+    // printf("%d", cdf[i]);
+  }
+
+  return cdf;
+}
+
+void StreamDisplayHD::adjust_colormap_with_cdf(SDL_Color *adjusted_colors,
+                                               const SDL_Color *original_colors,
+                                               const std::vector<uint8_t> &cdf,
+                                               int num_colors) {
+  for (int i = 0; i < num_colors; ++i) {
+    adjusted_colors[i].r = cdf[original_colors[i].r];
+    adjusted_colors[i].g = cdf[original_colors[i].g];
+    adjusted_colors[i].b = cdf[original_colors[i].b];
+    adjusted_colors[i].a = original_colors[i].a;
   }
 }

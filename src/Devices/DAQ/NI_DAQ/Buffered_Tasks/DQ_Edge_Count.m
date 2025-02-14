@@ -1,3 +1,9 @@
+%Implements a buffered event counter. (see
+%https://www.ni.com/en/support/documentation/supplemental/21/buffered-event-counting.html)
+%The counter counts clock pulses, which are latched into the read buffer
+%every time a gate pulse comes in. So effectively it records timestamps of
+%events coming in on the input (which corresponds to the 'gate' in NI
+%documentation).
 classdef DQ_Edge_Count < DQ_Buffered_Task
     properties
         counter

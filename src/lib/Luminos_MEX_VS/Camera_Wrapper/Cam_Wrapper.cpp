@@ -113,12 +113,15 @@ bool Cam_Wrapper::Start_Acquisition(int32 numframes, const char *fpath) {
   return (cam->aq_sync_start(numframes, fpath));
 }
 
+// Use to restart camera from Matlab
+bool Cam_Wrapper::aq_live_restart() {
+  return (cam->aq_live_restart());
+}
+
 // Stop triggered acquisition
-// never gets used
 void Cam_Wrapper::Stop_Sync_Acquisition() { cam->aq_sync_stop(); }
 
 // Stop live acquisition
-// never gets used
 void Cam_Wrapper::Stop_Live_Acquisition() { cam->aq_live_stop(); }
 
 // Take single snapshot from streamed camera data. Client provides memory
@@ -176,6 +179,25 @@ bool Cam_Wrapper::Set_ROI(int32 *ROI_in) {
   return result;
 }
 
+// Rotate camera stream clockwise 90 deg
+int Cam_Wrapper::RotateCamFOV() {
+  SDisplay.rotated = (SDisplay.rotated + 1) % 4;
+  return SDisplay.rotated;
+}
+
+// Rotate camera stream counterclockwise 90 deg
+int Cam_Wrapper::RotateCamFOVcounter() {
+  SDisplay.rotated = (SDisplay.rotated - 1 + 4) % 4;
+  return SDisplay.rotated;
+}
+
+// Flip camera stream horizontally
+bool Cam_Wrapper::FlipCamFOV() {
+  SDisplay.flipped = !SDisplay.flipped;
+  return SDisplay.flipped;
+}
+
+
 // Set binning mode. Also adjusts ROI to compensate for new binning.
 bool Cam_Wrapper::Set_Binning(uint32_t binning) {
   bool result;
@@ -187,7 +209,27 @@ bool Cam_Wrapper::Set_Binning(uint32_t binning) {
   return result;
 }
 
-double Cam_Wrapper::Get_Binning() { return ((double)cam->bin); }
+// Set magnification from Main tab objectives and tubelenses panel.
+// Use to calculate distances in steam using contour.
+bool Cam_Wrapper::Set_Magnification(double magnification) {
+  bool result = 0;
+  char mag[64];
+  sprintf(mag, "%f", magnification);
+  printf(mag);
+  StreamDisplayHD::Px_to_um = magnification;
+  result = 1;
+  return result;
+}
+
+
+bool Cam_Wrapper::Set_Master(bool master_in) {
+  cam->master = master_in;
+  return true;
+}
+
+// Return current binning
+double Cam_Wrapper::Get_Binning() { return ((double)cam->bin);
+}
 
 // Returns size of available data in the roi_buff that collects ROI mean data.
 // This roi is the SDisplay sum_rect ROI, which may not correspond to the camera
@@ -259,8 +301,10 @@ void Cam_Wrapper::Cleanup() {
   }
   SDisplay.cleanup();
   cam->dc_shutdown();
-  delete cam;
+  //delete cam;
 }
+
+int Cam_Wrapper::Check_for_ROI() { return SDisplay.ROI_click_toggle; }
 
 // Return number of dropped frames (frames that were not streamed to storage in
 // time and were overwritten in buffer)

@@ -19,7 +19,6 @@ classdef Scientifica_Stage_Controller < Linear_Controller
     end
     properties (SetObservable, AbortSet)
         pos % x, y, z
-        zStageFlag = false;
     end
     
     properties (Hidden, Constant)
@@ -29,7 +28,6 @@ classdef Scientifica_Stage_Controller < Linear_Controller
     methods
         
         function obj = Scientifica_Stage_Controller(Initializers)
-            
             lscSerialArgs = {'defaultTerminator', 'CR', 'deviceErrorResp', 'E', ...
                 'deviceSimpleResp', 'A'};
             lscArgs = {'numDeviceDimensions', 3};
@@ -47,6 +45,7 @@ classdef Scientifica_Stage_Controller < Linear_Controller
             end
             obj.Configure_Controller();
         end
+
         function Configure_Controller(obj)
             obj.serial_com = serialport(obj.COMPORT, obj.baud, 'Timeout', obj.port_timeout);
             obj.serial_com.configureTerminator("CR");
@@ -54,28 +53,42 @@ classdef Scientifica_Stage_Controller < Linear_Controller
             set(obj.serial_com, 'FlowControl', 'none');
             set(obj.serial_com, 'Parity', 'none');
             set(obj.serial_com, 'StopBits', 1);
-            set(obj.serial_com, 'Timeout', 10);
+            set(obj.serial_com, 'Timeout', 0.1);
         end
+
         function success = Move_To_Position(obj, position)
             % position = [x,y,z]
             flush(obj.serial_com);
             obj.serial_com.writeline(['ABS ', num2str(round(position / obj.microstep_size))]);
             msg = obj.serial_com.readline();
+
             while obj.isMoving()
                 pause(.01);
             end
             success = 1; % TODO (but not too important): read msg to see if move was successful
         end
+
         function pos = Get_Current_Position_Microns(obj)
             flush(obj.serial_com);
             pause(.01)
             obj.serial_com.writeline(obj.pos_command);
             flush(obj.serial_com);
-
-            pos_str = str2num(obj.serial_com.readline());
-            pos.x = pos_str(1);
-            pos.y = pos_str(2);
-            pos.z = pos_str(3);
+            pos_res = obj.serial_com.readline();
+            % Error handling when serial timeout
+            if isstring(pos_res)
+                pos_str = str2num(pos_res);
+                pos.x = pos_str(1);
+                pos.y = pos_str(2);
+                if size(pos_str, 2) == 3
+                    pos.z = pos_str(3);
+                else
+                    pos.z = obj.pos.z;
+                end
+            else
+                pos.x = obj.pos.x;
+                pos.y = obj.pos.y;
+                pos.z = obj.pos.z;
+            end
         end
         
         function pos = get.pos(obj)
@@ -99,7 +112,11 @@ classdef Scientifica_Stage_Controller < Linear_Controller
             flush(obj.serial_com);
             obj.serial_com.writeline('S');
             res = obj.serial_com.readline();
-            tf = logical(str2double(res));
+            if isnan(str2double(res))
+                tf = true;
+            else
+                tf = logical(str2double(res));
+            end
         end
     end
 end

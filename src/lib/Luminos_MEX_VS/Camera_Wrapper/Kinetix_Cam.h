@@ -32,6 +32,7 @@ public:
   bool dc_shutdown();
   void aq_live_stop();
   double find_sensor_size(); //  Sensor size hardcoded in Kinetix_Cam.cpp
+  bool Set_Master(bool master); 
 
 private:
   void pixel_filter_off();

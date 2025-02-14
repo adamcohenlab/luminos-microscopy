@@ -44,10 +44,17 @@ public:
   bool Get_ROI_Buffer(double *dataout, int samps);
   bool Get_ROI_Sum_Buffer(double *dataout, int samps);
   bool Set_Binning(uint32_t binning);
+  bool Set_Magnification(double magnification);
   double Get_Binning();
   void Stop_Sync_Acquisition();
   void Stop_Live_Acquisition();
   bool Set_ROI(int32 *ROI_in);
+  bool aq_live_restart();
+  bool Set_Master(bool master);
+  int RotateCamFOV();
+  int RotateCamFOVcounter();
+  bool FlipCamFOV();
+  int Check_for_ROI();
   bool Is_Cam_Recording();
   int Get_Contour_numel();
   bool Get_Contour_Data(double *dataout, int len);
@@ -58,6 +65,7 @@ public:
   void Set_RDrive_Mode(bool mode);
   void Set_Read_Mode(int mode);
   // END METHOD LIST
+
 private:
   Cam_Control *cam;
   StreamDisplayHD SDisplay;

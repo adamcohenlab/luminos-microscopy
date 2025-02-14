@@ -125,6 +125,18 @@
     <ClCompile Include="CommonPV.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\inc\SDL2_gfx\include\SDL2_framerate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\inc\SDL2_gfx\include\SDL2_gfxPrimitives.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\inc\SDL2_gfx\include\SDL2_imageFilter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\inc\SDL2_gfx\include\SDL2_rotozoom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="..\inc\SDL2-2.0.12\lib\x64\SDL2.dll" />

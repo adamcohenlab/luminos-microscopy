@@ -1,18 +1,53 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { computeRadius } from "../../../utils/computeRadius";
 import { useDrawingControls } from "../DrawingControlsContext";
 import { GrayBox } from "../../GrayBox";
 import { isEmpty } from "lodash";
 import { PrettyTextInput } from "../../PrettyTextInput";
+import { getFactors } from "../../../tabs/DMD";
+import { getDistanceFactor } from "../../../tabs/Main/Objectives";
 
 export const useCircleMode = ({
   handleCompletedCircle = (newCircle) => {},
   maxShapes = Infinity,
-  name = "circle", // change if you want to support multiple circle modes
+  name = "circle",
+  dmdDeviceName,
 } = {}) => {
   const [currentCircle, setCurrentCircle] = useState({});
   const [circles, setCircles] = useState([]);
   const { mode, pushLastMode, imgHeight } = useDrawingControls();
+  const [unit, setUnit] = useState("Screen px");
+  const [factor, setFactor] = useState(1);
+  const lastClickTimeRef = useRef(0);
+  const doubleClickThreshold = 250; // milliseconds between clicks to register as a double click
+  //console.log("dmdDeviceName: ", dmdDeviceName);
+  useEffect(() => {
+    const updateFactors = async (dmdDeviceName) => {
+      const { cameraFactor, dmdFactor } = await getFactors({ dmdDeviceName }); // Fetch factors
+      const distanceFactor = getDistanceFactor();
+      switch (unit) {
+        case "Screen px":
+          setFactor(1);
+          break;
+        case "Microns":
+          setFactor(cameraFactor * distanceFactor * 6.5);
+          // Temporarily just multiply by 6.5um. Ideally should import cam.microns_per_pixel. - DI 7/24
+          break;
+        case "Camera px":
+          setFactor(cameraFactor);
+          //console.log('Camera px factor: ', cameraFactor);
+          break;
+        case "DMD px":
+          setFactor(dmdFactor);
+          //console.log('DMD px factor: ', dmdFactor);
+          break;
+        default:
+          setFactor(1);
+      }
+    };
+
+    updateFactors(dmdDeviceName);
+  }, [unit]);
 
   const finishCircle = (newCircle) => {
     handleCompletedCircle({
@@ -22,7 +57,7 @@ export const useCircleMode = ({
       imgHeight,
     });
 
-    // limit to maxShapes
+    // Limit to maxShapes
     setCircles((prevCircles) => [
       ...prevCircles.slice(0, maxShapes - 1),
       newCircle,
@@ -32,24 +67,39 @@ export const useCircleMode = ({
   };
 
   const handleClick = (x, y) => {
-    // circle is complete after 2 clicks (one for the center, and one for the radius)
-    // currentCircle is an object with center and radius properties
-    if (currentCircle.center) {
-      // if the center has been set, then the radius has been set
+    const currentTime = Date.now();
+    const timeSinceLastClick = currentTime - lastClickTimeRef.current;
+
+    if (timeSinceLastClick < doubleClickThreshold) {
+      // Double click detected
+      const defaultRadius = 10;
+      const previousRadius =
+        circles.length > 0 ? circles[circles.length - 1].radius : defaultRadius;
       const newCircle = {
-        center: currentCircle.center,
-        radius: computeRadius(
-          currentCircle.center[0],
-          currentCircle.center[1],
-          x,
-          y
-        ),
+        center: currentCircle.center || [x, y], // If no center set, use current click position
+        radius: previousRadius,
       };
       finishCircle(newCircle);
     } else {
-      // if the center has not been set, then set the center
-      setCurrentCircle({ center: [x, y] });
+      if (currentCircle.center) {
+        // If the center has been set, then set the radius
+        const newCircle = {
+          center: currentCircle.center,
+          radius: computeRadius(
+            currentCircle.center[0],
+            currentCircle.center[1],
+            x,
+            y
+          ),
+        };
+        finishCircle(newCircle);
+      } else {
+        // If the center has not been set, then set the center
+        setCurrentCircle({ center: [x, y] });
+      }
     }
+
+    lastClickTimeRef.current = currentTime;
   };
 
   const handleMouseMove = (x, y, mouseDown) => {
@@ -94,12 +144,19 @@ export const useCircleMode = ({
       if (lastCircle) {
         setCircles((prevCircles) => [
           ...prevCircles.slice(0, -1),
-          { ...lastCircle, radius },
+          { ...lastCircle, radius: radius / factor }, // Adjust the radius according to the current factor
         ]);
       }
     } else {
-      setCurrentCircle({ ...currentCircle, radius });
+      setCurrentCircle({
+        ...currentCircle,
+        radius: radius / factor, // Adjust the radius according to the current factor
+      });
     }
+  };
+
+  const handleUnitChange = (event) => {
+    setUnit(event.target.value);
   };
 
   return {
@@ -113,16 +170,81 @@ export const useCircleMode = ({
     undo,
     icon: circleIcon,
     sideComponent: mode === name && (
-      <GrayBox className="p-2 rounded-none">
+      <GrayBox className="p-5 rounded-none">
         <PrettyTextInput
           name="Radius"
-          value={previousCircleRadius || 0}
-          setValue={setPreviousCircleRadius}
+          value={previousCircleRadius ? previousCircleRadius * factor : 0}
+          setValue={(val) => setPreviousCircleRadius(val)}
           maxDecimals={2}
         />
+        <div className="mt-3">
+          {/* <label>Unit:</label> */}
+          <div className="flex flex-col space-y-2">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                value="Screen px"
+                checked={unit.trim() === "Screen px"}
+                onChange={handleUnitChange}
+                className="mr-2"
+              />
+              <PrettyTextInput
+                name="Screen pixel"
+                value=""
+                setValue={() => {}}
+                readOnly={true}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                value="Microns"
+                checked={unit.trim() === "Microns"}
+                onChange={handleUnitChange}
+                className="mr-2"
+              />
+              <PrettyTextInput
+                name="Microns"
+                value=""
+                setValue={() => {}}
+                readOnly={true}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                value="Camera px"
+                checked={unit.trim() === "Camera px"}
+                onChange={handleUnitChange}
+                className="mr-2"
+              />
+              <PrettyTextInput
+                name="Camera pixel"
+                value=""
+                setValue={() => {}}
+                readOnly={true}
+              />
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                value="DMD px"
+                checked={unit.trim() === "DMD px"}
+                onChange={handleUnitChange}
+                className="mr-2"
+              />
+              <PrettyTextInput
+                name="DMD pixel"
+                value=""
+                setValue={() => {}}
+                readOnly={true}
+              />
+            </div>
+          </div>
+        </div>
       </GrayBox>
     ),
-    type: "circle", // tells ROIShapes to render as a circle
+    type: "circle",
     name,
   };
 };

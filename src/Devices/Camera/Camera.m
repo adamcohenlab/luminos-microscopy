@@ -8,6 +8,7 @@ classdef Camera < Device
         type; %0:emulator; 1:Hamamatsu; 2:Andor; 3:Kinetix.
         virtualSensorSize;
         microns_per_pixel;
+        magnification = [];
         cam_id
         rdrivemode = true; %True: use R: drive for intermediate data store. False: write directly to data dir.
         frametrigger_source = "Off";
@@ -17,6 +18,7 @@ classdef Camera < Device
         roiJS = struct('left', 0, 'width', 0, 'top', 0, 'height', 0, 'type', "arbitrary");
         exposuretime;
         bin;
+        slave = false; % This needs to be true if this camera is triggered together with a another camera.
     end
     properties (Transient = true, Hidden = true)
         plt;
@@ -106,7 +108,18 @@ classdef Camera < Device
         function delete(this)
             if this.check_Cpp_instance()
                 this.cpp_object_initialized=false;
-                CAMERA_WRAPPER_MEX('delete', this.objectHandle);
+                if this.type ==3 % Use different shutdown for Kinetix
+                    CAMERA_WRAPPER_MEX('deleteKin', this.objectHandle);
+                else
+                    CAMERA_WRAPPER_MEX('delete', this.objectHandle);
+                end
+                pause(0.5);
+            end
+        end
+
+        function Stop(this)
+            if this.check_Cpp_instance()
+                CAMERA_WRAPPER_MEX('Stop', this.objectHandle);
             end
         end
         
@@ -138,7 +151,7 @@ classdef Camera < Device
         end
         
         %% Get_ROI_Buffer pulls all available data from the ROImean buffer,
-        % which represents the mean counts over the user-selected sub-ROI
+        % which represnts the mean counts over the user-selected sub-ROI
         % within the viewport
         function data = Get_ROI_Buffer(this)
             if this.check_Cpp_instance()
@@ -221,16 +234,38 @@ classdef Camera < Device
                 end
             end
         end
-
+        
         function set.bin(this,binning)
             this.setBinningInCpp(binning);
         end
-
+        
         function binning = get.bin(this)
             if this.check_Cpp_instance()
                 binning = CAMERA_WRAPPER_MEX('Get_Binning',this.objectHandle);
             end
         end
+
+        function success = restartCamera(this)
+            if this.check_Cpp_instance()
+                success = CAMERA_WRAPPER_MEX('aq_live_restart',this.objectHandle);
+            end
+        end
+        
+        % Passing
+        function set.magnification(this,magnification)
+            this.setMagnificationInCpp(magnification);
+        end
+        
+        function setMagnificationInCpp(this, magnification)
+            try double(magnification);
+                pixel_to_um = this.microns_per_pixel / magnification;
+                CAMERA_WRAPPER_MEX('Set_Magnification', this.objectHandle,double(pixel_to_um));
+                %disp("Set pixel_to_um to " + pixel_to_um);
+            catch
+                warning("Magnification is string.");
+            end
+        end
+        
         
         function set.exposuretime(this, exposuretime)
             if this.check_Cpp_instance()
@@ -247,6 +282,19 @@ classdef Camera < Device
                 CAMERA_WRAPPER_MEX('Set_Exposure', this.objectHandle, exposuretime);
             end
         end
+
+        %% Switch between camera master (wait until camera is done until returning acq_done) and slave (return acq_done immediately)
+        function setMasterDevice(this, CamIsMasterDevice)
+            if this.check_Cpp_instance()
+                if CamIsMasterDevice
+                    CAMERA_WRAPPER_MEX('Set_Master', this.objectHandle);
+                else
+                    CAMERA_WRAPPER_MEX('Set_Slave', this.objectHandle);
+                end
+            end
+        end
+        
+        %%
         
         function exposureTime = get.exposuretime(this)
             if this.check_Cpp_instance()
@@ -296,6 +344,15 @@ classdef Camera < Device
                 top = (this.virtualSensorSize - ROI_JS.height) / 2;
                 left = (this.virtualSensorSize - ROI_JS.width) / 2;
                 roiToSet = [left, width, top, height];
+            elseif type == "centered with offset" % Pre-formats the ROI for high-speed acquisition
+                % round so it's compatible with the camera
+                width = min(max(ceil(ROI_JS.width/8)*8, 8), this.virtualSensorSize);
+                height = min(max(ceil(ROI_JS.height/8)*8, 8), this.virtualSensorSize);
+                
+                % compute the top left corner of the ROI
+                top = max(ROI_JS.top - ROI_JS.height / 2, 0);
+                left = max(ROI_JS.left - ROI_JS.width / 2, 0);
+                roiToSet = [left, width, top, height];
             end
             roiToSet = this.Set_ROI(int32(roiToSet));
             this.Set_ROI(roiToSet);
@@ -306,6 +363,35 @@ classdef Camera < Device
             if this.check_Cpp_instance()
                 res=CAMERA_WRAPPER_MEX('Set_ROI',this.objectHandle,ROIin);
                 this.ROI=res;
+            end
+        end
+        
+        %Rotate camera stream FOV by 90 deg clockwise
+        function success = rotateCamFOV(this)
+            if this.check_Cpp_instance()
+                rotated = CAMERA_WRAPPER_MEX('RotateCamFOV', this.objectHandle);
+                success = true;
+            else
+                success = false;
+            end
+        end
+        
+        %Rotate camera stream FOV by 90 deg clockwise
+        function success = rotateCamFOVcounter(this)
+            if this.check_Cpp_instance()
+                rotated = CAMERA_WRAPPER_MEX('RotateCamFOVcounter', this.objectHandle);
+                success = true;
+            else
+                success = false;
+            end
+        end
+        
+        %Flip camera stream FOV horizontally
+        function success = flipCamFOV(this)
+            if this.check_Cpp_instance()
+                success = CAMERA_WRAPPER_MEX('FlipCamFOV', this.objectHandle);
+            else
+                success = false;
             end
         end
         
@@ -331,6 +417,16 @@ classdef Camera < Device
                 this.ROI=res;
             end
         end
+
+        function result = Check_for_ROI(this)
+            if this.check_Cpp_instance()
+                if (CAMERA_WRAPPER_MEX('Check_for_ROI',this.objectHandle) == 2)
+                    result = true;
+                else
+                    result = false;
+                end
+            end
+        end
         
         function Start_Acquisition(this, numFrames, fpath)
             if this.check_Cpp_instance()
@@ -353,6 +449,9 @@ classdef Camera < Device
         
         function Wait_Until_Done(this)
             while this.acq_complete == 0
+                if this.name == "Simulated_Cam"
+                    break;
+                end
                 pause(.1);
             end
         end
