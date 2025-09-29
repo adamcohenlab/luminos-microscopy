@@ -1,0 +1,89 @@
+{
+  "objectType": "Rig_Initializer",
+  "dataDirectory": "C:\\Users\\wongcamposd\\Documents\\DataOptopatch",
+  "tabs": [
+    "Main",
+    "Waveforms",
+    "Lasers",
+    {
+      "type": "DMD",
+      "names": [ "DMD_Blue", "DMD_Orange" ]
+    }
+  ],
+  "devices": [
+    {
+      "deviceType": "DAQ",
+      "name": "Dev1",
+      "alias_init": "Dev1/ao0,mod594,Dev1/ao1,mod488, Dev1/port0/line0,shutter488",
+      "defaultClock": "Dev1/PFI0",
+      "default_trigger": "Dev1/PFI12"
+    },
+    {
+      "deviceType": "Camera",
+      "name": "Orca Fusion BT",
+      "trigger": "Dev1/PFI12",
+      "clock": "/Dev1/PFI0",
+      "hsync_rate": 200000,
+      "vsync": "Dev1/Ctr1",
+      "daqTrigCounter": "Dev1/Ctr0",
+      "type": 1,
+      "rdrivemode": 0,
+      "cam_id": "S/N: 502705",
+      "virtualSensorSize": 2304
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "mod594",
+      "port": "Dev1/ao0",
+
+      "min": 0,
+      "max": 5
+    },
+    {
+      "deviceType": "NI_DAQ_Shutter",
+      "name": "shutter488",
+      "port": "Dev1/port0/line0"
+    },
+    {
+      "deviceType": "OBIS_Laser",
+      "name": "594",
+      "COMPORT": "COM10",
+      "maxPower": 0.060,
+      "Wavelength": 594,
+      "Prop_Allowed_Vals": []
+    },
+    {
+      "deviceType": "NI_DAQ_Modulator",
+      "name": "mod488",
+      "port": "Dev1/ao1",
+      "min": 0,
+      "max": 5
+    },
+    {
+      "deviceType": "ALP_DMD",
+      "name": "DMD_Blue",
+      "api_version": "alpV42x64",
+      "frac_calpoints": [
+        [ 0.55, 0.35 ],
+        [ 0.3, 0.35 ],
+        [ 0.3, 0.45 ]
+      ],
+      "calPS": 5,
+      "debug_mode": 0,
+      "Alignment_Pattern_Stack": []
+    },
+    {
+      "deviceType": "ALP_DMD",
+      "name": "DMD_Orange",
+      "api_version": "alpV42x64",
+      "frac_calpoints": [
+        [ 0.55, 0.35 ],
+        [ 0.3, 0.35 ],
+        [ 0.3, 0.45 ]
+      ],
+      "calPS": 5,
+      "debug_mode": 0,
+      "Alignment_Pattern_Stack": []
+    }
+  ]
+}

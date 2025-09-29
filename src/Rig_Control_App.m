@@ -390,6 +390,7 @@ classdef Rig_Control_App < matlab.apps.AppBase & matlab.mixin.SetGetExactNames
             props2save = findobj(proplist, 'Transient', false);
             props2save = props2save(~(contains({props2save.Name}, 'Components') | contains({props2save.Name}, 'ServerEnd')));
             names = {props2save.Name};
+            
             Archive = cell2struct(get(app, names), names, 2);
             tracked_devices = app.Devices(app.monitored_devices_index);
             if isempty(tracked_devices)
